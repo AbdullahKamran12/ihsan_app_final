@@ -1,0 +1,60 @@
+name: ihsan_app_final
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  intl: ^0.20.1
+  geolocator: ^13.0.2
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  csv: ^6.0.0
+  flutter_compass: ^0.8.1
+  flutter_pdfview: ^1.4.0
+  flutter_map_location_marker: ^9.1.1
+  path_provider: ^2.0.8
+  permission_handler: ^11.4.0
+  shared_preferences: ^2.3.5
+  firebase_auth: ^5.4.0
+  cloud_firestore: ^5.6.1
+  firebase_core: ^3.10.0
+  audioplayers: ^6.1.0
+  flutter_overpass: ^1.1.1
+  table_calendar: ^3.2.0
+  flutter_local_notifications: ^18.0.1  
+  timezone: ^0.10.0
+  workmanager: ^0.5.2
+  just_audio: ^0.9.46
+  google_maps_flutter: ^2.12.1
+  #google_mobile_ads: ^6.0.0
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/Untitled_design-removebg-preview.png
+    - assets/mainAppLogo.png
+    - assets/Bolton, Lancashire, UK Prayer Times.csv
+    - assets/Quran Majeed (Arabic only - 13 Line).pdf
+    - assets/azan8.mp3
+    - assets/11-03-17_A.pdf
+    - assets/ONLINE-PDF-A-Childs-Gift.pdf
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/mainAppLogo.png"
+  adaptive_icon_foreground: "assets/mainAppLogo.png"
+  adaptive_icon_background: "#008080"
+
