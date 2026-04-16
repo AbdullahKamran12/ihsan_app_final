@@ -1,0 +1,90 @@
+name: ihsan_app_final
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.1.0+10
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  intl: ^0.20.1
+  geolocator: ^14.0.2
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
+  csv: ^6.0.0
+  flutter_compass: ^0.8.1
+  flutter_pdfview: ^1.4.0
+  flutter_map_location_marker: ^10.2.0
+  path_provider: ^2.0.8
+  permission_handler: ^12.0.1
+  shared_preferences: ^2.3.5
+  firebase_auth: ^6.1.3
+  cloud_firestore: ^6.1.1
+  firebase_core: ^4.3.0
+  firebase_analytics: ^12.1.2
+  audioplayers: ^6.1.0
+  flutter_overpass: ^1.1.1
+  table_calendar: ^3.2.0
+  flutter_local_notifications: ^20.1.0  
+  timezone: ^0.10.1
+  workmanager: ^0.9.0+3
+  just_audio: ^0.10.5
+  google_maps_flutter: ^2.12.1
+  connectivity_plus: ^7.0.0
+  firebase_storage: ^13.0.6
+  file_picker: ^8.0.0
+  url_launcher: ^6.3.2
+  google_mlkit_text_recognition: ^0.15.1
+  image_picker: ^1.2.1
+  flutter_timezone: ^5.0.1
+  gal: ^2.3.2
+  wakelock_plus: ^1.5.1
+  
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/Untitled_design-removebg-preview.png
+    - assets/mainAppLogo.png
+    - assets/BannerAppQurbani.png
+    - assets/quran_majeed_13_line.pdf
+    - assets/11-03-17_A.pdf
+    - assets/ONLINE-PDF-A-Childs-Gift.pdf
+    - assets/qr_ihsan.png
+    - assets/app_promo_landscape.png
+    - assets/app_promo_portrait.png
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter_28pt-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter_28pt-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter_28pt-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter_28pt-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Inter_28pt-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Inter_28pt-Black.ttf
+          weight: 900
+          
+flutter_icons:
+  android: true
+  ios: true
+  web:
+    generate: true
+    image_path: "assets/mainAppLogo.png"
+  image_path: "assets/mainAppLogo.png"
+  adaptive_icon_foreground: "assets/mainAppLogo.png"
+  adaptive_icon_background: "#008080"
+
