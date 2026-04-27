@@ -37,7 +37,6 @@ dependencies:
   firebase_storage: ^13.0.6
   file_picker: ^8.0.0
   url_launcher: ^6.3.2
-  google_mlkit_text_recognition: ^0.15.1
   image_picker: ^1.2.1
   flutter_timezone: ^5.0.1
   gal: ^2.3.2
@@ -62,6 +61,9 @@ flutter:
     - assets/qr_ihsan.png
     - assets/app_promo_landscape.png
     - assets/app_promo_portrait.png
+    - assets/adhan_app.mp3
+    - assets/iqamah_app.mp3
+
   fonts:
     - family: Inter
       fonts:

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:workmanager/workmanager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +19,10 @@ import 'package:ihsan_app_final/utils/notification_service.dart';
 //  b. Fetch tomorrow's jamaat times from Firestore (if network available)
 //  c. Save both to SharedPreferences
 //  d. Reschedule all enabled notifications for the new day
+//
+// NOTE: WorkManager is Android-only. On iOS, notifications are rescheduled
+// whenever the app is opened (via scheduleNow). iOS does not support reliable
+// background tasks for this purpose.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const String _kDailyTaskName = 'dailyPrayerNotifTask';
@@ -352,11 +357,15 @@ List<DateTime?> _readJamaahTimesFromPrefs(SharedPreferences prefs,
 class PrayerScheduler {
   /// Call this once from main() after Firebase init.
   static Future<void> init() async {
-    await Workmanager().initialize(
-      callbackDispatcher,
-      isInDebugMode: false,
-    );
-    await _registerDailyTask();
+    if (Platform.isAndroid) {
+      await Workmanager().initialize(
+        callbackDispatcher,
+        isInDebugMode: false,
+      );
+      await _registerDailyTask();
+    }
+    // On iOS: no background task — notifications are rescheduled each time
+    // the app opens via scheduleNow(), which is called from the prayer screen.
   }
 
   static Future<void> _registerDailyTask() async {
@@ -424,6 +433,8 @@ class PrayerScheduler {
   /// Cancel everything and stop the background task.
   static Future<void> cancelAll() async {
     await NotificationService.cancelAll();
-    await Workmanager().cancelAll();
+    if (Platform.isAndroid) {
+      await Workmanager().cancelAll();
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -65,7 +66,16 @@ class NotificationService {
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const initSettings = InitializationSettings(android: androidSettings);
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
 
     await _plugin.initialize(settings: initSettings);
 
@@ -93,18 +103,29 @@ class NotificationService {
 
     await android?.requestNotificationsPermission();
 
+    // Request iOS permissions
+    final ios = _plugin.resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>();
+    await ios?.requestPermissions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     _initialised = true;
   }
 
   // ── Permission check ──────────────────────────────────────────────────────
 
   static Future<bool> hasExactAlarmPermission() async {
+    if (Platform.isIOS) return true; // iOS doesn't have this concept
     final android = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
     return await android?.canScheduleExactNotifications() ?? false;
   }
 
   static Future<void> requestExactAlarmPermission() async {
+    if (Platform.isIOS) return; // iOS doesn't have this concept
     final android = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
     await android?.requestExactAlarmsPermission();
@@ -165,8 +186,8 @@ class NotificationService {
         title: prayerNames[index],
         body: 'It\'s time for ${prayerNames[index]}',
         scheduledDate: tzTime,
-        notificationDetails: const NotificationDetails(
-          android: AndroidNotificationDetails(
+        notificationDetails: NotificationDetails(
+          android: const AndroidNotificationDetails(
             'prayer_beginning_adhan',
             'Prayer Beginning',
             channelDescription:
@@ -174,7 +195,13 @@ class NotificationService {
             importance: Importance.max,
             priority: Priority.high,
             playSound: true,
-            sound: const RawResourceAndroidNotificationSound('adhan_app'),
+            sound: RawResourceAndroidNotificationSound('adhan_app'),
+          ),
+          iOS: const DarwinNotificationDetails(
+            sound: 'adhan_app.mp3',
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -212,15 +239,21 @@ class NotificationService {
         body:
             "Jama'ah in $minutesBefore minute${minutesBefore == 1 ? '' : 's'}",
         scheduledDate: tzTime,
-        notificationDetails: const NotificationDetails(
-          android: AndroidNotificationDetails(
+        notificationDetails: NotificationDetails(
+          android: const AndroidNotificationDetails(
             'prayer_jamaah_iqamah',
             "Jama'ah Reminders",
             channelDescription: "Reminders before jama'ah time",
             importance: Importance.max,
             priority: Priority.high,
             playSound: true,
-            sound: const RawResourceAndroidNotificationSound('iqamah_app'),
+            sound: RawResourceAndroidNotificationSound('iqamah_app'),
+          ),
+          iOS: const DarwinNotificationDetails(
+            sound: 'iqamah_app.mp3',
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,

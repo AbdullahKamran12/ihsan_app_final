@@ -922,7 +922,7 @@ class _MosqueDisplayScreenState extends State<MosqueDisplayScreen>
   void _triggerAdhanMasjid(String prayerName, {bool isMaghribPost = false}) {
     _adhanMasjidTimer?.cancel();
     _adhanMasjidCountdownTimer?.cancel();
-    const totalSecs = 90; // 1 minutes 30 seconds
+    const totalSecs = 60; // 1 minutes
     int secsLeft = totalSecs;
     if (!mounted) return;
     setState(() {
@@ -960,7 +960,7 @@ class _MosqueDisplayScreenState extends State<MosqueDisplayScreen>
       _adhanDuaPrayerName = prayerName;
     });
     // Show dua for 30 seconds, then for Maghrib immediately fire iqamah/blackout
-    _adhanDuaTimer = Timer(const Duration(seconds: 150), () {
+    _adhanDuaTimer = Timer(const Duration(seconds: 90), () {
       if (!mounted) return;
       setState(() => _showAdhanDua = false);
       if (isMaghribPost) {

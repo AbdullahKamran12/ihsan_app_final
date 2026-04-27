@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Ihsan App Final</string>
+	<string>Ihsan</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +45,40 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Location (geolocator) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Used to calculate prayer times for your location</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Used to calculate prayer times for your location</string>
+	<!-- Camera (image_picker) -->
+	<key>NSCameraUsageDescription</key>
+	<string>Used to upload a mosque image</string>
+	<!-- Photo Library (image_picker, gal) -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to select or save images</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Used to save images to your photo library</string>
+	<!-- Microphone (audioplayers / just_audio) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Required for audio playback functionality</string>
+	<!-- Compass (flutter_compass) -->
+	<key>NSMotionUsageDescription</key>
+	<string>Used for the Qibla compass direction</string>
+	<!-- Background audio (just_audio / audioplayers) -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>fetch</string>
+	</array>
+	<!-- Notifications (flutter_local_notifications) -->
+	<key>UIUserNotificationSettings</key>
+	<array>
+		<string>alert</string>
+		<string>badge</string>
+		<string>sound</string>
+	</array>
+	<!-- Google Maps -->
+	<key>GMSApiKey</key>
+	<string>AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw</string>
 </dict>
 </plist>
