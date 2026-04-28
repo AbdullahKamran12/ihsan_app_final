@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
+import 'package:cloud_functions/cloud_functions.dart';
 
 // ─── API KEY ──────────────────────────────────────────────────────────────────
-const String _geminiApiKey = 'AIzaSyDvk0NK9CfnBfBn9vPWk14shAE33L9o0nc';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const _navy = Color.fromARGB(255, 10, 25, 60);
@@ -239,46 +239,22 @@ class _PhotoUploadPageState extends State<PhotoUploadPage> {
       final ext = _imageFile!.path.split('.').last.toLowerCase();
       final mime = ext == 'png' ? 'image/png' : 'image/jpeg';
 
-      // Key instructions:
-      // 1. fajr_begin must come from the "Fajr Start/Begin" column only —
-      //    ignore any "Sehri" column entirely.
-      // 2. Extract jummah_times as a list of up to 4 time strings for Friday
-      //    rows (first jummah, second jummah, etc.). Empty list for non-Fridays.
-      final prompt = getPrompt();
-
-      final body = jsonEncode({
-        'contents': [
-          {
-            'parts': [
-              {
-                'inline_data': {'mime_type': mime, 'data': b64}
-              },
-              {'text': prompt},
-            ]
-          }
-        ]
+      final callable = FirebaseFunctions.instance.httpsCallable('askGemini');
+      final result = await callable.call<Map<String, dynamic>>({
+        'image': b64,
+        'mime': mime,
+        'prompt': getPrompt(),
       });
 
-      final uri = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/'
-        'gemini-2.5-flash:generateContent?key=$_geminiApiKey',
-      );
-      final res = await http.post(uri,
-          headers: {'Content-Type': 'application/json'}, body: body);
-
-      if (res.statusCode != 200) {
-        throw Exception('AI API error ${res.statusCode}: ${res.body}');
-      }
-
-      final decoded = jsonDecode(res.body);
-      final rawText = (decoded['candidates'][0]['content']['parts'] as List)
-          .firstWhere((p) => p['text'] != null)['text'] as String;
+      final rawText = result.data['text'] as String;
       final cleaned = rawText
           .replaceAll(RegExp(r'```json\s*'), '')
           .replaceAll(RegExp(r'```\s*'), '')
           .trim();
 
       _buildRows(jsonDecode(cleaned) as List<dynamic>);
+    } on FirebaseFunctionsException catch (e) {
+      setState(() => _errorMsg = 'Function error [${e.code}]: ${e.message}');
     } catch (e) {
       setState(() => _errorMsg = e.toString());
     } finally {

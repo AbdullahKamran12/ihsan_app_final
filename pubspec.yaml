@@ -41,6 +41,7 @@ dependencies:
   flutter_timezone: ^5.0.1
   gal: ^2.3.2
   wakelock_plus: ^1.5.1
+  cloud_functions: ^6.2.0
   
   
 dev_dependencies:
