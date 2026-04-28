@@ -23,6 +23,7 @@ import 'package:ihsan_app_final/screens/qiblaScreen.dart';
 import 'package:ihsan_app_final/screens/quranScreen.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:ihsan_app_final/utils/prayer_scheduler.dart';
+import 'package:ihsan_app_final/screens/mosqueAdminScreen.dart';
 
 import 'package:ihsan_app_final/screens/accountsOptionsPage.dart';
 import 'package:ihsan_app_final/screens/calender.dart';
@@ -53,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   bool _isAdmin = false;
   bool _isForumAdmin = false;
+  bool _isMosqueAdmin = false;
+  String _adminMosqueName = '';
 
   List<Map<String, dynamic>> nearbyMosques = [];
   bool isLoadingJamaat = true;
@@ -1940,6 +1943,7 @@ class _HomeScreenState extends State<HomeScreen>
     loadAdjustments();
     _checkAdmin();
     _checkForumAdmin();
+    _checkMosqueAdmin();
     _fetchHijriDate(); // fire-and-forget — works for mosque timetable users too
     FirebaseAnalytics.instance
         .logScreenView(screenName: 'home_screen')
@@ -2323,6 +2327,28 @@ class _HomeScreenState extends State<HomeScreen>
       context,
       MaterialPageRoute(builder: (context) => const SettingScreen()),
     );
+  }
+
+  Future<void> _checkMosqueAdmin() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('displayMosques')
+          .doc(user.uid)
+          .get();
+      if (doc.exists && (doc.data()?['mosqueId'] as String? ?? '').isNotEmpty) {
+        final name = (doc.data()?['mosqueName'] as String?) ?? 'My Mosque';
+        if (mounted) {
+          setState(() {
+            _isMosqueAdmin = true;
+            _adminMosqueName = name;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('checkMosqueAdmin error: $e');
+    }
   }
 
   void _UploadMosqueGoTo(BuildContext context) async {
@@ -4479,6 +4505,21 @@ class _HomeScreenState extends State<HomeScreen>
                   },
                   'icon': Icons.download,
                 },
+              if (_isMosqueAdmin)
+                {
+                  'title': 'Mosque Admin',
+                  'subtitle': _adminMosqueName, // shown as subtitle
+                  'onPressed': () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MosqueAdminScreen(),
+                      ),
+                    );
+                  },
+                  'icon': Icons.admin_panel_settings_outlined,
+                },
             ];
 
             // Cycle through accent colours for drawer icons
@@ -4492,6 +4533,7 @@ class _HomeScreenState extends State<HomeScreen>
               skyLight,
               mintLight,
               skyLight,
+              mintLight,
             ];
             const List<Color> iconColors = [
               navy,
@@ -4503,6 +4545,7 @@ class _HomeScreenState extends State<HomeScreen>
               navy,
               Color.fromARGB(255, 30, 140, 105),
               navy,
+              Color.fromARGB(255, 30, 140, 105),
             ];
 
             return Column(
