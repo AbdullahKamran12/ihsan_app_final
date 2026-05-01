@@ -11,8 +11,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.ihsan.ihsanapp
-        certificate: Codemagic
-        provisioning_profile: Ihsan
     scripts:
       - name: Get Flutter packages
         script: flutter packages pub get
