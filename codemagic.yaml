@@ -26,22 +26,30 @@ workflows:
           cd ios
           pod install
 
-      - name: Debug signing environment
-        script: |
-          echo "=== Provisioning Profiles ==="
-          ls ~/Library/MobileDevice/Provisioning\ Profiles/ 2>/dev/null && \
-            for f in ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision; do
-              echo "Profile: $f"
-              /usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$f" 2>/dev/null) 2>/dev/null || true
-            done || echo "No profiles found"
-          echo "=== Keychain Certs ==="
-          security find-identity -v -p codesigning 2>/dev/null || echo "No certs found"
-
       - name: Build iOS signed
         script: |
-          flutter build ipa --release
-          echo "=== IPA location ==="
-          find . -name "*.ipa" 2>/dev/null
+          cat > /tmp/export_options.plist << PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>98Q8PA74RJ</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.ihsan.ihsanapp</key>
+              <string>codemagic</string>
+            </dict>
+          </dict>
+          </plist>
+          PLIST
+          flutter build ipa --release --export-options-plist=/tmp/export_options.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
