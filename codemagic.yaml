@@ -6,6 +6,9 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.ihsan.ihsanapp
     scripts:
       - name: Get Flutter packages
         script: flutter packages pub get
@@ -17,8 +20,12 @@ workflows:
         script: |
           cd ios
           pod install
-      - name: Build iOS (no signing)
+      - name: Build iOS signed
         script: |
-          flutter build ios --release --no-codesign
+          flutter build ipa --release
     artifacts:
-      - build/ios/iphoneos/Runner.app
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
