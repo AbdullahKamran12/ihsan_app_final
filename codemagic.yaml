@@ -12,6 +12,15 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.ihsan.ihsanapp
     scripts:
+      - name: Install provisioning profile
+        script: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          for profile in $(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" 2>/dev/null); do
+            echo "Found: $profile"
+          done
+          echo "CM_PROVISIONING_PROFILE: $CM_PROVISIONING_PROFILE"
+          echo "CM_CERTIFICATE: $CM_CERTIFICATE"
+          ls ~/Library/MobileDevice/Provisioning\ Profiles/ 2>/dev/null || echo "No profiles dir"
       - name: Get Flutter packages
         script: flutter packages pub get
       - name: Run Flutter analyze (warnings allowed)
