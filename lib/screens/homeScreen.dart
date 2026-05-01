@@ -3,6 +3,7 @@ import 'package:ihsan_app_final/screens/dailyActivities.dart';
 import 'package:ihsan_app_final/screens/uploadMosque.dart';
 import 'package:ihsan_app_final/screens/adminSubmissionsScreen.dart';
 import 'package:ihsan_app_final/screens/userphotosubmit.dart';
+import 'package:ihsan_app_final/screens/photoupload.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -56,6 +57,8 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isForumAdmin = false;
   bool _isMosqueAdmin = false;
   String _adminMosqueName = '';
+  String _adminMosqueId = ''; // ADD THIS
+  String _adminMosqueCity = ''; // ADD THIS
 
   List<Map<String, dynamic>> nearbyMosques = [];
   bool isLoadingJamaat = true;
@@ -2339,10 +2342,14 @@ class _HomeScreenState extends State<HomeScreen>
           .get();
       if (doc.exists && (doc.data()?['mosqueId'] as String? ?? '').isNotEmpty) {
         final name = (doc.data()?['mosqueName'] as String?) ?? 'My Mosque';
+        final id = (doc.data()?['mosqueId'] as String?) ?? '';
+        final city = (doc.data()?['mosqueCity'] as String?) ?? ''; // ADD
         if (mounted) {
           setState(() {
             _isMosqueAdmin = true;
             _adminMosqueName = name;
+            _adminMosqueId = id; // ADD
+            _adminMosqueCity = city; // ADD
           });
         }
       }
@@ -2360,6 +2367,21 @@ class _HomeScreenState extends State<HomeScreen>
         context,
         MaterialPageRoute(builder: (context) => const UploadMosque()),
       );
+    } else if (_isMosqueAdmin && _adminMosqueId.isNotEmpty) {
+      // Display-screen user — go straight to AI scanner for their own mosque only
+      final result = await Navigator.push<List<List<String>>>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PhotoUploadPage(
+            mosqueName: _adminMosqueName,
+            mosqueId: _adminMosqueId,
+            city: _adminMosqueCity,
+          ),
+        ),
+      );
+      if (result != null && mounted) {
+        _uploadScannedDataForDisplayUser(result);
+      }
     } else if (FirebaseAuth.instance.currentUser != null) {
       Navigator.push(
         context,
@@ -2371,6 +2393,117 @@ class _HomeScreenState extends State<HomeScreen>
           content: Text('You need to sign in to use this feature'),
           backgroundColor: Color.fromARGB(255, 18, 42, 95),
           behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  Future<void> _uploadScannedDataForDisplayUser(List<List<String>> rows) async {
+    // rows format matches PhotoUploadPage output:
+    // [0]=date(DD/MM/YYYY), [1]=dayname, [2]=fajrB, [3]=fajrJ, [4]=sunrise,
+    // [5]=dhuhrB, [6]=dhuhrJ, [7]=asrB, [8]=asrJ, [9]=maghrib,
+    // [10]=ishaB, [11]=ishaJ, [12-15]=jummah1-4 (Fridays only)
+
+    if (_adminMosqueId.isEmpty) return;
+
+    final scaffoldMsg = ScaffoldMessenger.of(context);
+
+    try {
+      // Show uploading indicator
+      scaffoldMsg.showSnackBar(
+        const SnackBar(
+          content: Row(children: [
+            SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Colors.white)),
+            SizedBox(width: 12),
+            Text('Uploading timetable…'),
+          ]),
+          backgroundColor: Color.fromARGB(255, 18, 42, 95),
+          duration: Duration(seconds: 30),
+        ),
+      );
+
+      final firestore = FirebaseFirestore.instance;
+      final batch = firestore.batch();
+
+      for (final row in rows) {
+        if (row.length < 12) continue;
+        final dateParts = row[0].split('/');
+        if (dateParts.length != 3) continue;
+        final day = int.tryParse(dateParts[0]);
+        final month = int.tryParse(dateParts[1]);
+        final year = int.tryParse(dateParts[2]);
+        if (day == null || month == null || year == null) continue;
+
+        final isoDate =
+            '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
+
+        final jummahTimes = <String>[];
+        if (row.length > 12) {
+          for (int i = 12; i <= 15 && i < row.length; i++) {
+            if (row[i].isNotEmpty) jummahTimes.add(row[i]);
+          }
+        }
+
+        final docRef = firestore
+            .collection('mosques')
+            .doc(_adminMosqueId)
+            .collection('prayerTimes')
+            .doc(isoDate);
+
+        batch.set(docRef, {
+          'fajr': row[2],
+          'fajrJ': row[3],
+          'sunrise': row[4],
+          'dhuhr': row[5],
+          'dhuhrJ': row[6],
+          'asr': row[7],
+          'asrJ': row[8],
+          'maghrib': row[9],
+          'isha': row[10],
+          'ishaJ': row[11],
+          if (jummahTimes.isNotEmpty) 'jummahTimes': jummahTimes,
+        });
+      }
+
+      await batch.commit();
+
+      // Also set needsRefresh flag so TV display auto-reloads
+      await firestore
+          .collection('displayMosques')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({'needsRefresh': true});
+
+      scaffoldMsg.hideCurrentSnackBar();
+      scaffoldMsg.showSnackBar(
+        SnackBar(
+          content: Row(children: const [
+            Icon(Icons.check_circle_outline_rounded,
+                color: Color.fromARGB(255, 72, 200, 155), size: 18),
+            SizedBox(width: 8),
+            Text('Timetable uploaded successfully!',
+                style: TextStyle(color: Colors.white)),
+          ]),
+          backgroundColor: const Color.fromARGB(255, 18, 42, 95),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(12),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      scaffoldMsg.hideCurrentSnackBar();
+      scaffoldMsg.showSnackBar(
+        SnackBar(
+          content: Text('Upload failed: $e',
+              style: const TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(12),
         ),
       );
     }

@@ -239,7 +239,10 @@ class _PhotoUploadPageState extends State<PhotoUploadPage> {
       final ext = _imageFile!.path.split('.').last.toLowerCase();
       final mime = ext == 'png' ? 'image/png' : 'image/jpeg';
 
-      final callable = FirebaseFunctions.instance.httpsCallable('askGemini');
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'askGemini',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 280)),
+      );
       final result = await callable.call<Map<String, dynamic>>({
         'image': b64,
         'mime': mime,
