@@ -12,30 +12,38 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.ihsan.ihsanapp
     scripts:
-      - name: Install provisioning profile
-        script: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          for profile in $(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" 2>/dev/null); do
-            echo "Found: $profile"
-          done
-          echo "CM_PROVISIONING_PROFILE: $CM_PROVISIONING_PROFILE"
-          echo "CM_CERTIFICATE: $CM_CERTIFICATE"
-          ls ~/Library/MobileDevice/Provisioning\ Profiles/ 2>/dev/null || echo "No profiles dir"
       - name: Get Flutter packages
         script: flutter packages pub get
+
       - name: Run Flutter analyze (warnings allowed)
         script: flutter analyze || true
+
       - name: Generate launcher icons
         script: dart run flutter_launcher_icons
+
       - name: Pod install
         script: |
           cd ios
           pod install
+
+      - name: Debug signing environment
+        script: |
+          echo "=== Provisioning Profiles ==="
+          ls ~/Library/MobileDevice/Provisioning\ Profiles/ 2>/dev/null && \
+            for f in ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision; do
+              echo "Profile: $f"
+              /usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(security cms -D -i "$f" 2>/dev/null) 2>/dev/null || true
+            done || echo "No profiles found"
+          echo "=== Keychain Certs ==="
+          security find-identity -v -p codesigning 2>/dev/null || echo "No certs found"
+
       - name: Build iOS signed
         script: |
           flutter build ipa --release
+
     artifacts:
       - build/ios/ipa/*.ipa
+
     publishing:
       app_store_connect:
         auth: integration
