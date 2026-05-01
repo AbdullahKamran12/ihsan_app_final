@@ -40,6 +40,8 @@ workflows:
       - name: Build iOS signed
         script: |
           flutter build ipa --release
+          echo "=== IPA location ==="
+          find . -name "*.ipa" 2>/dev/null
 
     artifacts:
       - build/ios/ipa/*.ipa
