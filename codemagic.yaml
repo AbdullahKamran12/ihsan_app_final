@@ -46,6 +46,8 @@ workflows:
               <key>com.ihsan.ihsanapp</key>
               <string>codemagic</string>
             </dict>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
           </dict>
           </plist>
           PLIST
@@ -58,4 +60,5 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        submit_to_app_store: false
+        submit_to_app_store: true
+        expire_build_submitted_for_review: true
