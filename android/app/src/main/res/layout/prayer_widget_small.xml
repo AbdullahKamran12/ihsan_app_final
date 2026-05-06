@@ -7,7 +7,6 @@
     android:padding="10dp"
     android:gravity="center_vertical">
 
-    <!-- Each row: initial | adhan | jamaat -->
     <!-- Fajr -->
     <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
@@ -17,11 +16,11 @@
         <TextView android:id="@+id/s_fajr_adhan" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#D4AF5F"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
         <TextView android:id="@+id/s_fajr_jamaat" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#90C8A0"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
     </LinearLayout>
 
     <!-- Sunrise -->
@@ -33,26 +32,25 @@
         <TextView android:id="@+id/s_sunrise_adhan" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#D4AF5F"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:text="" />
     </LinearLayout>
 
     <!-- Dhuhr -->
-    <LinearLayout android:id="@+id/s_row_dhuhr" android:layout_width="match_parent"
-        android:layout_height="0dp" android:layout_weight="1"
-        android:orientation="horizontal" android:gravity="center_vertical">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
         <TextView android:id="@+id/s_dhuhr_init" android:layout_width="28dp"
-            android:layout_height="wrap_content" android:text="D"
+            android:layout_height="wrap_content" android:text="Z"
             android:textColor="#EEF0FF" android:textSize="13sp" android:textStyle="bold"/>
         <TextView android:id="@+id/s_dhuhr_adhan" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#D4AF5F"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
         <TextView android:id="@+id/s_dhuhr_jamaat" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#90C8A0"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
     </LinearLayout>
 
     <!-- Asr -->
@@ -64,11 +62,11 @@
         <TextView android:id="@+id/s_asr_adhan" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#D4AF5F"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
         <TextView android:id="@+id/s_asr_jamaat" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#90C8A0"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
     </LinearLayout>
 
     <!-- Maghrib -->
@@ -80,7 +78,7 @@
         <TextView android:id="@+id/s_maghrib_adhan" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#D4AF5F"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:text="" />
     </LinearLayout>
@@ -89,16 +87,16 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
         android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
         <TextView android:id="@+id/s_isha_init" android:layout_width="28dp"
-            android:layout_height="wrap_content" android:text="E"
+            android:layout_height="wrap_content" android:text="I"
             android:textColor="#EEF0FF" android:textSize="13sp" android:textStyle="bold"/>
         <TextView android:id="@+id/s_isha_adhan" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#D4AF5F"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
         <TextView android:id="@+id/s_isha_jamaat" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:text="--:--" android:textColor="#90C8A0"
-            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+            android:textSize="12sp" android:gravity="center" android:typeface="monospace"/>
     </LinearLayout>
 
 </LinearLayout>

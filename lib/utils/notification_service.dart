@@ -109,6 +109,12 @@ class NotificationService {
       sound: const RawResourceAndroidNotificationSound('fajr_adhan'),
       playSound: true,
     ));
+    await android?.createNotificationChannel(AndroidNotificationChannel(
+      'prayer_sunrise_ping',
+      'Sunrise Reminder',
+      description: 'Notification at Sunrise time',
+      importance: Importance.max,
+    ));
 
     await android?.requestNotificationsPermission();
 
@@ -208,13 +214,11 @@ class NotificationService {
                 )
               : index == 1
                   ? const AndroidNotificationDetails(
-                      'prayer_beginning_adhan',
-                      'Prayer Beginning',
-                      channelDescription:
-                          'Notifications at the beginning of each prayer time',
+                      'prayer_sunrise_ping',
+                      'Sunrise Reminder',
+                      channelDescription: 'Notification at Sunrise time',
                       importance: Importance.max,
                       priority: Priority.high,
-                      playSound: true,
                     )
                   : const AndroidNotificationDetails(
                       'prayer_beginning_adhan',

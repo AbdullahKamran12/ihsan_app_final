@@ -3,198 +3,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_bg"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="10dp">
 
-    <!-- ── TOP HALF: Clock | Logo | Next prayer ── -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:background="@drawable/widget_header_bg"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp">
+    <TextView
+        android:id="@+id/w_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12:00"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold" />
 
-        <!-- Live clock (left side) -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:orientation="vertical">
-            <TextView
-                android:id="@+id/w_clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="12:00"
-                android:textColor="#FFFFFF"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace" />
-            <TextView
-                android:id="@+id/w_clock_ampm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PM"
-                android:textColor="#8890C0"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+    <TextView
+        android:id="@+id/w_clock_ampm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AM"
+        android:textColor="#8890C0"
+        android:textSize="10sp" />
 
-        <!-- App logo (centre) -->
-        <!-- Replace R.drawable.logo with your actual logo drawable name -->
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/logo"
-            android:scaleType="fitCenter"
-            android:layout_marginHorizontal="8dp" />
+    <TextView
+        android:id="@+id/w_next_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:textColor="#8890C0"
+        android:textSize="9sp" />
 
-        <!-- Next prayer (right side) -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:orientation="vertical"
-            android:gravity="end">
-            <TextView
-                android:id="@+id/w_next_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Next"
-                android:textColor="#8890C0"
-                android:textSize="9sp"
-                android:layout_gravity="end" />
-            <TextView
-                android:id="@+id/w_next_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dhuhr"
-                android:textColor="#D4AF5F"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_gravity="end" />
-            <TextView
-                android:id="@+id/w_next_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="01:30"
-                android:textColor="#D4AF5F"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
-                android:layout_gravity="end" />
-        </LinearLayout>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/w_next_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dhuhr"
+        android:textColor="#D4AF5F"
+        android:textSize="14sp" />
 
-    <!-- Subtle divider -->
-    <View android:layout_width="match_parent" android:layout_height="0.5dp"
-        android:background="#44D4AF5F" />
+    <TextView
+        android:id="@+id/w_next_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="--:--"
+        android:textColor="#D4AF5F"
+        android:textSize="14sp" />
 
-    <!-- ── BOTTOM HALF: All 6 prayers ── -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:orientation="horizontal"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:gravity="center_vertical">
+    <TextView android:id="@+id/w_fajr_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fajr" android:textColor="#EEF0FF" android:textSize="10sp" />
+    <TextView android:id="@+id/w_fajr_adhan" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#D4AF5F" android:textSize="10sp" />
+    <TextView android:id="@+id/w_fajr_jamaat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#90C8A0" android:textSize="10sp" />
+    <TextView android:id="@+id/w_sunrise_adhan" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#D4AF5F" android:textSize="10sp" />
+    <TextView android:id="@+id/w_dhuhr_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dhuhr" android:textColor="#EEF0FF" android:textSize="10sp" />
+    <TextView android:id="@+id/w_dhuhr_adhan" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#D4AF5F" android:textSize="10sp" />
+    <TextView android:id="@+id/w_dhuhr_jamaat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#90C8A0" android:textSize="10sp" />
+    <TextView android:id="@+id/w_asr_adhan" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#D4AF5F" android:textSize="10sp" />
+    <TextView android:id="@+id/w_asr_jamaat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#90C8A0" android:textSize="10sp" />
+    <TextView android:id="@+id/w_maghrib_adhan" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#D4AF5F" android:textSize="10sp" />
+    <TextView android:id="@+id/w_isha_adhan" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#D4AF5F" android:textSize="10sp" />
+    <TextView android:id="@+id/w_isha_jamaat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textColor="#90C8A0" android:textSize="10sp" />
 
-        <!-- Each prayer column: name / adhan / jamaat -->
-
-        <!-- Fajr -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:id="@+id/w_fajr_name" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="Fajr"
-                android:textColor="#EEF0FF" android:textSize="9sp" android:textStyle="bold"
-                android:gravity="center"/>
-            <TextView android:id="@+id/w_fajr_adhan" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#D4AF5F" android:textSize="10sp"
-                android:gravity="center" android:fontFamily="monospace"/>
-            <TextView android:id="@+id/w_fajr_jamaat" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#90C8A0" android:textSize="11sp" android:textStyle="bold"
-                android:gravity="center" android:fontFamily="monospace"/>
-        </LinearLayout>
-
-        <!-- Sunrise -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Sunrise" android:textColor="#EEF0FF" android:textSize="9sp"
-                android:textStyle="bold" android:gravity="center"/>
-            <TextView android:id="@+id/w_sunrise_adhan" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#D4AF5F" android:textSize="10sp"
-                android:gravity="center" android:fontFamily="monospace"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="—" android:textColor="#44FFFFFF" android:textSize="11sp"
-                android:gravity="center"/>
-        </LinearLayout>
-
-        <!-- Dhuhr -->
-        <LinearLayout android:id="@+id/w_col_dhuhr" android:layout_width="0dp"
-            android:layout_height="match_parent" android:layout_weight="1"
-            android:orientation="vertical" android:gravity="center">
-            <TextView android:id="@+id/w_dhuhr_name" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="Dhuhr"
-                android:textColor="#EEF0FF" android:textSize="9sp" android:textStyle="bold"
-                android:gravity="center"/>
-            <TextView android:id="@+id/w_dhuhr_adhan" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#D4AF5F" android:textSize="10sp"
-                android:gravity="center" android:fontFamily="monospace"/>
-            <TextView android:id="@+id/w_dhuhr_jamaat" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#90C8A0" android:textSize="11sp" android:textStyle="bold"
-                android:gravity="center" android:fontFamily="monospace"/>
-        </LinearLayout>
-
-        <!-- Asr -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Asr" android:textColor="#EEF0FF" android:textSize="9sp"
-                android:textStyle="bold" android:gravity="center"/>
-            <TextView android:id="@+id/w_asr_adhan" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#D4AF5F" android:textSize="10sp"
-                android:gravity="center" android:fontFamily="monospace"/>
-            <TextView android:id="@+id/w_asr_jamaat" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#90C8A0" android:textSize="11sp" android:textStyle="bold"
-                android:gravity="center" android:fontFamily="monospace"/>
-        </LinearLayout>
-
-        <!-- Maghrib -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Maghrib" android:textColor="#EEF0FF" android:textSize="9sp"
-                android:textStyle="bold" android:gravity="center"/>
-            <TextView android:id="@+id/w_maghrib_adhan" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#D4AF5F" android:textSize="10sp"
-                android:gravity="center" android:fontFamily="monospace"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="—" android:textColor="#44FFFFFF" android:textSize="11sp"
-                android:gravity="center"/>
-        </LinearLayout>
-
-        <!-- Isha -->
-        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Esha" android:textColor="#EEF0FF" android:textSize="9sp"
-                android:textStyle="bold" android:gravity="center"/>
-            <TextView android:id="@+id/w_isha_adhan" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#D4AF5F" android:textSize="10sp"
-                android:gravity="center" android:fontFamily="monospace"/>
-            <TextView android:id="@+id/w_isha_jamaat" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="--:--"
-                android:textColor="#90C8A0" android:textSize="11sp" android:textStyle="bold"
-                android:gravity="center" android:fontFamily="monospace"/>
-        </LinearLayout>
-
-    </LinearLayout>
 </LinearLayout>
