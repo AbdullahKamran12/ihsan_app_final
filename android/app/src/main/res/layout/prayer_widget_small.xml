@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:gravity="center_vertical">
+
+    <!-- Each row: initial | adhan | jamaat -->
+    <!-- Fajr -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/s_fajr_init" android:layout_width="28dp"
+            android:layout_height="wrap_content" android:text="F"
+            android:textColor="#EEF0FF" android:textSize="13sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/s_fajr_adhan" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#D4AF5F"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+        <TextView android:id="@+id/s_fajr_jamaat" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#90C8A0"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+    </LinearLayout>
+
+    <!-- Sunrise -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/s_sunrise_init" android:layout_width="28dp"
+            android:layout_height="wrap_content" android:text="S"
+            android:textColor="#EEF0FF" android:textSize="13sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/s_sunrise_adhan" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#D4AF5F"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="" />
+    </LinearLayout>
+
+    <!-- Dhuhr -->
+    <LinearLayout android:id="@+id/s_row_dhuhr" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1"
+        android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/s_dhuhr_init" android:layout_width="28dp"
+            android:layout_height="wrap_content" android:text="D"
+            android:textColor="#EEF0FF" android:textSize="13sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/s_dhuhr_adhan" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#D4AF5F"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+        <TextView android:id="@+id/s_dhuhr_jamaat" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#90C8A0"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+    </LinearLayout>
+
+    <!-- Asr -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/s_asr_init" android:layout_width="28dp"
+            android:layout_height="wrap_content" android:text="A"
+            android:textColor="#EEF0FF" android:textSize="13sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/s_asr_adhan" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#D4AF5F"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+        <TextView android:id="@+id/s_asr_jamaat" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#90C8A0"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+    </LinearLayout>
+
+    <!-- Maghrib -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/s_maghrib_init" android:layout_width="28dp"
+            android:layout_height="wrap_content" android:text="M"
+            android:textColor="#EEF0FF" android:textSize="13sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/s_maghrib_adhan" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#D4AF5F"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="" />
+    </LinearLayout>
+
+    <!-- Isha -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/s_isha_init" android:layout_width="28dp"
+            android:layout_height="wrap_content" android:text="E"
+            android:textColor="#EEF0FF" android:textSize="13sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/s_isha_adhan" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#D4AF5F"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+        <TextView android:id="@+id/s_isha_jamaat" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="--:--" android:textColor="#90C8A0"
+            android:textSize="12sp" android:gravity="center" android:fontFamily="monospace"/>
+    </LinearLayout>
+
+</LinearLayout>

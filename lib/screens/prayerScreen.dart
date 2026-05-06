@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ihsan_app_final/utils/widget_service.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:ihsan_app_final/utils/prayer_scheduler.dart';
@@ -79,6 +80,24 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     _initNotificationsAndLoad();
     _startTimer();
     _fetchHijriDate(_displayDate);
+  }
+
+  void _syncWidget() {
+    if (todayPrayerTimes == null) return;
+
+    final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    PrayerTimesJamaat? todayJamaat;
+    try {
+      todayJamaat = prayerTimesListJamaat.firstWhere((e) => e.date == todayStr);
+    } catch (_) {}
+
+    WidgetService.update(
+      adhan: todayPrayerTimes!,
+      jamaat: todayJamaat,
+      mosqueName: _mosqueName, // already a field in your state
+      nextPrayerName: nextPrayerName, // already a field in your state
+      currentPrayerName: null,
+    );
   }
 
   Future<void> _fetchHijriDate(DateTime date) async {
@@ -666,7 +685,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
         mosqueLong = mosqueDoc.data()?['long'];
         _mosqueName = mosqueDoc.data()?['name'] ?? activeId;
       });
-
+      _syncWidget();
       // ── Save jama'ah times for background scheduler ──────────────────
       // 1. Save the full year as JSON so midnight task never needs Firestore
       final fullYearForPrefs = loaded
@@ -703,6 +722,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
           'maghrib': todayJamaat.maghrib,
           'isha': todayJamaat.isha,
         });
+        _syncWidget();
       } catch (_) {
         // Today not in loaded list — no jama'ah times to save
       }
@@ -749,6 +769,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
           behavior: SnackBarBehavior.floating,
         ));
       }
+      _syncWidget();
     } catch (e) {
       setState(() => _isFavouriting = false);
       debugPrint('Failed to save favourite: $e');
@@ -839,6 +860,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     setState(() {
       this.nextPrayerName = nextPrayerName;
     });
+    _syncWidget();
   }
 
   void _settingsPageGoTo() {
@@ -900,7 +922,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                   prayerTimesFuture = Future.value(todayPrayerTimes);
                 });
               }
-
+              _syncWidget();
               // Success - exit early
               return;
             }
@@ -952,6 +974,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             );
 
             _savePrayerTimesToLocal(todayPrayerTimes!, todayPrayerTimes!.date);
+            _syncWidget();
 
             if (mounted) {
               setState(() {
@@ -1084,6 +1107,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     const Color textDark = Color.fromARGB(255, 15, 30, 65);
     const Color textMid = Color.fromARGB(255, 90, 115, 160);
     const Color border = Color.fromARGB(255, 210, 220, 240);
+    const Color errorRed = Color.fromARGB(255, 200, 60, 60);
 
     Widget headerCell(String text, TextAlign align) => Expanded(
           child: Text(text,
@@ -1199,7 +1223,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
           final List<PrayerTime> rows = [
             PrayerTime('Fajr', bv(0), jv(0)),
-            PrayerTime('Sunrise', bv(1), jv(1)),
+            PrayerTime('Sunrise', bv(1), "-"),
             PrayerTime(
                 _displayDate.weekday == DateTime.friday ? "Jumu'ah" : 'Dhuhr',
                 bv(2),
@@ -1628,10 +1652,20 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                                   color: gold.withOpacity(0.5), width: 1.5),
                             ),
                             child: Row(children: [
-                              headerCell('Salaah', TextAlign.left),
-                              headerCell('Beginning', TextAlign.center),
-                              headerCell("Jama'ah", TextAlign.center),
-                              headerCell("Adhan/Jama'ah", TextAlign.right),
+                              Expanded(
+                                child: headerCell('Salaah', TextAlign.left),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Center(
+                                    child: headerCell(
+                                        'Beginning', TextAlign.center)),
+                              ),
+                              Expanded(
+                                child: Center(
+                                    child:
+                                        headerCell("Jama'ah", TextAlign.right)),
+                              ),
                             ]),
                           ),
 
@@ -1678,6 +1712,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                                           child: Row(children: [
                                             // Name
                                             Expanded(
+                                              flex: 4,
                                               child: Row(children: [
                                                 if (isNext)
                                                   Container(
@@ -1705,8 +1740,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                                               ]),
                                             ),
 
-                                            // Beginning
+                                            // Beginning / Adhan time
                                             Expanded(
+                                              flex: 3,
                                               child: Center(
                                                 child: timeChip(
                                                   prayer.time,
@@ -1725,8 +1761,35 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                                               ),
                                             ),
 
-                                            // Jamaat
+                                            // Adhan notification bell
                                             Expanded(
+                                              flex: 1,
+                                              child: Center(
+                                                child: _bellButton(
+                                                  isOn: notifBeginningOn[index],
+                                                  isLoading:
+                                                      notifBeginningLoading[
+                                                          index],
+                                                  result: notifBeginningResult[
+                                                      index],
+                                                  onTap: () =>
+                                                      _toggleBeginning(index),
+                                                  tooltip:
+                                                      'Beginning time notification',
+                                                  activeColor: gold,
+                                                  activeLight: goldLight,
+                                                  navy: navy,
+                                                  offWhite: offWhite,
+                                                  border: border,
+                                                  textMid: textMid,
+                                                  errorRed: errorRed,
+                                                ),
+                                              ),
+                                            ),
+
+                                            // Jamaat time
+                                            Expanded(
+                                              flex: 3,
                                               child: Center(
                                                 child: prayer.name ==
                                                             "Jumu'ah" &&
@@ -1843,8 +1906,79 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                                               ),
                                             ),
 
-                                            // Notification
-                                            _buildBellPair(index),
+                                            // Jamaah notification bell
+                                            Expanded(
+                                              flex: 1,
+                                              child: Center(
+                                                child: Stack(
+                                                  clipBehavior: Clip.none,
+                                                  children: [
+                                                    _bellButton(
+                                                      isOn:
+                                                          notifJamaahOn[index],
+                                                      isLoading:
+                                                          notifJamaahLoading[
+                                                              index],
+                                                      result: notifJamaahResult[
+                                                          index],
+                                                      onTap: () =>
+                                                          _toggleJamaah(index),
+                                                      tooltip:
+                                                          "Jama'ah reminder",
+                                                      activeColor: mintGreen,
+                                                      activeLight: mintLight,
+                                                      navy: navy,
+                                                      offWhite: offWhite,
+                                                      border: border,
+                                                      textMid: textMid,
+                                                      errorRed: errorRed,
+                                                      isJamaah: true,
+                                                    ),
+                                                    if (notifJamaahOn[index])
+                                                      Positioned(
+                                                        top: -6,
+                                                        right: -6,
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal: 5,
+                                                                  vertical: 2),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: navy,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                            border: Border.all(
+                                                                color: mintGreen
+                                                                    .withOpacity(
+                                                                        0.7),
+                                                                width: 1),
+                                                          ),
+                                                          child: Text(
+                                                            '${notifJamaahMins[index]}m',
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 9,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      60,
+                                                                      200,
+                                                                      140),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           ]),
                                         ),
                                       ),

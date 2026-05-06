@@ -62,6 +62,7 @@ class _MosqueAdminScreenState extends State<MosqueAdminScreen>
     'maghrib': TextEditingController(),
     'ishaJ': TextEditingController(),
   };
+  DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now().add(const Duration(days: 6));
   bool _savingJamaat = false;
   String _jamaatSaveMsg = '';
@@ -352,8 +353,8 @@ class _MosqueAdminScreenState extends State<MosqueAdminScreen>
     try {
       final db = FirebaseFirestore.instance;
       final batch = db.batch();
-      final now = DateTime.now();
-      DateTime cursor = DateTime(now.year, now.month, now.day);
+      DateTime cursor =
+          DateTime(_startDate.year, _startDate.month, _startDate.day);
 
       while (!cursor.isAfter(_endDate)) {
         final dateStr = cursor.toIso8601String().substring(0, 10);
@@ -379,7 +380,7 @@ class _MosqueAdminScreenState extends State<MosqueAdminScreen>
       setState(() {
         _savingJamaat = false;
         _jamaatSaveMsg =
-            '✓ Saved for ${_endDate.difference(DateTime.now()).inDays + 1} day(s)';
+            '✓ Saved from ${DateFormat('d MMM').format(_startDate)} to ${DateFormat('d MMM yyyy').format(_endDate)} (both days included)';
       });
     } catch (e) {
       setState(() {
@@ -739,7 +740,7 @@ class _MosqueAdminScreenState extends State<MosqueAdminScreen>
           _sectionLabel("JAMĀ'AH TIMES", Icons.schedule),
           const SizedBox(height: 6),
           Text(
-            "Set new Jamā'ah times. Choose an end date — all days from today to that date will be updated.",
+            "Set new Jamā'ah times. Choose a start and end date — all days in that range will be updated (both dates included).",
             style: TextStyle(
                 color: _white.withOpacity(0.35), fontSize: 11, height: 1.5),
           ),
@@ -809,13 +810,78 @@ class _MosqueAdminScreenState extends State<MosqueAdminScreen>
           Divider(color: _white.withOpacity(0.08)),
           const SizedBox(height: 10),
 
+          // Start date picker
+          GestureDetector(
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: _startDate,
+                firstDate: DateTime.now().subtract(const Duration(days: 30)),
+                lastDate: DateTime.now().add(const Duration(days: 90)),
+                builder: (ctx, child) => Theme(
+                  data: ThemeData.dark().copyWith(
+                    colorScheme: const ColorScheme.dark(
+                      primary: _gold,
+                      surface: _navyMid,
+                    ),
+                  ),
+                  child: child!,
+                ),
+              );
+              if (picked != null) {
+                setState(() {
+                  _startDate = picked;
+                  if (_endDate.isBefore(_startDate)) _endDate = _startDate;
+                });
+              }
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: _navyLight,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: _gold.withOpacity(0.25), width: 1),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.calendar_today,
+                      color: _gold.withOpacity(0.7), size: 16),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Apply from',
+                          style: TextStyle(
+                              color: _white.withOpacity(0.4),
+                              fontSize: 10,
+                              letterSpacing: 0.5)),
+                      Text(
+                        DateFormat('EEEE, d MMMM yyyy').format(_startDate),
+                        style: const TextStyle(
+                            color: _white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Icon(Icons.chevron_right,
+                      color: _white.withOpacity(0.3), size: 16),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
           // End date picker
           GestureDetector(
             onTap: () async {
               final picked = await showDatePicker(
                 context: context,
                 initialDate: _endDate,
-                firstDate: DateTime.now(),
+                firstDate: _startDate,
                 lastDate: DateTime.now().add(const Duration(days: 90)),
                 builder: (ctx, child) => Theme(
                   data: ThemeData.dark().copyWith(
@@ -869,7 +935,7 @@ class _MosqueAdminScreenState extends State<MosqueAdminScreen>
 
           const SizedBox(height: 8),
           Text(
-            'This will update ${_endDate.difference(DateTime.now()).inDays + 1} day(s)',
+            '${_endDate.difference(_startDate).inDays + 1} day(s) — ${DateFormat('d MMM').format(_startDate)} to ${DateFormat('d MMM yyyy').format(_endDate)}, both dates included',
             style: TextStyle(color: _gold.withOpacity(0.5), fontSize: 11),
           ),
           const SizedBox(height: 16),

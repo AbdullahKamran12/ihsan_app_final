@@ -42,6 +42,7 @@ dependencies:
   gal: ^2.3.2
   wakelock_plus: ^1.5.1
   cloud_functions: ^6.2.0
+  home_widget: ^0.9.1
   
   
 dev_dependencies:
@@ -64,6 +65,7 @@ flutter:
     - assets/app_promo_portrait.png
     - assets/adhan_app.mp3
     - assets/iqamah_app.mp3
+    - assets/fajr_adhan.mp3
 
   fonts:
     - family: Inter

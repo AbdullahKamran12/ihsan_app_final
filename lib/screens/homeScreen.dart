@@ -24,7 +24,7 @@ import 'package:ihsan_app_final/screens/qiblaScreen.dart';
 import 'package:ihsan_app_final/screens/quranScreen.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:ihsan_app_final/utils/prayer_scheduler.dart';
-import 'package:ihsan_app_final/screens/mosqueAdminScreen.dart';
+import 'package:ihsan_app_final/screens/mosqueadminscreen.dart' hide PrayerTime;
 
 import 'package:ihsan_app_final/screens/accountsOptionsPage.dart';
 import 'package:ihsan_app_final/screens/calender.dart';
@@ -838,21 +838,21 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> getCurrentLocation() async {
-    PermissionStatus permissionStatus = await Permission.location.status;
+    LocationPermission permission = await Geolocator.checkPermission();
 
-    if (!permissionStatus.isGranted) {
-      PermissionStatus status = await Permission.location.request();
-
-      if (status.isGranted) {
-        print('Location permission granted');
-      } else {
-        print('Location permission denied');
-        if (await isConnected()) {
-          await showTownInputDialog(context);
-        }
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        if (await isConnected()) await showTownInputDialog(context);
         await GetData();
         return;
       }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      if (await isConnected()) await showTownInputDialog(context);
+      await GetData();
+      return;
     }
 
     try {
@@ -862,18 +862,13 @@ class _HomeScreenState extends State<HomeScreen>
       latitude = position.latitude;
       longitude = position.longitude;
       saveLocation(latitude, longitude);
-
-      print('Latitude: $latitude, Longitude: $longitude');
       if (await isConnected()) {
         await updateTownNameFromCoordinates(latitude, longitude);
       }
       await saveTownName(townName);
     } catch (e) {
       print('Failed to get location: $e');
-      if (await isConnected()) {
-        await showTownInputDialog(context);
-      }
-      await GetData();
+      if (await isConnected()) await showTownInputDialog(context);
     }
   }
 
@@ -1276,9 +1271,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   // ── Fetch city name from current GPS position ──────────────────────────────
   Future<String?> _getCityFromGPS() async {
-    PermissionStatus status = await Permission.location.status;
-    if (!status.isGranted) status = await Permission.location.request();
-    if (!status.isGranted) return null;
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) return null;
     try {
       final pos = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
@@ -1828,8 +1826,10 @@ class _HomeScreenState extends State<HomeScreen>
         }
       } else if (lastKnownLocation != null) {
         // Try to refresh GPS coordinates if permission is granted
-        final status = await Permission.location.status;
-        if (status.isGranted && change == true) {
+        final permission = await Geolocator.checkPermission();
+        if ((permission == LocationPermission.whileInUse ||
+                permission == LocationPermission.always) &&
+            (change == true)) {
           try {
             final pos = await Geolocator.getCurrentPosition(
                 desiredAccuracy: LocationAccuracy.high);
@@ -1947,7 +1947,8 @@ class _HomeScreenState extends State<HomeScreen>
     _checkAdmin();
     _checkForumAdmin();
     _checkMosqueAdmin();
-    _fetchHijriDate(); // fire-and-forget — works for mosque timetable users too
+    _fetchHijriDate();
+    _loadCachedData();
     FirebaseAnalytics.instance
         .logScreenView(screenName: 'home_screen')
         .catchError((e) => debugPrint('Analytics screenView error: $e'));
@@ -2016,9 +2017,12 @@ class _HomeScreenState extends State<HomeScreen>
     if (_isRefreshingLocation) return;
     setState(() => _isRefreshingLocation = true);
     try {
-      PermissionStatus status = await Permission.location.status;
-      if (!status.isGranted) status = await Permission.location.request();
-      if (status.isGranted) {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
         final pos = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.medium);
         await saveLocation(pos.latitude, pos.longitude);
@@ -2526,6 +2530,22 @@ class _HomeScreenState extends State<HomeScreen>
           behavior: SnackBarBehavior.floating,
         ),
       );
+    }
+  }
+
+  Future<void> _loadCachedData() async {
+    final stored = await loadMonthlyPrayerTimes();
+    if (stored.isEmpty) return;
+
+    final today = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    todayPrayerTimes = stored.firstWhere(
+      (p) => p.date == today,
+      orElse: () => stored.first,
+    );
+
+    if (mounted) {
+      updatePrayerTimesList(); // this calls setState internally
+      await GetData();
     }
   }
 
@@ -3430,7 +3450,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                     // Mosque card — gold outlined, scrollable list
                     Container(
-                      constraints: BoxConstraints(maxHeight: rowHeight * 0.52),
+                      constraints: BoxConstraints(maxHeight: rowHeight * 0.40),
                       decoration: card(goldOutline: true),
                       clipBehavior: Clip.hardEdge,
                       child: Column(

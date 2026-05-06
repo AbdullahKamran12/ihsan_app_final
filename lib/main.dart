@@ -4,6 +4,7 @@ import 'package:ihsan_app_final/utils/notification_service.dart';
 import 'package:ihsan_app_final/utils/prayer_scheduler.dart';
 import 'package:ihsan_app_final/screens/mosqueDisplayScreen.dart';
 import 'package:flutter/services.dart';
+import 'package:ihsan_app_final/utils/widget_service.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ihsan_app_final/screens/login.dart';
@@ -44,6 +45,7 @@ void main() async {
   if (!kIsWeb) {
     // Mobile/TV only — these don't exist on web
     await PrayerScheduler.init();
+    await WidgetService.init();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,

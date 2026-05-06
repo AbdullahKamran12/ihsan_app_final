@@ -101,6 +101,15 @@ class NotificationService {
       playSound: true,
     ));
 
+    await android?.createNotificationChannel(AndroidNotificationChannel(
+      'prayer_fajr_adhan',
+      'Fajr Adhan',
+      description: 'Fajr prayer beginning notification',
+      importance: Importance.max,
+      sound: const RawResourceAndroidNotificationSound('fajr_adhan'),
+      playSound: true,
+    ));
+
     await android?.requestNotificationsPermission();
 
     // Request iOS permissions
@@ -182,31 +191,63 @@ class NotificationService {
       final tzTime = tz.TZDateTime.from(target, tz.local);
 
       await _plugin.zonedSchedule(
-        id: index, // 0–5
+        id: index,
         title: prayerNames[index],
         body: 'It\'s time for ${prayerNames[index]}',
         scheduledDate: tzTime,
         notificationDetails: NotificationDetails(
-          android: const AndroidNotificationDetails(
-            'prayer_beginning_adhan',
-            'Prayer Beginning',
-            channelDescription:
-                'Notifications at the beginning of each prayer time',
-            importance: Importance.max,
-            priority: Priority.high,
-            playSound: true,
-            sound: RawResourceAndroidNotificationSound('adhan_app'),
-          ),
-          iOS: const DarwinNotificationDetails(
-            sound: 'adhan_app.mp3',
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          ),
+          android: index == 0
+              ? const AndroidNotificationDetails(
+                  'prayer_fajr_adhan',
+                  'Fajr Adhan',
+                  channelDescription: 'Fajr prayer beginning notification',
+                  importance: Importance.max,
+                  priority: Priority.high,
+                  playSound: true,
+                  sound: RawResourceAndroidNotificationSound('fajr_adhan'),
+                )
+              : index == 1
+                  ? const AndroidNotificationDetails(
+                      'prayer_beginning_adhan',
+                      'Prayer Beginning',
+                      channelDescription:
+                          'Notifications at the beginning of each prayer time',
+                      importance: Importance.max,
+                      priority: Priority.high,
+                      playSound: true,
+                    )
+                  : const AndroidNotificationDetails(
+                      'prayer_beginning_adhan',
+                      'Prayer Beginning',
+                      channelDescription:
+                          'Notifications at the beginning of each prayer time',
+                      importance: Importance.max,
+                      priority: Priority.high,
+                      playSound: true,
+                      sound: RawResourceAndroidNotificationSound('adhan_app'),
+                    ),
+          iOS: index == 0
+              ? const DarwinNotificationDetails(
+                  sound: 'fajr_adhan.mp3',
+                  presentAlert: true,
+                  presentBadge: true,
+                  presentSound: true,
+                )
+              : index == 1
+                  ? const DarwinNotificationDetails(
+                      presentAlert: true,
+                      presentBadge: true,
+                      presentSound: true,
+                    )
+                  : const DarwinNotificationDetails(
+                      sound: 'adhan_app.mp3',
+                      presentAlert: true,
+                      presentBadge: true,
+                      presentSound: true,
+                    ),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
-
       return const NotifResult.ok();
     } catch (e) {
       return NotifResult.fail(e.toString());
@@ -234,7 +275,7 @@ class NotificationService {
       final tzTime = tz.TZDateTime.from(target, tz.local);
 
       await _plugin.zonedSchedule(
-        id: index + 10, // 10–15
+        id: index + 10,
         title: "${prayerNames[index]} Jama'ah",
         body:
             "Jama'ah in $minutesBefore minute${minutesBefore == 1 ? '' : 's'}",
@@ -258,7 +299,6 @@ class NotificationService {
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
-
       return const NotifResult.ok();
     } catch (e) {
       return NotifResult.fail(e.toString());

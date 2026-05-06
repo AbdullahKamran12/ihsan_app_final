@@ -67,6 +67,29 @@
             <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
         </intent-filter>
     </receiver>
+    <!-- 2×2 small widget -->
+    <receiver
+        android:name=".PrayerWidgetSmallProvider"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+            android:name="android.appwidget.provider"
+            android:resource="@xml/prayer_widget_small_info" />
+    </receiver>
+
+    <!-- 2×4 wide widget -->
+    <receiver
+        android:name=".PrayerWidgetProvider"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+            android:name="android.appwidget.provider"
+            android:resource="@xml/prayer_widget_wide_info" />
+    </receiver>
 
     </application>
     <!-- Required to query activities that can process text, see:

@@ -301,13 +301,14 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    final status = await Permission.location.status;
-    if (!status.isGranted) {
-      final req = await Permission.location.request();
-      if (!req.isGranted) {
-        if (await isConnected()) await showTownInputDialog(context);
-        return;
-      }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      if (await isConnected()) await showTownInputDialog(context);
+      return;
     }
     try {
       final pos = await Geolocator.getCurrentPosition(

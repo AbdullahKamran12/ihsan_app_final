@@ -98,38 +98,40 @@ class _QiblaScreenState extends State<QiblaScreen> {
   }
 
   Future<void> getCurrentLocationQiblah() async {
-    PermissionStatus status = await Permission.location.request();
+    LocationPermission permission = await Geolocator.checkPermission();
 
-    if (status.isGranted) {
-      try {
-        Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-        );
-        double latitude = position.latitude;
-        double longitude = position.longitude;
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
 
-        setState(() {
-          qiblaDirection = calculateQibla(latitude, longitude);
-          _currentLocation = LatLng(latitude, longitude);
-          locationMessage = 'Latitude: $latitude, Longitude: $longitude';
-        });
-
-        if (_currentLocation != null) {
-          _mapControllerGoogle?.animateCamera(
-            CameraUpdate.newLatLng(_currentLocation!),
-          );
-        }
-      } catch (e) {
-        setState(() {
-          locationMessage = 'Failed to get location: $e';
-        });
-        print('Failed to get location: $e');
-      }
-    } else {
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
       setState(() {
         locationMessage = 'Location permission denied';
       });
-      print('Location permission denied');
+      return;
+    }
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      double latitude = position.latitude;
+      double longitude = position.longitude;
+      setState(() {
+        _currentLocation = LatLng(latitude, longitude);
+        locationMessage = 'Latitude: $latitude, Longitude: $longitude';
+      });
+      if (_currentLocation != null) {
+        _mapControllerGoogle?.animateCamera(
+          CameraUpdate.newLatLng(_currentLocation!),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        locationMessage = 'Failed to get location: $e';
+      });
+      print('Failed to get location: $e');
     }
   }
 
