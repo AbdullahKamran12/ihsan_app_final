@@ -20,6 +20,13 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         }
     }
 
+    override fun onEnabled(context: Context) {
+        // Ensure the clock service is running so small widget also gets minute ticks
+        val intent = android.content.Intent(context, WidgetClockService::class.java)
+        context.startService(intent)
+        WidgetClockService.scheduleNextExactMinute(context)
+    }
+
     private fun updateSmall(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -45,7 +52,7 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         val gold  = Color.parseColor("#D4AF5F")
         val white = Color.parseColor("#EEF0FF")
 
-        val initIds = mapOf<String, Int>(
+        val initIds = mapOf(
             "Fajr"    to R.id.s_fajr_init,
             "Sunrise" to R.id.s_sunrise_init,
             "Dhuhr"   to R.id.s_dhuhr_init,
@@ -55,6 +62,29 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         )
         initIds.values.forEach { views.setTextColor(it, white) }
         initIds[nextName]?.let { id -> views.setTextColor(id, gold) }
+
+        // Tap anywhere on the small widget → PrayerScreen
+        views.setOnClickPendingIntent(
+            android.R.id.content,   // root view fallback
+            WidgetClockService.buildTapIntent(context)
+        )
+        // Also set on the layout root — use a full-width invisible overlay approach:
+        // set the intent on each row layout ID isn't possible without extra IDs,
+        // so set it on the background root instead
+        try {
+            // prayer_widget_small root LinearLayout has no explicit id; set intent
+            // on a known child that covers most of the widget (first init TextView)
+            // The cleanest approach is to add android:id="@+id/s_root" to the XML root.
+            // If you've done that, replace android.R.id.content below with R.id.s_root.
+            views.setOnClickPendingIntent(
+                R.id.s_fajr_init,   // fallback: tap on initials column opens app
+                WidgetClockService.buildTapIntent(context)
+            )
+            views.setOnClickPendingIntent(
+                R.id.s_fajr_adhan,
+                WidgetClockService.buildTapIntent(context)
+            )
+        } catch (_: Exception) {}
 
         appWidgetManager.updateAppWidget(widgetId, views)
     }

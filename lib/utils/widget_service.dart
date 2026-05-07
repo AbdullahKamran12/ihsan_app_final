@@ -1,6 +1,7 @@
 import 'package:home_widget/home_widget.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WidgetService {
   // ── iOS App Group — MUST match Xcode App Group exactly ───────────────
@@ -69,6 +70,41 @@ class WidgetService {
     if (currentPrayerName != null) {
       await HomeWidget.saveWidgetData(_currentPrayer, currentPrayerName);
     }
+
+    await HomeWidget.updateWidget(
+      androidName: 'PrayerWidgetProvider',
+      iOSName: 'PrayerWidget',
+    );
+  }
+
+  /// Re-pushes whatever prayer times were last saved to SharedPreferences
+  /// back into HomeWidget shared prefs. Call at app startup so the widget
+  /// is never blank even before prayerScreen has been visited this session.
+  static Future<void> pushPrayerDataToWidget() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Read the last-saved values (same keys used by prayerScreen to persist times)
+    String get(String key) => prefs.getString(key) ?? '--:--';
+
+    await HomeWidget.saveWidgetData(_fajrAdhan, get(_fajrAdhan));
+    await HomeWidget.saveWidgetData(_sunriseAdhan, get(_sunriseAdhan));
+    await HomeWidget.saveWidgetData(_dhuhrAdhan, get(_dhuhrAdhan));
+    await HomeWidget.saveWidgetData(_asrAdhan, get(_asrAdhan));
+    await HomeWidget.saveWidgetData(_maghribAdhan, get(_maghribAdhan));
+    await HomeWidget.saveWidgetData(_ishaAdhan, get(_ishaAdhan));
+
+    await HomeWidget.saveWidgetData(_fajrJamaat, get(_fajrJamaat));
+    await HomeWidget.saveWidgetData(_dhuhrJamaat, get(_dhuhrJamaat));
+    await HomeWidget.saveWidgetData(_asrJamaat, get(_asrJamaat));
+    await HomeWidget.saveWidgetData(_ishaJamaat, get(_ishaJamaat));
+
+    await HomeWidget.saveWidgetData(
+        _mosqueName, prefs.getString(_mosqueName) ?? '');
+    await HomeWidget.saveWidgetData(
+        _nextPrayer, prefs.getString(_nextPrayer) ?? '');
+    await HomeWidget.saveWidgetData(_nextTime, get(_nextTime));
+    await HomeWidget.saveWidgetData(
+        _currentPrayer, prefs.getString(_currentPrayer) ?? '');
 
     await HomeWidget.updateWidget(
       androidName: 'PrayerWidgetProvider',

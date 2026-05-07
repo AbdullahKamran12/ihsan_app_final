@@ -80,5 +80,12 @@
 	<!-- Google Maps -->
 	<key>GMSApiKey</key>
 	<string>AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array><string>ihsan</string></array>
+		</dict>
+	</array>
 </dict>
 </plist>

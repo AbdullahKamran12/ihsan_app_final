@@ -3,6 +3,7 @@ import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:ihsan_app_final/utils/notification_service.dart';
 import 'package:ihsan_app_final/utils/prayer_scheduler.dart';
 import 'package:ihsan_app_final/screens/mosqueDisplayScreen.dart';
+import 'package:ihsan_app_final/screens/prayerScreen.dart';
 import 'package:flutter/services.dart';
 import 'package:ihsan_app_final/utils/widget_service.dart';
 
@@ -60,6 +61,12 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      onGenerateRoute: (settings) {
+        if (settings.name == '/prayerScreen') {
+          return MaterialPageRoute(builder: (_) => const PrayerTimesScreen());
+        }
+        return null;
+      },
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
@@ -224,6 +231,10 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Navigate after animation settles
     _checkUserStatus();
+
+    // Push saved prayer times to widget shared prefs on every app open
+    // so the home screen widget is never blank even before prayerScreen is visited
+    WidgetService.pushPrayerDataToWidget().catchError((_) {});
   }
 
   Future<void> _requestPermissions() async {

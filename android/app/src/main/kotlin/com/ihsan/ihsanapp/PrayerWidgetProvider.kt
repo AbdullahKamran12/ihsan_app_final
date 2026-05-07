@@ -4,10 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.widget.RemoteViews
-import es.antonborri.home_widget.HomeWidgetPlugin
-import java.util.*
 
 class PrayerWidgetProvider : AppWidgetProvider() {
 
@@ -16,17 +12,20 @@ class PrayerWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        // Start the clock service so it registers TIME_TICK dynamically
+        // Start the service for ongoing minute updates
         context.startService(Intent(context, WidgetClockService::class.java))
+        // Force an immediate update for each widget (includes tap intent)
+        for (id in appWidgetIds) {
+            WidgetClockService.updateWidget(context, appWidgetManager, id)
+        }
     }
 
     override fun onEnabled(context: Context) {
-        // First widget added — start service
         context.startService(Intent(context, WidgetClockService::class.java))
+        WidgetClockService.scheduleNextExactMinute(context)
     }
 
     override fun onDisabled(context: Context) {
-        // Last widget removed — stop service
         context.stopService(Intent(context, WidgetClockService::class.java))
     }
 }
