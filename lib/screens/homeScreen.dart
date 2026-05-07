@@ -24,6 +24,7 @@ import 'package:ihsan_app_final/screens/qiblaScreen.dart';
 import 'package:ihsan_app_final/screens/quranScreen.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:ihsan_app_final/utils/prayer_scheduler.dart';
+import 'package:ihsan_app_final/utils/widget_service.dart';
 import 'package:ihsan_app_final/screens/mosqueadminscreen.dart' hide PrayerTime;
 
 import 'package:ihsan_app_final/screens/accountsOptionsPage.dart';
@@ -1856,6 +1857,20 @@ class _HomeScreenState extends State<HomeScreen>
         await GetDataAuto();
         await _loadNearbyMosques();
         await _logUserAndLocation(method: 'auto');
+      }
+
+      // Sync the home-screen widget with the prayer times we just loaded.
+      // This must run after initializeMonthlyPrayerTimes() so todayPrayerTimes
+      // is populated. Without this the widget reads stale/missing
+      // SharedPreferences keys (w_fajr_adhan etc.) and shows --:-- on cold start.
+      if (todayPrayerTimes != null) {
+        WidgetService.update(
+          adhan: todayPrayerTimes!,
+          jamaat: null, // jamaat times are synced separately by prayerScreen
+          mosqueName: '',
+          nextPrayerName: nextPrayerName,
+          currentPrayerName: currentPrayerName,
+        );
       }
     } catch (e) {
       print("Initialization error: $e");

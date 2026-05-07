@@ -64,12 +64,6 @@
 	<!-- Compass (flutter_compass) -->
 	<key>NSMotionUsageDescription</key>
 	<string>Used for the Qibla compass direction</string>
-	<!-- Background audio (just_audio / audioplayers) -->
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-		<string>fetch</string>
-	</array>
 	<!-- Notifications (flutter_local_notifications) -->
 	<key>UIUserNotificationSettings</key>
 	<array>
@@ -87,5 +81,7 @@
 			<array><string>ihsan</string></array>
 		</dict>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
