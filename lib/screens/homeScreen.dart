@@ -1864,10 +1864,38 @@ class _HomeScreenState extends State<HomeScreen>
       // is populated. Without this the widget reads stale/missing
       // SharedPreferences keys (w_fajr_adhan etc.) and shows --:-- on cold start.
       if (todayPrayerTimes != null) {
-        WidgetService.update(
+        // Read back the jamaat times prayerScreen previously saved to prefs
+        // (keys: jamaah_fajr, jamaah_dhuhr, etc.) so we never blank them out.
+        // Passing jamaat: null would wipe the widget's jamaah data on every
+        // home navigation — that was the bug.
+        final prefs = await SharedPreferences.getInstance();
+        final jFajr = prefs.getString('jamaah_fajr') ?? '';
+        final jSunrise = prefs.getString('jamaah_sunrise') ?? '';
+        final jDhuhr = prefs.getString('jamaah_dhuhr') ?? '';
+        final jAsr = prefs.getString('jamaah_asr') ?? '';
+        final jMaghrib = prefs.getString('jamaah_maghrib') ?? '';
+        final jIsha = prefs.getString('jamaah_isha') ?? '';
+        final savedMosqueName = prefs.getString('widget_mosque_name') ?? '';
+
+        // Only reconstruct a jamaat object if we actually have saved times
+        PrayerTimesJamaat? savedJamaatObj;
+        if (jFajr.isNotEmpty || jDhuhr.isNotEmpty || jIsha.isNotEmpty) {
+          final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+          savedJamaatObj = PrayerTimesJamaat(
+            date: todayStr,
+            fajr: jFajr,
+            sunrise: jSunrise,
+            dhuhr: jDhuhr,
+            asr: jAsr,
+            maghrib: jMaghrib,
+            isha: jIsha,
+          );
+        }
+
+        await WidgetService.update(
           adhan: todayPrayerTimes!,
-          jamaat: null, // jamaat times are synced separately by prayerScreen
-          mosqueName: '',
+          jamaat: savedJamaatObj, // null only if prayerScreen hasn't run yet
+          mosqueName: savedMosqueName,
           nextPrayerName: nextPrayerName,
           currentPrayerName: currentPrayerName,
         );

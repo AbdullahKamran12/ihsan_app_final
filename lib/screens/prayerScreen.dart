@@ -82,7 +82,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     _fetchHijriDate(_displayDate);
   }
 
-  void _syncWidget() {
+  Future<void> _syncWidget() async {
     if (todayPrayerTimes == null) return;
 
     final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -91,11 +91,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       todayJamaat = prayerTimesListJamaat.firstWhere((e) => e.date == todayStr);
     } catch (_) {}
 
-    WidgetService.update(
+    await WidgetService.update(
       adhan: todayPrayerTimes!,
       jamaat: todayJamaat,
-      mosqueName: _mosqueName, // already a field in your state
-      nextPrayerName: nextPrayerName, // already a field in your state
+      mosqueName: _mosqueName,
+      nextPrayerName: nextPrayerName,
       currentPrayerName: null,
     );
   }
@@ -722,6 +722,12 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
           'maghrib': todayJamaat.maghrib,
           'isha': todayJamaat.isha,
         });
+
+        // Persist mosque name so homeScreen can read it back when syncing the widget.
+        // Without this, navigating to home would blank the mosque name on the widget.
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('widget_mosque_name', _mosqueName);
+
         _syncWidget();
       } catch (_) {
         // Today not in loaded list — no jama'ah times to save

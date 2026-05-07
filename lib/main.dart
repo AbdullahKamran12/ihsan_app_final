@@ -12,12 +12,18 @@ import 'package:ihsan_app_final/screens/login.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
+import 'package:home_widget/home_widget.dart';
 
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -228,13 +234,14 @@ class _SplashScreenState extends State<SplashScreen>
     Future.delayed(const Duration(milliseconds: 900), () {
       if (mounted) _shimmerController.forward();
     });
+    HomeWidget.widgetClicked.listen((uri) {
+      if (uri != null && uri.path == '/prayerScreen') {
+        Navigator.pushNamed(context, '/prayerScreen');
+      }
+    });
 
     // Navigate after animation settles
     _checkUserStatus();
-
-    // Push saved prayer times to widget shared prefs on every app open
-    // so the home screen widget is never blank even before prayerScreen is visited
-    WidgetService.pushPrayerDataToWidget().catchError((_) {});
   }
 
   Future<void> _requestPermissions() async {
@@ -291,6 +298,11 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
     await _requestPermissions();
 
+    // ── 3. Check for update in background (doesn't block navigation) ─────
+    // Capture the navigator NOW, before we navigate away and this context dies
+    final navigator = Navigator.of(context);
+    _checkForUpdate(navigator);
+
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (!mounted) return;
       if (user != null || isGuest == true) {
@@ -328,6 +340,152 @@ class _SplashScreenState extends State<SplashScreen>
         );
       }
     });
+  }
+
+  Future<void> _checkForUpdate(NavigatorState navigator) async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      final currentVersion = info.version; // e.g. "1.1.0"
+
+      String? storeVersion;
+
+      if (Platform.isAndroid) {
+        // Use Firestore config doc — more reliable than scraping Play Store HTML
+        // Add a document at config/latestVersion with field: android: "1.2.0"
+        try {
+          final doc = await FirebaseFirestore.instance
+              .collection('config')
+              .doc('latestVersion')
+              .get()
+              .timeout(const Duration(seconds: 8));
+          storeVersion = doc.data()?['android'] as String?;
+        } catch (_) {
+          // config doc not set up yet — silently skip
+        }
+      } else if (Platform.isIOS) {
+        // iTunes lookup API — stable and official
+        final url = Uri.parse(
+          'https://itunes.apple.com/lookup?bundleId=com.ihsan.ihsanapp',
+        );
+        final response =
+            await http.get(url).timeout(const Duration(seconds: 8));
+        if (response.statusCode == 200) {
+          final decoded = jsonDecode(response.body);
+          final results = decoded['results'] as List?;
+          if (results != null && results.isNotEmpty) {
+            storeVersion = results[0]['version'] as String?;
+          }
+        }
+      }
+
+      if (storeVersion == null) return;
+
+      // Compare versions — pad shorter list with zeros so "1.2" vs "1.2.1" works
+      final current = currentVersion.split('.').map(int.parse).toList();
+      final store = storeVersion.split('.').map(int.parse).toList();
+      final maxLen =
+          current.length > store.length ? current.length : store.length;
+
+      bool updateAvailable = false;
+      for (int i = 0; i < maxLen; i++) {
+        final s = i < store.length ? store[i] : 0;
+        final c = i < current.length ? current[i] : 0;
+        if (s > c) {
+          updateAvailable = true;
+          break;
+        }
+        if (s < c) break;
+      }
+
+      if (!updateAvailable) return;
+
+      // Small delay so the home screen has fully settled before showing dialog
+      await Future.delayed(const Duration(milliseconds: 1500));
+
+      // Use the captured navigator's overlay context — safe even after splash is gone
+      final overlayContext = navigator.overlay?.context;
+      if (overlayContext == null) return;
+
+      _showUpdateDialog(storeVersion, overlayContext);
+    } catch (_) {
+      // Silently fail — update check should never crash the app
+    }
+  }
+
+  void _showUpdateDialog(String storeVersion, BuildContext dialogContext) {
+    const Color navy = Color.fromARGB(255, 10, 25, 60);
+    const Color navyMid = Color.fromARGB(255, 18, 42, 95);
+    const Color gold = Color.fromARGB(255, 212, 175, 95);
+    const Color white = Color.fromARGB(255, 255, 255, 255);
+
+    showDialog(
+      context: dialogContext,
+      barrierDismissible: true,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: navyMid,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: gold.withOpacity(0.45), width: 1.5),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.system_update_rounded, color: gold, size: 22),
+            SizedBox(width: 8),
+            Text(
+              'Update Available',
+              style: TextStyle(
+                color: gold,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'A new version ($storeVersion) of Ihsan is available. Update now for the latest features and fixes.',
+          style: TextStyle(
+            color: white.withOpacity(0.85),
+            fontSize: 14,
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Later',
+              style: TextStyle(color: white.withOpacity(0.5), fontSize: 14),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(ctx);
+              final storeUrl = Platform.isIOS
+                  ? Uri.parse(
+                      'https://apps.apple.com/app/id6745788124') // replace with your real Apple ID
+                  : Uri.parse(
+                      'https://play.google.com/store/apps/details?id=com.ihsan.ihsanapp');
+              launchUrl(storeUrl, mode: LaunchMode.externalApplication);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: gold,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                'Update',
+                style: TextStyle(
+                  color: navy,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

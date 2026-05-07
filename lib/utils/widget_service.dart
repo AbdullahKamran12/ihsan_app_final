@@ -1,7 +1,6 @@
 import 'package:home_widget/home_widget.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class WidgetService {
   // ── iOS App Group — MUST match Xcode App Group exactly ───────────────
@@ -30,6 +29,9 @@ class WidgetService {
   }
 
   /// Call after prayer times are loaded or mosque changes.
+  /// All saves run in parallel via Future.wait — updateWidget is only
+  /// called once every key is guaranteed written. This is what prevents
+  /// the blank-widget bug in release/AOT builds.
   static Future<void> update({
     required PrayerTimes adhan,
     PrayerTimesJamaat? jamaat,
@@ -37,79 +39,69 @@ class WidgetService {
     String? nextPrayerName,
     String? currentPrayerName,
   }) async {
-    // Adhan times
-    await HomeWidget.saveWidgetData(_fajrAdhan, adhan.fajr);
-    await HomeWidget.saveWidgetData(_sunriseAdhan, adhan.sunrise);
-    await HomeWidget.saveWidgetData(_dhuhrAdhan, adhan.dhuhr);
-    await HomeWidget.saveWidgetData(_asrAdhan, adhan.asr);
-    await HomeWidget.saveWidgetData(_maghribAdhan, adhan.maghrib);
-    await HomeWidget.saveWidgetData(_ishaAdhan, adhan.isha);
+    final saves = <Future<void>>[
+      HomeWidget.saveWidgetData(_fajrAdhan, adhan.fajr),
+      HomeWidget.saveWidgetData(_sunriseAdhan, adhan.sunrise),
+      HomeWidget.saveWidgetData(_dhuhrAdhan, adhan.dhuhr),
+      HomeWidget.saveWidgetData(_asrAdhan, adhan.asr),
+      HomeWidget.saveWidgetData(_maghribAdhan, adhan.maghrib),
+      HomeWidget.saveWidgetData(_ishaAdhan, adhan.isha),
+    ];
 
-    // Jamaat times (only favourited mosque's times)
     if (jamaat != null) {
-      await HomeWidget.saveWidgetData(_fajrJamaat, jamaat.fajr);
-      await HomeWidget.saveWidgetData(_dhuhrJamaat, jamaat.dhuhr);
-      await HomeWidget.saveWidgetData(_asrJamaat, jamaat.asr);
-      await HomeWidget.saveWidgetData(_ishaJamaat, jamaat.isha);
+      saves.addAll([
+        HomeWidget.saveWidgetData(_fajrJamaat, jamaat.fajr),
+        HomeWidget.saveWidgetData(_dhuhrJamaat, jamaat.dhuhr),
+        HomeWidget.saveWidgetData(_asrJamaat, jamaat.asr),
+        HomeWidget.saveWidgetData(_ishaJamaat, jamaat.isha),
+      ]);
     }
 
     if (mosqueName != null) {
-      await HomeWidget.saveWidgetData(_mosqueName, mosqueName);
+      saves.add(HomeWidget.saveWidgetData(_mosqueName, mosqueName));
     }
 
-    // Determine next prayer jamaat time for the 2x4 header
-    if (nextPrayerName != null) {
-      await HomeWidget.saveWidgetData(_nextPrayer, nextPrayerName);
-      // Store the jamaat time of the next prayer for the header
+    if (nextPrayerName != null && nextPrayerName.isNotEmpty) {
+      saves.add(HomeWidget.saveWidgetData(_nextPrayer, nextPrayerName));
       if (jamaat != null) {
-        final nextJamaat = _jamaatForPrayer(nextPrayerName, jamaat, adhan);
-        await HomeWidget.saveWidgetData(_nextTime, nextJamaat);
+        saves.add(HomeWidget.saveWidgetData(
+            _nextTime, _jamaatForPrayer(nextPrayerName, jamaat, adhan)));
+      } else {
+        // No jamaat yet — use adhan time so header never shows --:--
+        saves.add(HomeWidget.saveWidgetData(
+            _nextTime, _adhanForPrayer(nextPrayerName, adhan)));
       }
     }
 
     if (currentPrayerName != null) {
-      await HomeWidget.saveWidgetData(_currentPrayer, currentPrayerName);
+      saves.add(HomeWidget.saveWidgetData(_currentPrayer, currentPrayerName));
     }
 
+    // All keys written before we tell the widget to redraw
+    await Future.wait(saves);
     await HomeWidget.updateWidget(
       androidName: 'PrayerWidgetProvider',
       iOSName: 'PrayerWidget',
     );
   }
 
-  /// Re-pushes whatever prayer times were last saved to SharedPreferences
-  /// back into HomeWidget shared prefs. Call at app startup so the widget
-  /// is never blank even before prayerScreen has been visited this session.
-  static Future<void> pushPrayerDataToWidget() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Read the last-saved values (same keys used by prayerScreen to persist times)
-    String get(String key) => prefs.getString(key) ?? '--:--';
-
-    await HomeWidget.saveWidgetData(_fajrAdhan, get(_fajrAdhan));
-    await HomeWidget.saveWidgetData(_sunriseAdhan, get(_sunriseAdhan));
-    await HomeWidget.saveWidgetData(_dhuhrAdhan, get(_dhuhrAdhan));
-    await HomeWidget.saveWidgetData(_asrAdhan, get(_asrAdhan));
-    await HomeWidget.saveWidgetData(_maghribAdhan, get(_maghribAdhan));
-    await HomeWidget.saveWidgetData(_ishaAdhan, get(_ishaAdhan));
-
-    await HomeWidget.saveWidgetData(_fajrJamaat, get(_fajrJamaat));
-    await HomeWidget.saveWidgetData(_dhuhrJamaat, get(_dhuhrJamaat));
-    await HomeWidget.saveWidgetData(_asrJamaat, get(_asrJamaat));
-    await HomeWidget.saveWidgetData(_ishaJamaat, get(_ishaJamaat));
-
-    await HomeWidget.saveWidgetData(
-        _mosqueName, prefs.getString(_mosqueName) ?? '');
-    await HomeWidget.saveWidgetData(
-        _nextPrayer, prefs.getString(_nextPrayer) ?? '');
-    await HomeWidget.saveWidgetData(_nextTime, get(_nextTime));
-    await HomeWidget.saveWidgetData(
-        _currentPrayer, prefs.getString(_currentPrayer) ?? '');
-
-    await HomeWidget.updateWidget(
-      androidName: 'PrayerWidgetProvider',
-      iOSName: 'PrayerWidget',
-    );
+  static String _adhanForPrayer(String name, PrayerTimes adhan) {
+    switch (name) {
+      case 'Fajr':
+        return adhan.fajr;
+      case 'Sunrise':
+        return adhan.sunrise;
+      case 'Dhuhr':
+        return adhan.dhuhr;
+      case 'Asr':
+        return adhan.asr;
+      case 'Maghrib':
+        return adhan.maghrib;
+      case 'Isha':
+        return adhan.isha;
+      default:
+        return '--:--';
+    }
   }
 
   static String _jamaatForPrayer(

@@ -15,6 +15,14 @@ workflows:
       - name: Get Flutter packages
         script: flutter packages pub get
 
+      - name: Install xcodeproj gem
+        script: |
+          gem install xcodeproj
+
+      - name: Add Prayer Widget target
+        script: |
+          ruby add_widget_target.rb
+
       - name: Run Flutter analyze (warnings allowed)
         script: flutter analyze || true
 
@@ -33,25 +41,39 @@ workflows:
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
+
             <key>method</key>
             <string>app-store</string>
+
             <key>teamID</key>
             <string>98Q8PA74RJ</string>
+
             <key>signingStyle</key>
             <string>manual</string>
+
             <key>signingCertificate</key>
             <string>Apple Distribution</string>
+
             <key>provisioningProfiles</key>
             <dict>
+
               <key>com.ihsan.ihsanapp</key>
               <string>codemagic</string>
+
+              <key>com.ihsan.ihsanapp.PrayerWidget</key>
+              <string>codemagic</string>
+
             </dict>
+
             <key>manageAppVersionAndBuildNumber</key>
             <false/>
+
           </dict>
           </plist>
           PLIST
-          flutter build ipa --release --export-options-plist=/tmp/export_options.plist
+
+          flutter build ipa --release \
+            --export-options-plist=/tmp/export_options.plist
 
     artifacts:
       - build/ios/ipa/*.ipa

@@ -83,5 +83,16 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>ihsan</string>
+			</array>
+		</dict>
+	</array>
+	<key>CODE_SIGN_ENTITLEMENTS</key>
+	<string>Runner/Runner.entitlements</string>
 </dict>
 </plist>
