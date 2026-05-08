@@ -109,8 +109,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       return;
     }
     try {
-      final response = await http
-          .get(Uri.parse('https://api.aladhan.com/v1/gToH?date=$key'));
+      final response = await http.get(
+        Uri.parse('https://api.aladhan.com/v1/gToH?date=$key'),
+      );
       if (response.statusCode == 200) {
         final hijri = jsonDecode(response.body)['data']['hijri'];
         final result =
@@ -136,29 +137,34 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
   void _showNotifSnack(String message, {bool error = false}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message),
-      backgroundColor: error
-          ? const Color.fromARGB(255, 180, 50, 50)
-          : const Color.fromARGB(255, 18, 42, 95),
-      behavior: SnackBarBehavior.floating,
-      duration: const Duration(seconds: 3),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: error
+            ? const Color.fromARGB(255, 180, 50, 50)
+            : const Color.fromARGB(255, 18, 42, 95),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   void _handleNotifError(String? error) {
     switch (error) {
       case 'exact_alarm_permission':
         _showNotifSnack(
-            'Enable "Alarms & reminders" in Settings for exact prayer times',
-            error: true);
+          'Enable "Alarms & reminders" in Settings for exact prayer times',
+          error: true,
+        );
         break;
       case 'no_prayer_time':
         _showNotifSnack('Prayer times not loaded yet', error: true);
         break;
       case 'no_jamaah_time':
-        _showNotifSnack('Select a mosque to enable Jama\'ah notifications',
-            error: true);
+        _showNotifSnack(
+          'Select a mosque to enable Jama\'ah notifications',
+          error: true,
+        );
         break;
       default:
         _showNotifSnack('Something went wrong — please try again', error: true);
@@ -176,8 +182,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     if (!await NotificationService.hasExactAlarmPermission()) {
       await NotificationService.requestExactAlarmPermission();
       _showNotifSnack(
-          'Please enable "Alarms & reminders" for exact prayer times',
-          error: true);
+        'Please enable "Alarms & reminders" for exact prayer times',
+        error: true,
+      );
       return;
     }
 
@@ -245,7 +252,8 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
         notifJamaahResult[index] = result.success;
       });
       _showNotifSnack(
-          "${NotificationService.prayerNames[index]} Jama'ah reminder removed");
+        "${NotificationService.prayerNames[index]} Jama'ah reminder removed",
+      );
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) setState(() => notifJamaahResult[index] = null);
       });
@@ -254,8 +262,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
     // Guard: need jama'ah times
     if (prayerTimesListJamaat.isEmpty) {
-      _showNotifSnack('Select a mosque first to set Jama\'ah notifications',
-          error: true);
+      _showNotifSnack(
+        'Select a mosque first to set Jama\'ah notifications',
+        error: true,
+      );
       return;
     }
 
@@ -267,8 +277,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     if (!await NotificationService.hasExactAlarmPermission()) {
       await NotificationService.requestExactAlarmPermission();
       _showNotifSnack(
-          'Please enable "Alarms & reminders" for exact prayer times',
-          error: true);
+        'Please enable "Alarms & reminders" for exact prayer times',
+        error: true,
+      );
       return;
     }
 
@@ -300,7 +311,8 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
     if (result.success) {
       _showNotifSnack(
-          "${NotificationService.prayerNames[index]} Jama'ah reminder set — $minutes min before ✓");
+        "${NotificationService.prayerNames[index]} Jama'ah reminder set — $minutes min before ✓",
+      );
     } else {
       _handleNotifError(result.errorMessage);
     }
@@ -355,7 +367,12 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     final parts = timeStr.split(':');
     final now = DateTime.now();
     return DateTime(
-        now.year, now.month, now.day, int.parse(parts[0]), int.parse(parts[1]));
+      now.year,
+      now.month,
+      now.day,
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+    );
   }
 
   Future<int?> _showMinutesPicker(int currentMinutes) async {
@@ -394,8 +411,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  Icon(Icons.mosque_outlined,
-                      size: 18, color: Color.fromARGB(255, 10, 25, 60)),
+                  Icon(
+                    Icons.mosque_outlined,
+                    size: 18,
+                    color: Color.fromARGB(255, 10, 25, 60),
+                  ),
                   SizedBox(width: 8),
                   Text(
                     "Minutes before Jama'ah",
@@ -414,7 +434,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
               child: Text(
                 'Notification will fire this many minutes before Jama\'ah',
                 style: TextStyle(
-                    fontSize: 12, color: Color.fromARGB(255, 110, 120, 150)),
+                  fontSize: 12,
+                  color: Color.fromARGB(255, 110, 120, 150),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -471,8 +493,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                   decoration: BoxDecoration(
                     color: navy,
                     borderRadius: BorderRadius.circular(12),
-                    border:
-                        Border.all(color: gold.withOpacity(0.5), width: 1.5),
+                    border: Border.all(
+                      color: gold.withOpacity(0.5),
+                      width: 1.5,
+                    ),
                   ),
                   child: Center(
                     child: Text(
@@ -519,10 +543,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       return const SizedBox(
         width: 18,
         height: 18,
-        child: CircularProgressIndicator(
-          color: gold,
-          strokeWidth: 2,
-        ),
+        child: CircularProgressIndicator(color: gold, strokeWidth: 2),
       );
     }
 
@@ -552,8 +573,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             GestureDetector(
               onTap: _favouriteMosque,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: gold.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
@@ -564,11 +587,14 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                   children: [
                     Icon(Icons.star_border_rounded, size: 13, color: gold),
                     SizedBox(width: 4),
-                    Text('Set Favourite',
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: gold,
-                            fontWeight: FontWeight.w600)),
+                    Text(
+                      'Set Favourite',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: gold,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -576,16 +602,21 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
           else
             GestureDetector(
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text(
-                      'To change favourite, select another mosque from the home screen'),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Color.fromARGB(255, 18, 42, 95),
-                ));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'To change favourite, select another mosque from the home screen',
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Color.fromARGB(255, 18, 42, 95),
+                  ),
+                );
               },
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: gold.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(20),
@@ -596,11 +627,14 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                   children: [
                     Icon(Icons.star_rounded, size: 13, color: gold),
                     SizedBox(width: 4),
-                    Text('Favourited',
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: gold,
-                            fontWeight: FontWeight.w600)),
+                    Text(
+                      'Favourited',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: gold,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -670,7 +704,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             asr: data['asrJ'] ?? '',
             maghrib: data['maghrib'] ?? '',
             isha: data['ishaJ'] ?? '',
-            jummahTimes: data['jummahTimes'] != null // ← add this
+            jummahTimes: data['jummahTimes'] != null
                 ? List<String>.from(data['jummahTimes'])
                 : null,
           ),
@@ -686,23 +720,24 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
         _mosqueName = mosqueDoc.data()?['name'] ?? activeId;
       });
       _syncWidget();
+
       // ── Save jama'ah times for background scheduler ──────────────────
-      // 1. Save the full year as JSON so midnight task never needs Firestore
       final fullYearForPrefs = loaded
-          .map((e) => {
-                'date': e.date,
-                'fajr': e.fajr,
-                'sunrise': e.sunrise,
-                'dhuhr': e.dhuhr,
-                'asr': e.asr,
-                'maghrib': e.maghrib,
-                'isha': e.isha,
-                if (e.jummahTimes != null) 'jummahTimes': e.jummahTimes,
-              })
+          .map(
+            (e) => {
+              'date': e.date,
+              'fajr': e.fajr,
+              'sunrise': e.sunrise,
+              'dhuhr': e.dhuhr,
+              'asr': e.asr,
+              'maghrib': e.maghrib,
+              'isha': e.isha,
+              if (e.jummahTimes != null) 'jummahTimes': e.jummahTimes,
+            },
+          )
           .toList();
       await PrayerScheduler.saveFullYearJamaahTimes(fullYearForPrefs);
 
-      // 2. Also save today's times to plain jamaah_ prefs for immediate use
       final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
       try {
         final todayJamaat = loaded.firstWhere((e) => e.date == todayStr);
@@ -724,7 +759,6 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
         });
 
         // Persist mosque name so homeScreen can read it back when syncing the widget.
-        // Without this, navigating to home would blank the mosque name on the widget.
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('widget_mosque_name', _mosqueName);
 
@@ -746,11 +780,13 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Log in to save a favourite mosque'),
-        backgroundColor: Color.fromARGB(255, 18, 42, 95),
-        behavior: SnackBarBehavior.floating,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Log in to save a favourite mosque'),
+          backgroundColor: Color.fromARGB(255, 18, 42, 95),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
 
@@ -758,9 +794,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
     setState(() => _isFavouriting = true);
     try {
-      await FirebaseFirestore.instance
-          .doc('UserData/${user.uid}')
-          .update({'mosquePreference': tempMosqueId});
+      await FirebaseFirestore.instance.doc('UserData/${user.uid}').update({
+        'mosquePreference': tempMosqueId,
+      });
 
       // Promote temp to permanent
       mosqueIdFind = tempMosqueId!;
@@ -769,11 +805,13 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       setState(() => _isFavouriting = false);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('$_mosqueName set as your favourite mosque'),
-          backgroundColor: const Color.fromARGB(255, 72, 200, 155),
-          behavior: SnackBarBehavior.floating,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$_mosqueName set as your favourite mosque'),
+            backgroundColor: const Color.fromARGB(255, 72, 200, 155),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
       _syncWidget();
     } catch (e) {
@@ -793,8 +831,6 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   }
 
   void _startTimer() {
-    // Countdown display is handled by _PrayerCountdown (owns its own timer).
-    // This timer only needs to update nextPrayerName once per minute.
     _timer?.cancel();
     _updateRemainingTime();
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
@@ -884,15 +920,16 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
       final today = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
-      todayPrayerTimes =
-          stored.firstWhere((p) => p.date == today, orElse: () => stored.first);
+      todayPrayerTimes = stored.firstWhere(
+        (p) => p.date == today,
+        orElse: () => stored.first,
+      );
 
       if (mounted) setState(() {});
     }
   }
 
   Future<void> initializeMonthlyPrayerTimes() async {
-    // ===== NEW: Check for saved mosque preference FIRST =====
     final savedMosqueId = await getLocalMosqueId();
 
     if (savedMosqueId.isNotEmpty) {
@@ -906,13 +943,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
             final todayDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
-            // Find today's times
             try {
               todayPrayerTimes = monthlyPrayerTimesList.firstWhere(
                 (prayerTime) => prayerTime.date == todayDate,
               );
             } catch (e) {
-              // Today not in mosque data - use closest available
               if (monthlyPrayerTimesList.isNotEmpty) {
                 todayPrayerTimes = monthlyPrayerTimesList.first;
               }
@@ -920,7 +955,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
             if (todayPrayerTimes != null) {
               _savePrayerTimesToLocal(
-                  todayPrayerTimes!, todayPrayerTimes!.date);
+                todayPrayerTimes!,
+                todayPrayerTimes!.date,
+              );
 
               if (mounted) {
                 setState(() {
@@ -929,18 +966,15 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                 });
               }
               _syncWidget();
-              // Success - exit early
               return;
             }
           }
         }
       } catch (e) {
         print("Error fetching mosque prayer times: $e");
-        // Fall through to Aladhan
       }
     }
 
-    // ===== ORIGINAL Aladhan flow (unchanged) =====
     List<PrayerTimes> storedPrayerTimes = await loadMonthlyPrayerTimes();
     String todayDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
     DateTime now = DateTime.now();
@@ -1053,8 +1087,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   Future<PrayerTimes> setFuturePrayerTimes() async {
     String todayDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
     todayPrayerTimes = monthlyPrayerTimesList.firstWhere(
-        (prayerTime) => prayerTime.date == todayDate,
-        orElse: () => throw Exception('No prayer times for today'));
+      (prayerTime) => prayerTime.date == todayDate,
+      orElse: () => throw Exception('No prayer times for today'),
+    );
 
     return todayPrayerTimes!;
   }
@@ -1084,7 +1119,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   }
 
   Future<void> _savePrayerTimesToLocal(
-      PrayerTimes prayerTimes, String date) async {
+    PrayerTimes prayerTimes,
+    String date,
+  ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString('fajr', prayerTimes.fajr);
@@ -1113,17 +1150,18 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     const Color textDark = Color.fromARGB(255, 15, 30, 65);
     const Color textMid = Color.fromARGB(255, 90, 115, 160);
     const Color border = Color.fromARGB(255, 210, 220, 240);
-    const Color errorRed = Color.fromARGB(255, 200, 60, 60);
 
     Widget headerCell(String text, TextAlign align) => Expanded(
-          child: Text(text,
-              textAlign: align,
-              style: const TextStyle(
-                color: gold,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-              )),
+          child: Text(
+            text,
+            textAlign: align,
+            style: const TextStyle(
+              color: gold,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
+            ),
+          ),
         );
 
     Widget timeChip(
@@ -1140,12 +1178,14 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: borderColor, width: 1),
           ),
-          child: Text(time,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: isNext ? FontWeight.w700 : FontWeight.w500,
-                color: textColor,
-              )),
+          child: Text(
+            time,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: isNext ? FontWeight.w700 : FontWeight.w500,
+              color: textColor,
+            ),
+          ),
         );
 
     return Scaffold(
@@ -1164,9 +1204,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
               monthlyPrayerTimesList.isEmpty &&
               prayerTimesListJamaat.isEmpty &&
               todayPrayerTimes == null) {
-            return const Center(
-              child: CircularProgressIndicator(color: gold),
-            );
+            return const Center(child: CircularProgressIndicator(color: gold));
           }
 
           // If there was an error but we still have cached/local data,
@@ -1182,7 +1220,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             );
           }
 
-          // ── Data logic (unchanged) ────────────────────────────────
+          // ── Data logic ────────────────────────────────
           final DateTime now = DateTime.now();
           List<String> beginningTimes = [];
           List<String> jamaatTimes = [];
@@ -1199,7 +1237,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                 pt.dhuhr,
                 pt.asr,
                 pt.maghrib,
-                pt.isha
+                pt.isha,
               ];
               jummahTime = pt.jummahTimes;
               break;
@@ -1217,7 +1255,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                 pt.dhuhr,
                 pt.asr,
                 pt.maghrib,
-                pt.isha
+                pt.isha,
               ];
               break;
             }
@@ -1229,11 +1267,12 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 
           final List<PrayerTime> rows = [
             PrayerTime('Fajr', bv(0), jv(0)),
-            PrayerTime('Sunrise', bv(1), "-"),
+            PrayerTime('Sunrise', bv(1), "--"),
             PrayerTime(
-                _displayDate.weekday == DateTime.friday ? "Jumu'ah" : 'Dhuhr',
-                bv(2),
-                jv(2)),
+              _displayDate.weekday == DateTime.friday ? "Jumu'ah" : 'Dhuhr',
+              bv(2),
+              jv(2),
+            ),
             PrayerTime('Asr', bv(3), jv(3)),
             PrayerTime('Maghrib', bv(4), jv(4)),
             PrayerTime('Isha', bv(5), jv(5)),
@@ -1254,13 +1293,18 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
               'Dhuhr',
               'Asr',
               'Maghrib',
-              'Isha'
+              'Isha',
             ];
             bool found = false;
             for (int i = 0; i < times.length; i++) {
               final p = times[i].split(':');
-              final pt = DateTime(now.year, now.month, now.day, int.parse(p[0]),
-                  int.parse(p[1]));
+              final pt = DateTime(
+                now.year,
+                now.month,
+                now.day,
+                int.parse(p[0]),
+                int.parse(p[1]),
+              );
               if (pt.isAfter(now)) {
                 nextPrayerName = names[i];
                 final rem = pt.difference(now);
@@ -1273,26 +1317,31 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             if (!found) {
               nextPrayerName = 'Fajr';
               final p = todayPrayerTimes!.fajr.split(':');
-              final nextFajr = DateTime(now.year, now.month, now.day + 1,
-                  int.parse(p[0]), int.parse(p[1]));
+              final nextFajr = DateTime(
+                now.year,
+                now.month,
+                now.day + 1,
+                int.parse(p[0]),
+                int.parse(p[1]),
+              );
               final rem = nextFajr.difference(now);
               timeRemaining = '${rem.inHours}h ${rem.inMinutes.remainder(60)}m';
             }
           }
 
           // ══════════════════════════════════════════════════════════
-          // UI — scrollable so nothing overflows on small screens
+          // UI — hero takes ~42% of screen, table the remaining ~58%
           // ══════════════════════════════════════════════════════════
-          return SingleChildScrollView(
-              child: Column(
+          return Column(
             children: [
-              // ── HERO ───────────────────────────────────────────────
               if (loading && change)
                 Container(
                   width: double.infinity,
                   color: navyMid,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 16,
+                  ),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1300,322 +1349,394 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         width: 13,
                         height: 13,
                         child: CircularProgressIndicator(
-                            color: gold, strokeWidth: 2),
+                          color: gold,
+                          strokeWidth: 2,
+                        ),
                       ),
                       SizedBox(width: 10),
                       Text(
-                        'Updating prayer times, please wait a coule seconds…',
+                        'Updating prayer times, please wait a couple seconds…',
                         style: TextStyle(
-                            color: gold,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500),
+                          color: gold,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
                 ),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: navy,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(26),
-                    bottomRight: Radius.circular(26),
+              Flexible(
+                flex: 42,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: navy,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(26),
+                      bottomRight: Radius.circular(26),
+                    ),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: gold.withOpacity(0.45),
+                        width: 1.5,
+                      ),
+                    ),
                   ),
-                  border: Border(
-                    bottom:
-                        BorderSide(color: gold.withOpacity(0.45), width: 1.5),
-                  ),
-                ),
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Town name
-                    Text(townName,
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        townName,
                         style: const TextStyle(
                           color: gold,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.5,
-                        )),
-                    const SizedBox(height: 6),
-                    _buildMosqueNameRow(),
-                    const SizedBox(height: 10),
-
-                    // Next + Remaining cards — tall, prominent
-                    IntrinsicHeight(
-                      child: Row(
-                        children: [
-                          // Next prayer
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: navyMid,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                    color: gold.withOpacity(0.5), width: 1.5),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(children: [
-                                    Container(
-                                        width: 7,
-                                        height: 7,
-                                        decoration: const BoxDecoration(
+                        ),
+                      ),
+                      _buildMosqueNameRow(),
+                      IntrinsicHeight(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: navyMid,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: gold.withOpacity(0.5),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 7,
+                                          height: 7,
+                                          decoration: const BoxDecoration(
                                             color: skyBlue,
-                                            shape: BoxShape.circle)),
-                                    const SizedBox(width: 6),
-                                    const Text('NEXT PRAYER',
-                                        style: TextStyle(
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        const Text(
+                                          'NEXT PRAYER',
+                                          style: TextStyle(
                                             fontSize: 10,
                                             letterSpacing: 1.4,
                                             fontWeight: FontWeight.w700,
-                                            color: skyBlue)),
-                                  ]),
-                                  const SizedBox(height: 8),
-                                  Text(nextPrayerName,
+                                            color: skyBlue,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      nextPrayerName,
                                       style: const TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                          color: white,
-                                          letterSpacing: 0.3)),
-                                ],
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: white,
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-
-                          const SizedBox(width: 12),
-
-                          // Remaining — shows a big countdown
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: navyMid,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                    color: gold.withOpacity(0.5), width: 1.5),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(children: [
-                                    Container(
-                                        width: 7,
-                                        height: 7,
-                                        decoration: const BoxDecoration(
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: navyMid,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: gold.withOpacity(0.5),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 7,
+                                          height: 7,
+                                          decoration: const BoxDecoration(
                                             color: mintGreen,
-                                            shape: BoxShape.circle)),
-                                    const SizedBox(width: 6),
-                                    const Text('TIME LEFT',
-                                        style: TextStyle(
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        const Text(
+                                          'TIME LEFT',
+                                          style: TextStyle(
                                             fontSize: 10,
                                             letterSpacing: 1.4,
                                             fontWeight: FontWeight.w700,
-                                            color: mintGreen)),
-                                  ]),
-                                  const SizedBox(height: 8),
-                                  _PrayerCountdown(
-                                    nextPrayerName: nextPrayerName,
-                                    prayerTimes: todayPrayerTimes,
-                                    textStyle: const TextStyle(
+                                            color: mintGreen,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    _PrayerCountdown(
+                                      nextPrayerName: nextPrayerName,
+                                      prayerTimes: todayPrayerTimes,
+                                      textStyle: const TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
                                         color: white,
-                                        letterSpacing: 0.3),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text('Until $nextPrayerName',
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Until $nextPrayerName',
                                       style: TextStyle(
-                                          fontSize: 13,
-                                          color: mintGreen.withOpacity(0.85),
-                                          fontWeight: FontWeight.w500)),
-                                ],
+                                        fontSize: 13,
+                                        color: mintGreen.withOpacity(0.85),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Settings + Today buttons
-                    // Settings + Today + Navigate buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: _settingsPageGoTo,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: gold,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: _settingsPageGoTo,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: gold,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
                                       color: gold.withOpacity(0.3),
                                       blurRadius: 8,
-                                      offset: const Offset(0, 3))
-                                ],
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.settings_outlined,
-                                      size: 16, color: navy),
-                                  SizedBox(width: 6),
-                                  Text('Settings',
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.settings_outlined,
+                                      size: 16,
+                                      color: navy,
+                                    ),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      'Settings',
                                       style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: navy)),
-                                ],
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: navy,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: _todayDisplayDate,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                    color: white.withOpacity(0.22), width: 1),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.today_outlined,
-                                      size: 16, color: white),
-                                  SizedBox(width: 6),
-                                  Text('Go to Today',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: white)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (mosqueLat != null && mosqueLong != null) ...[
                           const SizedBox(width: 12),
-                          GestureDetector(
-                            onTap: () =>
-                                openNavigation(mosqueLat!, mosqueLong!),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: skyBlue.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: _todayDisplayDate,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: white.withOpacity(0.22),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.today_outlined,
+                                      size: 16,
+                                      color: white,
+                                    ),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      'Go to Today',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (mosqueLat != null && mosqueLong != null) ...[
+                            const SizedBox(width: 12),
+                            GestureDetector(
+                              onTap: () =>
+                                  openNavigation(mosqueLat!, mosqueLong!),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: skyBlue.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
                                     color: skyBlue.withOpacity(0.5),
-                                    width: 1.5),
-                                boxShadow: [
-                                  BoxShadow(
+                                    width: 1.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
                                       color: skyBlue.withOpacity(0.15),
                                       blurRadius: 8,
-                                      offset: const Offset(0, 3))
-                                ],
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.directions_car_outlined,
-                                      size: 16, color: skyBlue),
-                                  SizedBox(width: 5),
-                                  Text('Go To',
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.directions_car_outlined,
+                                      size: 16,
+                                      color: skyBlue,
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'Go To',
                                       style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: skyBlue)),
-                                ],
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: skyBlue,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Date navigator
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 2, horizontal: 6),
-                      decoration: BoxDecoration(
-                        color: navyLight.withOpacity(0.45),
-                        borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: gold.withOpacity(0.28), width: 1),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            onPressed: _decrementDisplayDate,
-                            icon: const Icon(Icons.arrow_back_ios_rounded,
-                                color: gold, size: 15),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(
-                                minWidth: 32, minHeight: 32),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 2,
+                          horizontal: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: navyLight.withOpacity(0.45),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: gold.withOpacity(0.28),
+                            width: 1,
                           ),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                    DateFormat('EEEE, d MMM yyyy')
-                                        .format(_displayDate),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              onPressed: _decrementDisplayDate,
+                              icon: const Icon(
+                                Icons.arrow_back_ios_rounded,
+                                color: gold,
+                                size: 15,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 32,
+                                minHeight: 32,
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    DateFormat(
+                                      'EEEE, d MMM yyyy',
+                                    ).format(_displayDate),
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
-                                        color: white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.2)),
-                                if (_hijriDate.isNotEmpty)
-                                  Text(
-                                    _hijriDate,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                      color: white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                  if (_hijriDate.isNotEmpty)
+                                    Text(
+                                      _hijriDate,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
                                         color: gold.withOpacity(0.75),
                                         fontSize: 11,
                                         fontWeight: FontWeight.w500,
-                                        letterSpacing: 0.2),
-                                  ),
-                              ],
+                                        letterSpacing: 0.2,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: _incrementDisplayDate,
-                            icon: const Icon(Icons.arrow_forward_ios_rounded,
-                                color: gold, size: 15),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(
-                                minWidth: 32, minHeight: 32),
-                          ),
-                        ],
+                            IconButton(
+                              onPressed: _incrementDisplayDate,
+                              icon: const Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: gold,
+                                size: 15,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 32,
+                                minHeight: 32,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              // At the top of your table build, add this banner if no mosque is set:
               if (prayerTimesListJamaat.isEmpty)
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 10,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: navyMid,
                     borderRadius: BorderRadius.circular(10),
@@ -1623,8 +1744,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.mosque_outlined,
-                          size: 15, color: gold.withOpacity(0.6)),
+                      Icon(
+                        Icons.mosque_outlined,
+                        size: 15,
+                        color: gold.withOpacity(0.6),
+                      ),
                       const SizedBox(width: 6),
                       const Expanded(
                         child: Text(
@@ -1635,416 +1759,388 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                     ],
                   ),
                 ),
-
-              // ── TABLE ────────────────────────────────────────────────
-              Container(
-                color: offWhite,
-                child: todayPrayerTimes != null
-                    ? Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                        child:
-                            Column(mainAxisSize: MainAxisSize.min, children: [
-                          // Header
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 11, horizontal: 14),
-                            decoration: BoxDecoration(
-                              color: navy,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(14),
-                                topRight: Radius.circular(14),
+              Flexible(
+                flex: 58,
+                child: Container(
+                  color: offWhite,
+                  child: todayPrayerTimes != null
+                      ? Padding(
+                          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 11,
+                                  horizontal: 14,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: navy,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(14),
+                                    topRight: Radius.circular(14),
+                                  ),
+                                  border: Border.all(
+                                    color: gold.withOpacity(0.5),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    headerCell('Salaah', TextAlign.left),
+                                    headerCell('Beginning', TextAlign.center),
+                                    headerCell("Jama'ah", TextAlign.center),
+                                    headerCell(
+                                      "Adhan/Jama'ah",
+                                      TextAlign.right,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              border: Border.all(
-                                  color: gold.withOpacity(0.5), width: 1.5),
-                            ),
-                            child: Row(children: [
                               Expanded(
-                                child: headerCell('Salaah', TextAlign.left),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Center(
-                                    child: headerCell(
-                                        'Beginning', TextAlign.center)),
-                              ),
-                              Expanded(
-                                child: Center(
-                                    child:
-                                        headerCell("Jama'ah", TextAlign.right)),
-                              ),
-                            ]),
-                          ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: white,
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(14),
+                                      bottomRight: Radius.circular(14),
+                                    ),
+                                    border: Border.all(color: border, width: 1),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: navy.withOpacity(0.07),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Column(
+                                    children: rows.asMap().entries.map((entry) {
+                                      final index = entry.key;
+                                      final prayer = entry.value;
+                                      final bool isNext =
+                                          prayer.name == nextPrayerName;
+                                      final bool isLast =
+                                          index == rows.length - 1;
 
-                          // Rows — fixed height per row, works in scrollable
-                          Container(
-                            decoration: BoxDecoration(
-                              color: white,
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(14),
-                                bottomRight: Radius.circular(14),
-                              ),
-                              border: Border.all(color: border, width: 1),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: navy.withOpacity(0.07),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                )
-                              ],
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: rows.asMap().entries.map((entry) {
-                                final index = entry.key;
-                                final prayer = entry.value;
-                                final bool isNext =
-                                    prayer.name == nextPrayerName;
-                                final bool isLast = index == rows.length - 1;
-
-                                return Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(
-                                        height: 64,
-                                        child: AnimatedContainer(
-                                          duration:
-                                              const Duration(milliseconds: 250),
-                                          color: isNext
-                                              ? navy.withOpacity(0.05)
-                                              : Colors.transparent,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 14),
-                                          child: Row(children: [
-                                            // Name
+                                      return Expanded(
+                                        child: Column(
+                                          children: [
                                             Expanded(
-                                              flex: 4,
-                                              child: Row(children: [
-                                                if (isNext)
-                                                  Container(
-                                                    width: 3,
-                                                    height: 24,
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 8),
-                                                    decoration: BoxDecoration(
-                                                        color: gold,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(2)),
-                                                  ),
-                                                Text(prayer.name,
-                                                    style: TextStyle(
-                                                      fontSize: 17,
-                                                      fontWeight: isNext
-                                                          ? FontWeight.w700
-                                                          : FontWeight.w500,
-                                                      color: isNext
-                                                          ? navy
-                                                          : textDark,
-                                                    )),
-                                              ]),
-                                            ),
-
-                                            // Beginning / Adhan time
-                                            Expanded(
-                                              flex: 3,
-                                              child: Center(
-                                                child: timeChip(
-                                                  prayer.time,
-                                                  isNext: isNext,
-                                                  bg: isNext
-                                                      ? skyLight
-                                                      : offWhite,
-                                                  textColor: isNext
-                                                      ? const Color.fromARGB(
-                                                          255, 30, 90, 160)
-                                                      : textMid,
-                                                  borderColor: isNext
-                                                      ? skyBlue.withOpacity(0.5)
-                                                      : border,
+                                              child: AnimatedContainer(
+                                                duration: const Duration(
+                                                  milliseconds: 250,
                                                 ),
-                                              ),
-                                            ),
-
-                                            // Adhan notification bell
-                                            Expanded(
-                                              flex: 1,
-                                              child: Center(
-                                                child: _bellButton(
-                                                  isOn: notifBeginningOn[index],
-                                                  isLoading:
-                                                      notifBeginningLoading[
-                                                          index],
-                                                  result: notifBeginningResult[
-                                                      index],
-                                                  onTap: () =>
-                                                      _toggleBeginning(index),
-                                                  tooltip:
-                                                      'Beginning time notification',
-                                                  activeColor: gold,
-                                                  activeLight: goldLight,
-                                                  navy: navy,
-                                                  offWhite: offWhite,
-                                                  border: border,
-                                                  textMid: textMid,
-                                                  errorRed: errorRed,
+                                                color: isNext
+                                                    ? navy.withOpacity(0.05)
+                                                    : Colors.transparent,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 14,
                                                 ),
-                                              ),
-                                            ),
-
-                                            // Jamaat time
-                                            Expanded(
-                                              flex: 3,
-                                              child: Center(
-                                                child: prayer.name ==
-                                                            "Jumu'ah" &&
-                                                        jummahTime != null &&
-                                                        jummahTime!.isNotEmpty
-                                                    ? PopupMenuButton<void>(
-                                                        color: Colors.white,
-                                                        shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10)),
-                                                        offset:
-                                                            const Offset(0, 32),
-                                                        itemBuilder: (_) {
-                                                          final labels = [
-                                                            '1st',
-                                                            '2nd',
-                                                            '3rd',
-                                                            '4th'
-                                                          ];
-                                                          return jummahTime!
-                                                              .asMap()
-                                                              .entries
-                                                              .map((e) {
-                                                            final label = e
-                                                                        .key <
-                                                                    labels
-                                                                        .length
-                                                                ? labels[e.key]
-                                                                : '${e.key + 1}th';
-                                                            return PopupMenuItem<
-                                                                void>(
-                                                              child: Text(
-                                                                '$label  ${e.value}',
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 14,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          15,
-                                                                          30,
-                                                                          65),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        children: [
+                                                          if (isNext)
+                                                            Container(
+                                                              width: 3,
+                                                              height: 24,
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                right: 8,
+                                                              ),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: gold,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                  2,
                                                                 ),
                                                               ),
-                                                            );
-                                                          }).toList();
-                                                        },
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal: 9,
-                                                                  vertical: 5),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: offWhite,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8),
-                                                            border: Border.all(
-                                                                color: border),
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              Text(
-                                                                  jummahTime![
-                                                                      0],
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      color:
-                                                                          textMid)),
-                                                              const SizedBox(
-                                                                  width: 3),
-                                                              const Icon(
-                                                                  Icons
-                                                                      .expand_more,
-                                                                  size: 13,
-                                                                  color:
-                                                                      textMid),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      )
-                                                    : timeChip(
-                                                        prayer.jamaatTime,
-                                                        isNext: isNext,
-                                                        bg: isNext
-                                                            ? mintLight
-                                                            : offWhite,
-                                                        textColor: isNext
-                                                            ? const Color
-                                                                .fromARGB(255,
-                                                                20, 120, 85)
-                                                            : textMid,
-                                                        borderColor: isNext
-                                                            ? mintGreen
-                                                                .withOpacity(
-                                                                    0.5)
-                                                            : border,
-                                                      ),
-                                              ),
-                                            ),
-
-                                            // Jamaah notification bell
-                                            Expanded(
-                                              flex: 1,
-                                              child: Center(
-                                                child: Stack(
-                                                  clipBehavior: Clip.none,
-                                                  children: [
-                                                    _bellButton(
-                                                      isOn:
-                                                          notifJamaahOn[index],
-                                                      isLoading:
-                                                          notifJamaahLoading[
-                                                              index],
-                                                      result: notifJamaahResult[
-                                                          index],
-                                                      onTap: () =>
-                                                          _toggleJamaah(index),
-                                                      tooltip:
-                                                          "Jama'ah reminder",
-                                                      activeColor: mintGreen,
-                                                      activeLight: mintLight,
-                                                      navy: navy,
-                                                      offWhite: offWhite,
-                                                      border: border,
-                                                      textMid: textMid,
-                                                      errorRed: errorRed,
-                                                      isJamaah: true,
-                                                    ),
-                                                    if (notifJamaahOn[index])
-                                                      Positioned(
-                                                        top: -6,
-                                                        right: -6,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal: 5,
-                                                                  vertical: 2),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: navy,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8),
-                                                            border: Border.all(
-                                                                color: mintGreen
-                                                                    .withOpacity(
-                                                                        0.7),
-                                                                width: 1),
-                                                          ),
-                                                          child: Text(
-                                                            '${notifJamaahMins[index]}m',
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize: 9,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700,
-                                                              color: Color
-                                                                  .fromARGB(
-                                                                      255,
-                                                                      60,
-                                                                      200,
-                                                                      140),
+                                                            ),
+                                                          Text(
+                                                            prayer.name,
+                                                            style: TextStyle(
+                                                              fontSize: 17,
+                                                              fontWeight: isNext
+                                                                  ? FontWeight
+                                                                      .w700
+                                                                  : FontWeight
+                                                                      .w500,
+                                                              color: isNext
+                                                                  ? navy
+                                                                  : textDark,
                                                             ),
                                                           ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Center(
+                                                        child: timeChip(
+                                                          prayer.time,
+                                                          isNext: isNext,
+                                                          bg: isNext
+                                                              ? skyLight
+                                                              : offWhite,
+                                                          textColor: isNext
+                                                              ? const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  30,
+                                                                  90,
+                                                                  160,
+                                                                )
+                                                              : textMid,
+                                                          borderColor: isNext
+                                                              ? skyBlue
+                                                                  .withOpacity(
+                                                                  0.5,
+                                                                )
+                                                              : border,
                                                         ),
                                                       ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Center(
+                                                        child: prayer.name ==
+                                                                    "Jumu'ah" &&
+                                                                jummahTime !=
+                                                                    null &&
+                                                                jummahTime!
+                                                                    .isNotEmpty
+                                                            ? PopupMenuButton<
+                                                                void>(
+                                                                color: Colors
+                                                                    .white,
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                    10,
+                                                                  ),
+                                                                ),
+                                                                offset:
+                                                                    const Offset(
+                                                                  0,
+                                                                  32,
+                                                                ),
+                                                                itemBuilder:
+                                                                    (_) {
+                                                                  final labels =
+                                                                      [
+                                                                    '1st',
+                                                                    '2nd',
+                                                                    '3rd',
+                                                                    '4th',
+                                                                  ];
+                                                                  return jummahTime!
+                                                                      .asMap()
+                                                                      .entries
+                                                                      .map((
+                                                                    e,
+                                                                  ) {
+                                                                    final label = e.key <
+                                                                            labels
+                                                                                .length
+                                                                        ? labels[
+                                                                            e.key]
+                                                                        : '${e.key + 1}th';
+                                                                    return PopupMenuItem<
+                                                                        void>(
+                                                                      child:
+                                                                          Text(
+                                                                        '$label  ${e.value}',
+                                                                        style:
+                                                                            const TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          fontWeight:
+                                                                              FontWeight.w600,
+                                                                          color:
+                                                                              Color.fromARGB(
+                                                                            255,
+                                                                            15,
+                                                                            30,
+                                                                            65,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    );
+                                                                  }).toList();
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .symmetric(
+                                                                    horizontal:
+                                                                        9,
+                                                                    vertical: 5,
+                                                                  ),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color:
+                                                                        offWhite,
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(
+                                                                      8,
+                                                                    ),
+                                                                    border:
+                                                                        Border
+                                                                            .all(
+                                                                      color:
+                                                                          border,
+                                                                    ),
+                                                                  ),
+                                                                  child: Row(
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: [
+                                                                      Text(
+                                                                        jummahTime![
+                                                                            0],
+                                                                        style:
+                                                                            const TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                          color:
+                                                                              textMid,
+                                                                        ),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            3,
+                                                                      ),
+                                                                      const Icon(
+                                                                        Icons
+                                                                            .expand_more,
+                                                                        size:
+                                                                            13,
+                                                                        color:
+                                                                            textMid,
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              )
+                                                            : timeChip(
+                                                                prayer
+                                                                    .jamaatTime,
+                                                                isNext: isNext,
+                                                                bg: isNext
+                                                                    ? mintLight
+                                                                    : offWhite,
+                                                                textColor: isNext
+                                                                    ? const Color.fromARGB(
+                                                                        255,
+                                                                        20,
+                                                                        120,
+                                                                        85,
+                                                                      )
+                                                                    : textMid,
+                                                                borderColor:
+                                                                    isNext
+                                                                        ? mintGreen
+                                                                            .withOpacity(
+                                                                            0.5,
+                                                                          )
+                                                                        : border,
+                                                              ),
+                                                      ),
+                                                    ),
+                                                    _buildBellPair(index),
                                                   ],
                                                 ),
                                               ),
                                             ),
-                                          ]),
+                                            if (!isLast)
+                                              const Divider(
+                                                height: 1,
+                                                color: border,
+                                              ),
+                                          ],
                                         ),
-                                      ),
-                                      if (!isLast)
-                                        const Divider(height: 1, color: border),
-                                    ]);
-                              }).toList(),
-                            ),
-                          ),
-                        ]),
-                      )
-
-                    // ── Empty state ──────────────────────────────────
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 60),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.calendar_today_outlined,
-                                size: 52, color: textMid.withOpacity(0.35)),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'No prayer times available\nfor this date.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: textMid, fontSize: 16, height: 1.5),
-                            ),
-                            const SizedBox(height: 24),
-                            GestureDetector(
-                              onTap: _todayDisplayDate,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 22, vertical: 12),
-                                decoration: BoxDecoration(
-                                  color: navy,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                      color: gold.withOpacity(0.5), width: 1.5),
-                                ),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.refresh_rounded,
-                                        size: 17, color: gold),
-                                    SizedBox(width: 8),
-                                    Text('Go to Today',
-                                        style: TextStyle(
-                                            color: gold,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 15)),
-                                  ],
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                        )
+                      : Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.calendar_today_outlined,
+                                size: 52,
+                                color: textMid.withOpacity(0.35),
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'No prayer times available\nfor this date.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: textMid,
+                                  fontSize: 16,
+                                  height: 1.5,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              GestureDetector(
+                                onTap: _todayDisplayDate,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 22,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: navy,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: gold.withOpacity(0.5),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.refresh_rounded,
+                                        size: 17,
+                                        color: gold,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Go to Today',
+                                        style: TextStyle(
+                                          color: gold,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                ),
               ),
             ],
-          ));
+          );
         },
       ),
     );
@@ -2065,7 +2161,6 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          // ── Beginning bell ───────────────────────────────────────────────
           _bellButton(
             isOn: notifBeginningOn[index],
             isLoading: notifBeginningLoading[index],
@@ -2080,10 +2175,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             textMid: textMid,
             errorRed: errorRed,
           ),
-
           const SizedBox(width: 6),
-
-          // ── Jama'ah bell (with badge) ────────────────────────────────────
           Stack(
             clipBehavior: Clip.none,
             children: [
@@ -2102,20 +2194,22 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                 errorRed: errorRed,
                 isJamaah: true,
               ),
-
-              // Minutes badge — only shown when jama'ah is ON
               if (notifJamaahOn[index])
                 Positioned(
                   top: -6,
                   right: -6,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: navy,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: mintGreen.withOpacity(0.7), width: 1),
+                        color: mintGreen.withOpacity(0.7),
+                        width: 1,
+                      ),
                     ),
                     child: Text(
                       '${notifJamaahMins[index]}m',
@@ -2134,10 +2228,6 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     );
   }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 13. HELPER WIDGET — single animated bell button (reused for both bells)
-// ─────────────────────────────────────────────────────────────────────────────
-
   Widget _bellButton({
     required bool isOn,
     required bool isLoading,
@@ -2153,7 +2243,6 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     required Color errorRed,
     bool isJamaah = false,
   }) {
-    // Determine icon / content
     Widget child;
     if (isLoading) {
       child = SizedBox(
@@ -2165,7 +2254,6 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
         ),
       );
     } else if (result != null) {
-      // Brief feedback icon
       child = Icon(
         result ? Icons.check_rounded : Icons.close_rounded,
         size: 16,
@@ -2203,7 +2291,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                       color: activeColor.withOpacity(0.15),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
-                    )
+                    ),
                   ]
                 : [],
           ),
@@ -2215,7 +2303,6 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
 }
 
 // ── Self-contained countdown widget ──────────────────────────────────────────
-// Owns its own 1-second timer so the parent screen never rebuilds on each tick.
 class _PrayerCountdown extends StatefulWidget {
   final String nextPrayerName;
   final PrayerTimes? prayerTimes;
@@ -2270,24 +2357,32 @@ class _PrayerCountdownState extends State<_PrayerCountdown> {
       widget.prayerTimes!.maghrib,
       widget.prayerTimes!.isha,
     ];
-    final names = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
     DateTime? target;
     for (int i = 0; i < timeStrs.length; i++) {
       final parts = timeStrs[i].split(':');
       if (parts.length < 2) continue;
-      final t = DateTime(now.year, now.month, now.day, int.parse(parts[0]),
-          int.parse(parts[1]));
+      final t = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        int.parse(parts[0]),
+        int.parse(parts[1]),
+      );
       if (t.isAfter(now)) {
         target = t;
         break;
       }
     }
-    // After Isha — count down to next day's Fajr
     if (target == null) {
       final parts = widget.prayerTimes!.fajr.split(':');
-      target = DateTime(now.year, now.month, now.day + 1, int.parse(parts[0]),
-          int.parse(parts[1]));
+      target = DateTime(
+        now.year,
+        now.month,
+        now.day + 1,
+        int.parse(parts[0]),
+        int.parse(parts[1]),
+      );
     }
 
     final remaining = target.difference(now);

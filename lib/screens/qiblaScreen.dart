@@ -26,6 +26,9 @@ class _QiblaScreenState extends State<QiblaScreen> {
   double deviceHeading = 0.0;
   GoogleMapController? _mapControllerGoogle;
 
+  // FIX 3: Track whether the compass has ever fired instead of relying on heading == 0
+  bool _compassAvailable = false;
+
   /// When true the map is locked: bearing = 0 (north up), no rotation.
   /// When false (default) the map rotates with the device heading.
   bool _mapLocked = false;
@@ -46,6 +49,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
       if (event.heading != null && mounted) {
         setState(() {
           deviceHeading = event.heading!;
+          // FIX 3: Mark compass as available on first real reading
+          _compassAvailable = true;
         });
 
         // Only rotate the map when NOT locked
@@ -121,6 +126,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
       setState(() {
         _currentLocation = LatLng(latitude, longitude);
         locationMessage = 'Latitude: $latitude, Longitude: $longitude';
+        // FIX 1: Actually calculate and store the qibla direction
+        qiblaDirection = calculateQibla(latitude, longitude);
       });
       if (_currentLocation != null) {
         _mapControllerGoogle?.animateCamera(
@@ -189,7 +196,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double difference = (qiblaDirection - deviceHeading).abs();
+    // FIX 2: Proper angle calculation — wrap with % 360 to avoid negative/overflow values,
+    // then convert to radians. This ensures the arrow aligns with the map polyline.
+    final double arrowAngle =
+        ((qiblaDirection - deviceHeading) % 360) * (pi / 180);
+
+    double difference = (qiblaDirection - deviceHeading).abs() % 360;
     difference = difference > 180 ? 360 - difference : difference;
 
     bool isWithinQiblaRange = difference <= 30;
@@ -274,7 +286,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
               ),
               child: Column(
                 children: [
-                  if (deviceHeading != 0.0)
+                  // FIX 3: Use _compassAvailable flag instead of deviceHeading != 0.0
+                  if (_compassAvailable)
                     Row(
                       children: [
                         const Icon(Icons.info_outline,
@@ -367,9 +380,9 @@ class _QiblaScreenState extends State<QiblaScreen> {
                               isWithinQiblaRange ? Colors.green : Colors.blue,
                         ),
                       ),
+                      // FIX 2: Use pre-computed arrowAngle with proper % 360 wrapping
                       Transform.rotate(
-                        angle: (qiblaDirection * (pi / 180)) -
-                            (deviceHeading * (pi / 180)),
+                        angle: arrowAngle,
                         child: Icon(
                           Icons.arrow_upward,
                           size: 100,
