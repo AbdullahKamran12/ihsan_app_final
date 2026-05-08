@@ -31,8 +31,7 @@ widget_group = project.main_group.groups.find { |g| g.name == widget_name }
 widget_group ||= project.main_group.new_group(widget_name, widget_name)
 
 # ── Add Swift source files if not already present ─────────────────────────────
-swift_dir   = "#{widget_name}/#{widget_name}"
-
+swift_dir = '.'
 ['PrayerData.swift', 'PrayerWidgetViews.swift', 'PrayerWidgetBundle.swift'].each do |fname|
   full_path = "#{swift_dir}/#{fname}"
   unless widget_group.files.any? { |f| f.path == full_path }
@@ -49,7 +48,7 @@ unless widget_group.files.any? { |f| f.path == assets_path }
 end
 
 # ── Add Info.plist if not already present ────────────────────────────────────
-plist_path = "#{widget_name}/Info.plist"
+plist_path = "Info.plist"
 unless widget_group.files.any? { |f| f.path == plist_path }
   widget_group.new_file(plist_path)
 end
@@ -62,8 +61,8 @@ widget_target.build_configurations.each do |config|
   config.build_settings['SWIFT_VERSION']                         = '5.0'
   config.build_settings['TARGETED_DEVICE_FAMILY']                = '1,2'
   config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']            = '15.0'
-  config.build_settings['INFOPLIST_FILE']                        = "#{widget_name}/Info.plist"
-  config.build_settings['CODE_SIGN_ENTITLEMENTS']                = "#{widget_name}/#{widget_name}.entitlements"
+  config.build_settings['INFOPLIST_FILE'] = "PrayerWidget/Info.plist"
+  config.build_settings['CODE_SIGN_ENTITLEMENTS'] = "PrayerWidget/PrayerWidget.entitlements"
   config.build_settings['CODE_SIGN_STYLE']                       = 'Manual'
   config.build_settings['CODE_SIGN_IDENTITY']                    = 'Apple Distribution'
   config.build_settings['PROVISIONING_PROFILE_SPECIFIER']        = 'Widget'

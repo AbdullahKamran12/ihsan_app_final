@@ -19,9 +19,6 @@ workflows:
         script: |
           gem install xcodeproj --no-document
 
-      - name: Add Prayer Widget target
-        script: |
-          ruby add_widget_target.rb
 
       - name: Run Flutter analyze (warnings allowed)
         script: flutter analyze || true
