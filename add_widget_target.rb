@@ -69,22 +69,23 @@ widget_target.build_configurations.each do |config|
   config.build_settings['APPLICATION_EXTENSION_API_ONLY']        = 'YES'
 end
 
-# ── Embed in Runner — find or create phase, never duplicate the file ref ──────
+# ── Embed in Runner — remove ALL existing extension embed phases first ─────────
 runner_target = project.targets.find { |t| t.name == 'Runner' }
 
-embed_phase = runner_target.build_phases.find do |p|
+# Remove any existing copy-files phases targeting PlugIns (spec 13)
+runner_target.build_phases.delete_if do |p|
   p.is_a?(Xcodeproj::Project::Object::PBXCopyFilesBuildPhase) &&
   p.dst_subfolder_spec == '13'
 end
-embed_phase ||= runner_target.new_copy_files_build_phase('Embed App Extensions')
+
+# Create a single clean embed phase
+embed_phase = runner_target.new_copy_files_build_phase('Embed App Extensions')
 embed_phase.dst_subfolder_spec = '13'
 
-unless embed_phase.files.any? { |f| f.file_ref == widget_target.product_reference }
-  embed_ref          = project.new(Xcodeproj::Project::Object::PBXBuildFile)
-  embed_ref.file_ref = widget_target.product_reference
-  embed_ref.settings = { 'ATTRIBUTES' => ['RemoveHeadersOnCopy'] }
-  embed_phase.files << embed_ref
-end
+embed_ref          = project.new(Xcodeproj::Project::Object::PBXBuildFile)
+embed_ref.file_ref = widget_target.product_reference
+embed_ref.settings = { 'ATTRIBUTES' => ['RemoveHeadersOnCopy'] }
+embed_phase.files << embed_ref
 
 project.save
 puts "Done — PrayerWidget target configured"
