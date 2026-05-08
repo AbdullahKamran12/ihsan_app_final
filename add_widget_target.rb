@@ -54,6 +54,7 @@ end
 
 # ── Build settings (always overwrite — safe to repeat) ───────────────────────
 widget_target.build_configurations.each do |config|
+  config.build_settings['PRODUCT_NAME']                          = widget_name
   config.build_settings['PRODUCT_BUNDLE_IDENTIFIER']             = widget_bundle_id
   config.build_settings['DEVELOPMENT_TEAM']                      = team_id
   config.build_settings['SWIFT_VERSION']                         = '5.0'
