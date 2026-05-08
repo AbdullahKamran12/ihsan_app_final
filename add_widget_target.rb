@@ -11,7 +11,7 @@ team_id          = '98Q8PA74RJ'
 widget_target = project.targets.find { |t| t.name == widget_name }
 
 if widget_target.nil?
-  widget_target = project.new_target(:app_extension, widget_name, :ios, '14.0')
+  widget_target = project.new_target(:app_extension, widget_name, :ios, '15.0')
   puts "Created PrayerWidget target"
 else
   puts "PrayerWidget target already exists — updating settings only"
@@ -31,8 +31,10 @@ widget_group = project.main_group.groups.find { |g| g.name == widget_name }
 widget_group ||= project.main_group.new_group(widget_name, widget_name)
 
 # ── Add Swift source files if not already present ─────────────────────────────
+swift_dir   = "#{widget_name}/#{widget_name}"
+
 ['PrayerData.swift', 'PrayerWidgetViews.swift', 'PrayerWidgetBundle.swift'].each do |fname|
-  full_path = "#{widget_name}/#{fname}"
+  full_path = "#{swift_dir}/#{fname}"
   unless widget_group.files.any? { |f| f.path == full_path }
     ref = widget_group.new_file(full_path)
     widget_target.source_build_phase.add_file_reference(ref)
@@ -40,7 +42,7 @@ widget_group ||= project.main_group.new_group(widget_name, widget_name)
 end
 
 # ── Add Assets if not already present ────────────────────────────────────────
-assets_path = "#{widget_name}/Assets.xcassets"
+assets_path = "#{swift_dir}/Assets.xcassets"
 unless widget_group.files.any? { |f| f.path == assets_path }
   assets_ref = widget_group.new_file(assets_path)
   widget_target.resources_build_phase.add_file_reference(assets_ref)
