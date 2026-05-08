@@ -5,6 +5,7 @@ project = Xcodeproj::Project.open(project_path)
 
 widget_name      = 'PrayerWidget'
 widget_bundle_id = 'com.ihsan.ihsanapp.PrayerWidget'
+team_id          = '98Q8PA74RJ'
 
 # Exit early if target already exists — prevents duplicates on re-runs
 if project.targets.any? { |t| t.name == widget_name }
@@ -37,11 +38,14 @@ widget_group.new_file("#{widget_name}/Info.plist")
 # ── Build settings ────────────────────────────────────────────────────────────
 widget_target.build_configurations.each do |config|
   config.build_settings['PRODUCT_BUNDLE_IDENTIFIER']             = widget_bundle_id
+  config.build_settings['DEVELOPMENT_TEAM']                      = team_id
   config.build_settings['SWIFT_VERSION']                         = '5.0'
   config.build_settings['TARGETED_DEVICE_FAMILY']                = '1,2'
   config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']            = '14.0'
   config.build_settings['INFOPLIST_FILE']                        = "#{widget_name}/Info.plist"
   config.build_settings['CODE_SIGN_ENTITLEMENTS']                = "#{widget_name}/#{widget_name}.entitlements"
+  config.build_settings['CODE_SIGN_STYLE']                       = 'Manual'
+  config.build_settings['PROVISIONING_PROFILE_SPECIFIER']        = 'codemagic'
   config.build_settings['SKIP_INSTALL']                          = 'YES'
   config.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'NO'
   config.build_settings['APPLICATION_EXTENSION_API_ONLY']        = 'YES'

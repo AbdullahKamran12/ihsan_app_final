@@ -17,10 +17,11 @@ workflows:
 
       - name: Install xcodeproj gem
         script: |
-          gem install xcodeproj
+          gem install xcodeproj --no-document
 
       - name: Add Prayer Widget target
         script: |
+          git checkout ios/Runner.xcodeproj/project.pbxproj
           ruby add_widget_target.rb
 
       - name: Run Flutter analyze (warnings allowed)
