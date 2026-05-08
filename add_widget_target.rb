@@ -59,7 +59,7 @@ widget_target.build_configurations.each do |config|
   config.build_settings['DEVELOPMENT_TEAM']                      = team_id
   config.build_settings['SWIFT_VERSION']                         = '5.0'
   config.build_settings['TARGETED_DEVICE_FAMILY']                = '1,2'
-  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']            = '14.0'
+  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']            = '15.0'
   config.build_settings['INFOPLIST_FILE']                        = "#{widget_name}/Info.plist"
   config.build_settings['CODE_SIGN_ENTITLEMENTS']                = "#{widget_name}/#{widget_name}.entitlements"
   config.build_settings['CODE_SIGN_STYLE']                       = 'Manual'
