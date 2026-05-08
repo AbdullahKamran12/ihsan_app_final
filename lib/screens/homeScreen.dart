@@ -134,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen>
         int? remainingMinutes;
         remainingMinutes = remaining.inMinutes;
         selectedPrayerBox = remainingMinutes <= 20 ? nextPrayer : currentPrayer;
+        if (selectedPrayerBox == "Jumu'ah") selectedPrayerBox = 'Dhuhr';
         if (nextPrayer == 'Fajr' && postMidnight == true) {
           if (!mounted) return;
           setState(() {
@@ -190,6 +191,7 @@ class _HomeScreenState extends State<HomeScreen>
       currentPrayer = 'Isha';
       postMidnight = true;
       selectedPrayerBox = nextPrayer;
+      if (selectedPrayerBox == "Jumu'ah") selectedPrayerBox = 'Dhuhr';
       currentTime = prayerTimesList.last.time;
     }
     if (mounted) {
@@ -222,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen>
         int? remainingMinutes;
         remainingMinutes = remaining.inMinutes;
         selectedPrayerBox = remainingMinutes <= 20 ? nextPrayer : currentPrayer;
+        if (selectedPrayerBox == "Jumu'ah") selectedPrayerBox = 'Dhuhr';
         if (nextPrayer == 'Fajr' && postMidnight == true) {
           if (!mounted) return;
           setState(() {
@@ -280,6 +283,7 @@ class _HomeScreenState extends State<HomeScreen>
       currentPrayer = 'Isha';
       postMidnight = true;
       selectedPrayerBox = nextPrayer;
+      if (selectedPrayerBox == "Jumu'ah") selectedPrayerBox = 'Dhuhr';
       currentTime = prayerTimesList.last.time;
     }
     if (mounted) {
@@ -2115,6 +2119,7 @@ class _HomeScreenState extends State<HomeScreen>
         int? remainingMinutes;
         remainingMinutes = remaining.inMinutes;
         selectedPrayerBox = remainingMinutes <= 20 ? nextPrayer : currentPrayer;
+        if (selectedPrayerBox == "Jumu'ah") selectedPrayerBox = 'Dhuhr';
 
         if (nextPrayer == 'Fajr' && postMidnight == true) {
           if (!mounted) return;
@@ -2171,6 +2176,7 @@ class _HomeScreenState extends State<HomeScreen>
         currentPrayer = 'Isha';
         postMidnight = true;
         selectedPrayerBox = nextPrayer;
+        if (selectedPrayerBox == "Jumu'ah") selectedPrayerBox = 'Dhuhr';
         currentTime = prayerTimesList.last.time;
       }
     }
@@ -3655,77 +3661,98 @@ class _HomeScreenState extends State<HomeScreen>
                                                 horizontal: 14,
                                                 vertical: 11,
                                               ),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    width: 38,
-                                                    height: 38,
-                                                    decoration: BoxDecoration(
-                                                      color: skyLight,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      border: Border.all(
-                                                        color:
-                                                            skyBlue.withOpacity(
-                                                          0.4,
-                                                        ),
-                                                        width: 1,
-                                                      ),
-                                                    ),
-                                                    child: const Icon(
-                                                      Icons.mosque_outlined,
-                                                      size: 18,
-                                                      color: navy,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child: Column(
+                                              child: isFriday &&
+                                                      jummahTimes.isNotEmpty &&
+                                                      selectedPrayerBox ==
+                                                          'Dhuhr'
+                                                  // ── Jumu'ah layout: icon + name row, then badges below ──
+                                                  ? Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .start,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
                                                       children: [
-                                                        Text(
-                                                          mosque['name'] ??
-                                                              'Unnamed Mosque',
-                                                          style:
-                                                              const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            // User increased this to 20
-                                                            fontSize: 20,
-                                                            color: textDark,
-                                                          ),
-                                                          softWrap: true,
-                                                          overflow: TextOverflow
-                                                              .visible,
+                                                        Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Container(
+                                                              width: 38,
+                                                              height: 38,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: skyLight,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                border:
+                                                                    Border.all(
+                                                                  color: skyBlue
+                                                                      .withOpacity(
+                                                                          0.4),
+                                                                  width: 1,
+                                                                ),
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons
+                                                                    .mosque_outlined,
+                                                                size: 18,
+                                                                color: navy,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 12),
+                                                            Expanded(
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    mosque['name'] ??
+                                                                        'Unnamed Mosque',
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600,
+                                                                      fontSize:
+                                                                          20,
+                                                                      color:
+                                                                          textDark,
+                                                                    ),
+                                                                    softWrap:
+                                                                        true,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .visible,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          2),
+                                                                  Text(
+                                                                    '${mosque['distance'].toStringAsFixed(1)} km away',
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color:
+                                                                          textMid,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                         const SizedBox(
-                                                            height: 2),
-                                                        Text(
-                                                          '${mosque['distance'].toStringAsFixed(1)} km away',
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 12,
-                                                            color: textMid,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  // Prayer time — gold outlined navy badge
-                                                  // Instead of the single badge Container:
-                                                  isFriday &&
-                                                          jummahTimes
-                                                              .isNotEmpty &&
-                                                          selectedPrayerBox ==
-                                                              'Dhuhr'
-                                                      ? Wrap(
+                                                            height: 8),
+                                                        Wrap(
                                                           spacing: 4,
                                                           runSpacing: 4,
-                                                          alignment:
-                                                              WrapAlignment.end,
                                                           children: jummahTimes
                                                               .asMap()
                                                               .entries
@@ -3776,9 +3803,76 @@ class _HomeScreenState extends State<HomeScreen>
                                                               ),
                                                             );
                                                           }).toList(),
-                                                        )
-                                                      : Container(
-                                                          // ← your existing single time badge unchanged
+                                                        ),
+                                                      ],
+                                                    )
+                                                  // ── Normal layout: icon + name + badge in a row ──
+                                                  : Row(
+                                                      children: [
+                                                        Container(
+                                                          width: 38,
+                                                          height: 38,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: skyLight,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                            border: Border.all(
+                                                              color: skyBlue
+                                                                  .withOpacity(
+                                                                      0.4),
+                                                              width: 1,
+                                                            ),
+                                                          ),
+                                                          child: const Icon(
+                                                            Icons
+                                                                .mosque_outlined,
+                                                            size: 18,
+                                                            color: navy,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 12),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                mosque['name'] ??
+                                                                    'Unnamed Mosque',
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  fontSize: 20,
+                                                                  color:
+                                                                      textDark,
+                                                                ),
+                                                                softWrap: true,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .visible,
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 2),
+                                                              Text(
+                                                                '${mosque['distance'].toStringAsFixed(1)} km away',
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontSize: 12,
+                                                                  color:
+                                                                      textMid,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Container(
                                                           padding:
                                                               const EdgeInsets
                                                                   .symmetric(
@@ -3808,8 +3902,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                                 color: gold),
                                                           ),
                                                         ),
-                                                ],
-                                              ),
+                                                      ],
+                                                    ),
                                             ),
                                           );
                                         },
