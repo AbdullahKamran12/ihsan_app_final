@@ -33,6 +33,21 @@ workflows:
         script: |
           cd ios
           pod install
+      - name: Debug pbxproj embed phases
+        script: |
+          ruby -e "
+            require 'xcodeproj'
+            p = Xcodeproj::Project.open('ios/Runner.xcodeproj')
+            runner = p.targets.find { |t| t.name == 'Runner' }
+            runner.build_phases.each do |phase|
+              if phase.is_a?(Xcodeproj::Project::Object::PBXCopyFilesBuildPhase)
+                puts \"Phase: #{phase.display_name}, spec: #{phase.dst_subfolder_spec}\"
+                phase.files.each { |f| puts \"  -> #{f.file_ref&.path}\" }
+              end
+            end
+            puts '---'
+            puts \"All targets: #{p.targets.map(&:name).join(', ')}\"
+          "
 
       - name: Clean DerivedData
         script: |
