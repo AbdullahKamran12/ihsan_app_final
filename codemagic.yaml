@@ -21,7 +21,6 @@ workflows:
 
       - name: Add Prayer Widget target
         script: |
-          git checkout ios/Runner.xcodeproj/project.pbxproj
           ruby add_widget_target.rb
 
       - name: Run Flutter analyze (warnings allowed)
@@ -35,7 +34,11 @@ workflows:
           cd ios
           pod install
 
-      - name: Install widget provisioning profile
+      - name: Clean DerivedData
+        script: |
+          rm -rf ~/Library/Developer/Xcode/DerivedData
+
+      - name: Build iOS signed
         script: |
           # WIDGET_PROFILE_UUID must be set in Codemagic environment variables
           # Find it: Apple Developer portal → Profiles → Widget → UUID at the top

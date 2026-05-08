@@ -62,6 +62,7 @@ widget_target.build_configurations.each do |config|
   config.build_settings['INFOPLIST_FILE']                        = "#{widget_name}/Info.plist"
   config.build_settings['CODE_SIGN_ENTITLEMENTS']                = "#{widget_name}/#{widget_name}.entitlements"
   config.build_settings['CODE_SIGN_STYLE']                       = 'Manual'
+  config.build_settings['CODE_SIGN_IDENTITY']                    = 'Apple Distribution'
   config.build_settings['PROVISIONING_PROFILE_SPECIFIER']        = 'Widget'
   config.build_settings['SKIP_INSTALL']                          = 'YES'
   config.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'NO'
