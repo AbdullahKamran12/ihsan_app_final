@@ -10,9 +10,7 @@ workflows:
       cocoapods: default
       ios_signing:
         distribution_type: app_store
-        bundle_identifiers:
-          - com.ihsan.ihsanapp
-          - com.ihsan.ihsanapp.PrayerWidget
+        bundle_identifier: com.ihsan.ihsanapp
     scripts:
       - name: Get Flutter packages
         script: flutter packages pub get
@@ -36,6 +34,14 @@ workflows:
         script: |
           cd ios
           pod install
+
+      - name: Install widget provisioning profile
+        script: |
+          # WIDGET_PROFILE_UUID must be set in Codemagic environment variables
+          # Find it: Apple Developer portal → Profiles → Widget → UUID at the top
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_DIR"
+          echo "$WIDGET_PROFILE" | base64 --decode > "$PROFILES_DIR/PrayerWidget.mobileprovision"
 
       - name: Build iOS signed
         script: |
