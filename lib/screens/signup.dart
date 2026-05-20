@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:ihsan_app_final/screens/moreOptionsScreen.dart';
 import 'package:ihsan_app_final/screens/login.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -125,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<String> _getCityFromCoordinates(
       double latitude, double longitude) async {
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final String url =
         'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
     try {
@@ -197,7 +198,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _currentCity = await _getCityFromCoordinates(latitude, longitude);
     if (_currentCity.isEmpty) _currentCity = 'Unknown';
 
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final uris = [
       Uri.parse(
           'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=5000&type=mosque&key=$apiKey'),
@@ -244,7 +245,7 @@ class _SignUpPageState extends State<SignUpPage> {
       setState(() => _citySuggestions.clear());
       return;
     }
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final url = 'https://maps.googleapis.com/maps/api/place/autocomplete.json'
         '?input=$input&types=(cities)&key=$apiKey';
     try {
@@ -269,7 +270,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<Map<String, double>> _getLatLngFromPlaceId(String placeId) async {
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final response = await http.get(Uri.parse(
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$apiKey'));
     final location =

@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 import 'package:ihsan_app_final/sharedWidgets.dart';
 import 'package:ihsan_app_final/screens/moreoptionsScreen.dart';
@@ -588,7 +589,7 @@ class _HomeScreenState extends State<HomeScreen>
     Future<void> getCitySuggestions(String input) async {
       if (input.isEmpty) return;
 
-      final String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+      final String apiKey = await ApiKeys.getMapsKey();
       // Using Places Autocomplete API instead of Geocoding
       final String url =
           'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey';
@@ -982,7 +983,7 @@ class _HomeScreenState extends State<HomeScreen>
   ) async {
     try {
       if (userArea == null) {
-        final String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+        final String apiKey = await ApiKeys.getMapsKey();
         final url = 'https://maps.googleapis.com/maps/api/geocode/json'
             '?latlng=$latitude,$longitude&key=$apiKey';
 
@@ -1285,7 +1286,7 @@ class _HomeScreenState extends State<HomeScreen>
     try {
       final pos = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      const apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+      final String apiKey = await ApiKeys.getMapsKey();
       final url =
           'https://maps.googleapis.com/maps/api/geocode/json?latlng=${pos.latitude},${pos.longitude}&key=$apiKey';
       final response = await http.get(Uri.parse(url));
@@ -1382,7 +1383,7 @@ class _HomeScreenState extends State<HomeScreen>
     Future<void> fetchSuggestions(
         String input, void Function(void Function()) setS) async {
       if (input.isEmpty) return;
-      const apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+      final String apiKey = await ApiKeys.getMapsKey();
       final url =
           'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey';
       try {

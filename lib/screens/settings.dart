@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:ihsan_app_final/screens/SettingsScreens/prayerTimeSettings.dart';
 import 'package:ihsan_app_final/sharedWidgets.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 // ── Palette (matches app) ─────────────────────────────────────────────────────
 const Color _navy = Color.fromARGB(255, 10, 25, 60);
@@ -42,7 +43,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     Future<void> getCitySuggestions(String input) async {
       if (input.isEmpty) return;
-      const apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+      final String apiKey = await ApiKeys.getMapsKey();
       final url =
           'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey';
       try {

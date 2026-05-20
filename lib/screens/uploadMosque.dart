@@ -10,6 +10,7 @@ import 'package:ihsan_app_final/sharedWidgets.dart';
 import 'package:ihsan_app_final/screens/moreoptionsScreen.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:ihsan_app_final/screens/photoupload.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 class UploadMosque extends StatefulWidget {
   const UploadMosque({super.key});
@@ -98,7 +99,7 @@ class _UploadMosqueState extends State<UploadMosque> {
       setState(() => _citySuggestions.clear());
       return;
     }
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final String url =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json'
         '?input=$input&types=(cities)&key=$apiKey';
@@ -123,7 +124,7 @@ class _UploadMosqueState extends State<UploadMosque> {
   }
 
   Future<LatLng> _getLatLngFromPlaceId(String placeId) async {
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final url = 'https://maps.googleapis.com/maps/api/place/details/json'
         '?place_id=$placeId&fields=geometry&key=$apiKey';
     final response = await http.get(Uri.parse(url));
@@ -135,7 +136,7 @@ class _UploadMosqueState extends State<UploadMosque> {
   // ── Reverse geocode to get city name ────────────────────────────────────────
   Future<void> _updateCityFromCoordinates(
       double latitude, double longitude) async {
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final String url =
         'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
 
@@ -201,7 +202,7 @@ class _UploadMosqueState extends State<UploadMosque> {
 
   // ── Nearby mosques ──────────────────────────────────────────────────────────
   Future<void> _fetchNearbyMosques(double latitude, double longitude) async {
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final List<Uri> uris = [
       Uri.parse(
           'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=5000&type=mosque&key=$apiKey'),
@@ -490,7 +491,7 @@ class _UploadMosqueState extends State<UploadMosque> {
   // ── Place text search ───────────────────────────────────────────────────────
   Future<void> _searchPlaceByText(String query) async {
     if (query.trim().isEmpty) return;
-    const apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final url =
         'https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(query)}&key=$apiKey';
     try {

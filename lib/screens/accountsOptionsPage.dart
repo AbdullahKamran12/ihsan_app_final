@@ -5,6 +5,7 @@ import 'package:ihsan_app_final/screens/login.dart';
 import 'package:ihsan_app_final/screens/moreoptionsScreen.dart';
 import 'package:ihsan_app_final/sharedWidgets.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 import 'dart:convert';
 import 'dart:async';
@@ -56,7 +57,7 @@ class _AccountsOptionsScreenState extends State<AccountsOptionsScreen> {
 
   Future<String> getCityFromCoordinates(
       double latitude, double longitude) async {
-    final String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final String url =
         'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
 
@@ -137,7 +138,7 @@ class _AccountsOptionsScreenState extends State<AccountsOptionsScreen> {
     if (_currentCity.isEmpty) {
       _currentCity = townName.isNotEmpty ? townName : 'Unknown';
     }
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final uris = [
       Uri.parse(
           'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=5000&type=mosque&key=$apiKey'),
@@ -184,7 +185,7 @@ class _AccountsOptionsScreenState extends State<AccountsOptionsScreen> {
       setState(() => _citySuggestions.clear());
       return;
     }
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json'
         '?input=$input&types=(cities)&key=$apiKey';
     try {
@@ -209,7 +210,7 @@ class _AccountsOptionsScreenState extends State<AccountsOptionsScreen> {
   }
 
   Future<LatLng> _getLatLngFromPlaceId(String placeId) async {
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final response = await http.get(Uri.parse(
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$apiKey'));
     final location =

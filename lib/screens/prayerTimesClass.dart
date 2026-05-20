@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 String townName = "";
 double latitude = 0;
@@ -201,7 +202,7 @@ List<Duration> adjustments = [
 Future<void> updateTownNameFromCoordinates(
     double latitude, double longitude) async {
   try {
-    final String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final url = 'https://maps.googleapis.com/maps/api/geocode/json'
         '?latlng=$latitude,$longitude&key=$apiKey';
 
@@ -367,7 +368,7 @@ List<String> adjustPrayerTimesIndividually(
 }
 
 Future<List<double>> getLatLngFromCity(String cityName) async {
-  final String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+  final String apiKey = await ApiKeys.getMapsKey();
   final String url =
       'https://maps.googleapis.com/maps/api/geocode/json?address=$cityName&key=$apiKey';
 

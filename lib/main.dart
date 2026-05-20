@@ -6,6 +6,7 @@ import 'package:ihsan_app_final/screens/mosqueDisplayScreen.dart';
 import 'package:ihsan_app_final/screens/prayerScreen.dart';
 import 'package:flutter/services.dart';
 import 'package:ihsan_app_final/utils/widget_service.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ihsan_app_final/screens/login.dart';
@@ -44,6 +45,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  ApiKeys.getMapsKey();
   await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   await FirebaseAnalytics.instance.setUserProperty(
     name: 'platform',

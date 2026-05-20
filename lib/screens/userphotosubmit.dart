@@ -13,6 +13,7 @@ import 'package:ihsan_app_final/sharedWidgets.dart';
 import 'package:ihsan_app_final/screens/moreoptionsScreen.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
 import 'package:intl/intl.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const Color _navy = Color.fromARGB(255, 10, 25, 60);
@@ -39,8 +40,6 @@ class _UserMosquePickerPageState extends State<UserMosquePickerPage> {
   List<Map<String, dynamic>> _citySuggestions = [];
   Timer? _debounceTimer;
   List<Map<String, dynamic>> _textSearchResults = [];
-
-  static const String _apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
 
   @override
   void initState() {
@@ -88,8 +87,9 @@ class _UserMosquePickerPageState extends State<UserMosquePickerPage> {
   }
 
   Future<String> _getCityFromCoordinates(double lat, double lng) async {
+    final String apiKey = await ApiKeys.getMapsKey();
     final url =
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$_apiKey';
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$apiKey';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -120,13 +120,14 @@ class _UserMosquePickerPageState extends State<UserMosquePickerPage> {
   }
 
   Future<void> _fetchNearbyMosques(double lat, double lng) async {
+    final String apiKey = await ApiKeys.getMapsKey();
     final uris = [
       Uri.parse(
-          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=5000&type=mosque&key=$_apiKey'),
+          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=5000&type=mosque&key=$apiKey'),
       Uri.parse(
-          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=5000&keyword=masjid&key=$_apiKey'),
+          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=5000&keyword=masjid&key=$apiKey'),
       Uri.parse(
-          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=5000&keyword=islam&key=$_apiKey'),
+          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=5000&keyword=islam&key=$apiKey'),
     ];
 
     final responses = await Future.wait(uris.map(http.get));
@@ -165,8 +166,9 @@ class _UserMosquePickerPageState extends State<UserMosquePickerPage> {
       setState(() => _citySuggestions.clear());
       return;
     }
+    final String apiKey = await ApiKeys.getMapsKey();
     final url =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$_apiKey';
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&types=(cities)&key=$apiKey';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) return;
@@ -189,8 +191,9 @@ class _UserMosquePickerPageState extends State<UserMosquePickerPage> {
   }
 
   Future<Map<String, double>> _getLatLngFromPlaceId(String placeId) async {
+    final String apiKey = await ApiKeys.getMapsKey();
     final url =
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$_apiKey';
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$apiKey';
     final response = await http.get(Uri.parse(url));
     final location =
         jsonDecode(response.body)['result']['geometry']['location'];
@@ -215,8 +218,9 @@ class _UserMosquePickerPageState extends State<UserMosquePickerPage> {
   // ── Place text search ─────────────────────────────────────────────────────
   Future<void> _searchPlaceByText(String query) async {
     if (query.trim().isEmpty) return;
+    final String apiKey = await ApiKeys.getMapsKey();
     final url =
-        'https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(query)}&key=$_apiKey';
+        'https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(query)}&key=$apiKey';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) return;

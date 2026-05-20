@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ihsan_app_final/screens/prayerScreen.dart';
 import 'package:ihsan_app_final/screens/prayerTimesClass.dart';
+import 'package:ihsan_app_final/utils/api_keys.dart';
 
 // Simple model to hold mosque list data for the bottom sheet
 class _MosqueListItem {
@@ -261,7 +262,7 @@ class _MosqueScreenState extends State<MosqueScreen> {
       return;
     }
 
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final String url =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json'
         '?input=$input&types=(cities)&key=$apiKey';
@@ -291,7 +292,7 @@ class _MosqueScreenState extends State<MosqueScreen> {
   }
 
   Future<LatLng> _getLatLngFromPlaceId(String placeId) async {
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final url = 'https://maps.googleapis.com/maps/api/place/details/json'
         '?place_id=$placeId&fields=geometry&key=$apiKey';
 
@@ -344,7 +345,7 @@ class _MosqueScreenState extends State<MosqueScreen> {
   }
 
   Future<void> _fetchNearbyMosques(double latitude, double longitude) async {
-    const String apiKey = 'AIzaSyBgsjMh_ojTBOMxLkSk5NSNYO7qSogbjdw';
+    final String apiKey = await ApiKeys.getMapsKey();
     final today = DateTime.now().toIso8601String().substring(0, 10);
 
     Map<String, Marker> markersMap = {
