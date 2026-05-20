@@ -33,7 +33,7 @@ class _WebUploadMosqueState extends State<WebUploadMosque> {
   static const Color textDark = Color.fromARGB(255, 15, 30, 65);
   static const Color textMid = Color.fromARGB(255, 90, 115, 160);
   static const Color borderCol = Color.fromARGB(255, 210, 220, 240);
-  static const String _apiKey = 'AIzaSyBxRyh6L7yPp8YkStN3q9dnUJK0N6rp71I';
+  static const String _apiKey = '#';
 
   // ── Controllers ───────────────────────────────────────────────────
   final TextEditingController _searchCityCtrl = TextEditingController();
