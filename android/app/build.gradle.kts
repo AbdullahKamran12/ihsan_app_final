@@ -22,7 +22,7 @@ android {
             storeFile = file("upload-keystore.jks")
             storePassword = "ihsan123"
             keyAlias = "upload"
-            keyPassword = "ihsan123" // same as keystore if you didn't set a separate one
+            keyPassword = "ihsan123"
         }
     }
 
@@ -32,8 +32,11 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+    configurations.all {
+        resolutionStrategy {
+            force("androidx.glance:glance-appwidget:1.1.1")
+            force("androidx.glance:glance:1.1.1")
+        }
     }
 
     defaultConfig {
@@ -50,6 +53,12 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
