@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ihsan Admin</title>
+  <!-- No description meta, no og tags, no robots indexing -->
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:      #0A193C;
+      --navy-mid:  #122A5F;
+      --navy-light:#1C3A78;
+      --gold:      #D4AF5F;
+      --mint:      #48C89B;
+      --sky:       #64B4F0;
+      --muted:     #7898C8;
+      --white:     #fff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; }
+
+    /* ── NAV ────────────────────────────────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,25,60,.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(220,50,50,.2);
+      padding: 0 28px; display: flex; align-items: center;
+      justify-content: space-between; height: 58px;
+    }
+    .nav-brand { font-family: 'Amiri', serif; font-size: 18px; color: var(--gold); }
+    .nav-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: .08em;
+      background: rgba(220,50,50,.15); border: 1px solid rgba(220,50,50,.3);
+      color: #e05555; border-radius: 20px; padding: 3px 9px;
+    }
+    .nav-right { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+    .btn-sm {
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700;
+      padding: 5px 11px; border-radius: 8px; cursor: pointer;
+      border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.07);
+      color: var(--muted); transition: background .14s;
+    }
+    .btn-sm:hover { background: rgba(255,255,255,.13); color: var(--white); }
+
+    /* ── LAYOUT ─────────────────────────────────────────────────── */
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 58px); }
+    .sidebar {
+      background: rgba(255,255,255,.025);
+      border-right: 1px solid rgba(212,175,95,.1);
+      padding: 20px 10px; position: sticky; top: 58px;
+      height: calc(100vh - 58px); overflow-y: auto;
+    }
+    .sidebar-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.2px;
+      color: rgba(120,152,200,.5); text-transform: uppercase;
+      padding: 0 8px; margin-bottom: 6px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 10px 11px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      cursor: pointer; border: none; background: none; width: 100%;
+      font-family: 'DM Sans', sans-serif; text-align: left;
+      transition: background .14s, color .14s; margin-bottom: 2px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.06); color: var(--white); }
+    .nav-item.active { background: rgba(212,175,95,.1); color: var(--gold); }
+    .nav-item svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
+    .nav-item .badge-count {
+      margin-left: auto; font-size: 10px; font-weight: 800;
+      background: rgba(220,50,50,.2); color: #e05555;
+      border-radius: 20px; padding: 1px 7px; min-width: 20px; text-align: center;
+    }
+
+    .main { padding: 32px 28px; max-width: 1100px; }
+
+    /* ── PAGE TITLES ─────────────────────────────────────────────── */
+    .page { display: none; }
+    .page.active { display: block; }
+    .page-title {
+      font-size: 22px; font-weight: 700; color: var(--white);
+      margin-bottom: 4px;
+    }
+    .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+    /* ── STAT CARDS ──────────────────────────────────────────────── */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 28px; }
+    .stat-card {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(212,175,95,.15);
+      border-radius: 14px; padding: 18px; text-align: center;
+    }
+    .stat-num { font-size: 30px; font-weight: 800; color: var(--gold); margin-bottom: 4px; }
+    .stat-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+
+    /* ── CARDS ───────────────────────────────────────────────────── */
+    .card {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(212,175,95,.17);
+      border-radius: 16px; padding: 22px; margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700; color: var(--white);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .card-title svg { width: 16px; height: 16px; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; }
+
+    /* ── TABLES ──────────────────────────────────────────────────── */
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th {
+      text-align: left; padding: 9px 12px;
+      background: rgba(212,175,95,.07); color: var(--gold);
+      font-size: 9.5px; font-weight: 700; letter-spacing: .9px;
+      text-transform: uppercase; border-bottom: 1px solid rgba(212,175,95,.14);
+    }
+    .tbl td { padding: 11px 12px; color: rgba(255,255,255,.82); border-bottom: 1px solid rgba(255,255,255,.05); vertical-align: middle; }
+    .tbl tr:hover td { background: rgba(255,255,255,.025); }
+    .tbl tr:last-child td { border-bottom: none; }
+
+    /* ── BADGES ──────────────────────────────────────────────────── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .b-approved { background: rgba(72,200,155,.14); color: var(--mint); border: 1px solid rgba(72,200,155,.28); }
+    .b-pending  { background: rgba(212,175,95,.12); color: var(--gold);  border: 1px solid rgba(212,175,95,.28); }
+    .b-rejected { background: rgba(220,50,50,.1);   color: #e05555;      border: 1px solid rgba(220,50,50,.22); }
+
+    /* ── ACTION BUTTONS ──────────────────────────────────────────── */
+    .actions { display: flex; gap: 5px; flex-wrap: wrap; }
+    .btn-approve, .btn-reject, .btn-view, .btn-action {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700;
+      padding: 5px 10px; border-radius: 7px; border: none; cursor: pointer;
+      transition: opacity .14s;
+    }
+    .btn-approve { background: rgba(72,200,155,.18); color: var(--mint); }
+    .btn-reject  { background: rgba(220,50,50,.12);  color: #e05555; }
+    .btn-view    { background: rgba(100,180,240,.12); color: var(--sky); }
+    .btn-action  { background: rgba(212,175,95,.12);  color: var(--gold); }
+    .btn-approve:hover,.btn-reject:hover,.btn-view:hover,.btn-action:hover { opacity: .72; }
+
+    /* ── FORM ────────────────────────────────────────────────────── */
+    .field { margin-bottom: 12px; }
+    .label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
+    .input {
+      width: 100%; background: rgba(255,255,255,.07);
+      border: 1px solid rgba(212,175,95,.22); border-radius: 9px;
+      padding: 11px 13px; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; color: var(--white); outline: none;
+      transition: border-color .15s;
+    }
+    .input:focus { border-color: var(--gold); }
+    .input::placeholder { color: rgba(120,152,200,.5); }
+    select.input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237898C8' stroke-width='2' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+    select.input option { background: #0A193C; }
+
+    /* ── DETAIL MODAL ────────────────────────────────────────────── */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.65); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: var(--navy-mid); border: 1px solid rgba(212,175,95,.22);
+      border-radius: 18px; padding: 26px; width: 100%; max-width: 540px;
+      max-height: 90vh; overflow-y: auto; position: relative;
+    }
+    .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--white); margin-bottom: 16px; }
+    .detail-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+    .detail-key { color: var(--muted); width: 140px; flex-shrink: 0; }
+    .detail-val { color: var(--white); font-weight: 500; word-break: break-all; }
+
+    /* ── SPINNER ─────────────────────────────────────────────────── */
+    .spinner { width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid rgba(212,175,95,.2); border-top-color: var(--gold); animation: spin .7s linear infinite; margin: 24px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── AUTH WALL ───────────────────────────────────────────────── */
+    .auth-wall {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100vh;
+      padding: 40px 20px; text-align: center;
+    }
+    .auth-wall-icon { font-size: 48px; margin-bottom: 16px; }
+    .auth-wall h1 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .auth-wall p { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+    .auth-input {
+      width: 100%; max-width: 320px; background: rgba(255,255,255,.07);
+      border: 1px solid rgba(212,175,95,.25); border-radius: 10px;
+      padding: 12px 14px; font-family: 'DM Sans', sans-serif;
+      font-size: 14px; color: var(--white); outline: none; margin-bottom: 10px;
+      display: block; margin-left: auto; margin-right: auto;
+    }
+    .auth-input:focus { border-color: var(--gold); }
+    .auth-btn {
+      background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 11px;
+      border: none; cursor: pointer; transition: background .14s;
+    }
+    .auth-btn:hover { background: #e0c472; }
+    .auth-err { font-size: 12px; color: #e05555; margin-top: 8px; }
+
+    /* ── TOAST ────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: var(--navy-mid); border: 1px solid rgba(212,175,95,.35);
+      border-radius: 12px; padding: 12px 18px; color: var(--white);
+      font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 9px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.3);
+      opacity: 0; transform: translateY(10px);
+      transition: opacity .22s, transform .22s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: rgba(72,200,155,.4); }
+    .toast.error   { border-color: rgba(220,50,50,.4); }
+
+    /* ── INFO BOX ────────────────────────────────────────────────── */
+    .info-box {
+      background: rgba(100,180,240,.07); border: 1px solid rgba(100,180,240,.2);
+      border-radius: 9px; padding: 10px 13px; font-size: 12px;
+      color: rgba(100,180,240,.9); line-height: 1.6; margin-bottom: 14px;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────────── */
+    @media(max-width:800px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; display: flex; overflow-x: auto; gap: 3px; padding: 10px; flex-wrap: nowrap; border-right: none; border-bottom: 1px solid rgba(212,175,95,.1); }
+      .sidebar-label { display: none; }
+      .nav-item { white-space: nowrap; flex-shrink: 0; }
+      .main { padding: 20px 16px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH WALL — shown until superadmin signed in -->
+<div id="auth-wall" class="auth-wall">
+  <div class="auth-wall-icon">🛡️</div>
+  <h1>Restricted Access</h1>
+  <p>Sign in with your authorised account to continue.</p>
+  <input class="auth-input" id="aw-email" type="email" placeholder="Email" onkeydown="if(event.key==='Enter')document.getElementById('aw-pass').focus()">
+  <input class="auth-input" id="aw-pass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')awSignIn()">
+  <button class="auth-btn" onclick="awSignIn()">Sign in</button>
+  <div class="auth-err" id="aw-err"></div>
+</div>
+
+<!-- MAIN APP — hidden until verified superadmin -->
+<div id="app" style="display:none;">
+
+  <nav class="nav">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="nav-brand">Ihsan — إحسان</span>
+      <span class="nav-badge">SUPERADMIN</span>
+    </div>
+    <div class="nav-right">
+      <span id="sa-user-email"></span>
+      <button class="btn-sm" onclick="saSignOut()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-label">Display Screens</div>
+      <button class="nav-item active" id="ni-queue" onclick="saNav('queue',this)">
+        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+        Approval Queue
+        <span class="badge-count" id="pending-count-badge">0</span>
+      </button>
+      <button class="nav-item" id="ni-all" onclick="saNav('all',this)">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        All Accounts
+      </button>
+      <button class="nav-item" id="ni-mosques" onclick="saNav('mosques',this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7h2v13h16V7h2L12 2z"/><path d="M9 21V11h6v10"/></svg>
+        All Mosques
+      </button>
+      <div class="sidebar-label" style="margin-top:16px;">System</div>
+      <button class="nav-item" id="ni-link" onclick="saNav('link',this)">
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Link Mosque to Account
+      </button>
+    </div>
+
+    <!-- Main content -->
+    <div class="main">
+
+      <!-- ══ APPROVAL QUEUE ══════════════════════════════════════ -->
+      <div class="page active" id="page-queue">
+        <div class="page-title">Approval Queue</div>
+        <p class="page-sub">All pending display screen applications. Approve to create the <code style="color:var(--gold);font-size:11px;">displayMosques/{uid}</code> doc and set status to approved.</p>
+        <div class="card">
+          <div id="queue-loading"><div class="spinner"></div></div>
+          <div id="queue-empty" style="display:none;text-align:center;padding:32px;color:var(--muted);">🎉 No pending requests</div>
+          <div style="overflow-x:auto;" id="queue-table-wrap" style="display:none;">
+            <table class="tbl" id="queue-table">
+              <thead><tr>
+                <th>Mosque</th><th>City</th><th>Email / UID</th><th>Requested</th><th>Timetable</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="queue-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ALL ACCOUNTS ════════════════════════════════════════ -->
+      <div class="page" id="page-all">
+        <div class="page-title">All Display Accounts</div>
+        <p class="page-sub">Every account that has registered for a mosque display screen.</p>
+
+        <!-- Filter row -->
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <input class="input" id="all-search" placeholder="Search mosque, city or email…" style="flex:1;min-width:200px;" oninput="filterAllAccounts()">
+          <select class="input" id="all-filter" style="width:160px;" onchange="filterAllAccounts()">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr>
+                <th>Mosque</th><th>City</th><th>Email</th><th>UID</th><th>Status</th><th>Mosque ID</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="all-tbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ALL MOSQUES ═════════════════════════════════════════ -->
+      <div class="page" id="page-mosques">
+        <div class="page-title">All Mosques</div>
+        <p class="page-sub">Every mosque document in the <code style="color:var(--gold);font-size:11px;">mosques/</code> collection. Click a mosque to view its timetable stats.</p>
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <input class="input" id="mosque-search" placeholder="Search name or city…" oninput="filterMosques()">
+        </div>
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr>
+                <th>Mosque ID</th><th>Name</th><th>City</th><th>Last Updated</th><th>Timetable docs</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="mosques-tbody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ LINK MOSQUE TO ACCOUNT ══════════════════════════════ -->
+      <div class="page" id="page-link">
+        <div class="page-title">Link Mosque to Display Account</div>
+        <p class="page-sub">
+          When you approve an account, this is done automatically. Use this page only to manually re-link or fix a binding.<br>
+          Writes to <code style="color:var(--gold);font-size:11px;">displayMosques/{uid}</code> — the doc the display app reads at startup via <code style="color:var(--sky);font-size:11px;">_checkMosqueBinding()</code>.
+        </p>
+        <div class="info-box">
+          The display app reads <code>displayMosques/{uid}</code> for <code>mosqueId</code>, <code>mosqueName</code>, <code>mosqueCity</code>.
+          It also reads <code>customTickerMessage</code>, <code>donationLink</code>, all <code>setting_*</code> fields, and <code>setting_bgImagePath</code>.
+          Setting <code>needsRefresh: true</code> causes the app to reload all data.
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Manual link
+          </div>
+          <div class="input-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field">
+              <label class="label">Display Account UID</label>
+              <input class="input" id="link-uid" type="text" placeholder="Firebase Auth UID">
+            </div>
+            <div class="field">
+              <label class="label">Mosque ID</label>
+              <input class="input" id="link-mosque-id" type="text" placeholder="e.g. Bolton_Masjid-e-Ibrahim">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Mosque Name (display label)</label>
+            <input class="input" id="link-mosque-name" type="text" placeholder="e.g. Masjid-e-Ibrahim">
+          </div>
+          <div class="field">
+            <label class="label">Mosque City</label>
+            <input class="input" id="link-mosque-city" type="text" placeholder="e.g. Bolton">
+          </div>
+          <button onclick="manualLink()" style="background:var(--gold);color:var(--navy);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;padding:12px 22px;border-radius:11px;border:none;cursor:pointer;margin-top:4px;">
+            Link mosque → account
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /layout -->
+
+</div><!-- /app -->
+
+<!-- Detail modal -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title" id="modal-title">Account Details</div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FIREBASE LOGIC
+═══════════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp }                                from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged,
+         signInWithEmailAndPassword, signOut }           from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs,
+         setDoc, updateDoc, deleteDoc, query, orderBy,
+         serverTimestamp, writeBatch }                   from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const app  = initializeApp({
+  apiKey:            "AIzaSyA6f4ejuvj5vF5gw4NhXJ2GtPJSzdWE8kw",
+  authDomain:        "ihsanapp-e2d2d.firebaseapp.com",
+  projectId:         "ihsanapp-e2d2d",
+  storageBucket:     "ihsanapp-e2d2d.firebasestorage.app",
+  messagingSenderId: "706286641509",
+  appId:             "1:706286641509:web:9ba251972b488ad582018c",
+  measurementId:     "G-GF71EXG990"
+});
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── SUPERADMIN EMAILS — add yours ────────────────────────────────
+const SUPERADMIN_EMAILS = ['abdullahkamran98@yahoo.es'];
+
+// ── STATE ────────────────────────────────────────────────────────
+let SA = { user: null, allAccounts: [], allMosques: [] };
+
+// ── TOAST ────────────────────────────────────────────────────────
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.className = 'toast '+type;
+  t.innerHTML = `<span style="color:${type==='success'?'var(--mint)':'#e05555'}">${type==='success'?'✓':'✕'}</span> ${msg}`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3400);
+}
+window.saToast = toast;
+
+// ── AUTH WALL ────────────────────────────────────────────────────
+window.awSignIn = async () => {
+  const email = document.getElementById('aw-email').value.trim();
+  const pass  = document.getElementById('aw-pass').value;
+  const err   = document.getElementById('aw-err');
+  err.textContent = '';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    err.textContent = e.message.replace('Firebase: ','').replace(/\(auth\/.*\)/,'').trim();
+  }
+};
+
+window.saSignOut = async () => {
+  await signOut(auth);
+};
+
+onAuthStateChanged(auth, user => {
+  SA.user = user;
+  if (!user) {
+    document.getElementById('auth-wall').style.display='flex';
+    document.getElementById('app').style.display='none';
+    return;
+  }
+  if (!SUPERADMIN_EMAILS.includes(user.email)) {
+    // Wrong account — sign out immediately and show wall
+    signOut(auth);
+    document.getElementById('aw-err').textContent = 'This account does not have superadmin access.';
+    return;
+  }
+  document.getElementById('auth-wall').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('sa-user-email').textContent = user.email;
+  loadAll();
+});
+
+// ── NAVIGATION ───────────────────────────────────────────────────
+window.saNav = (page, btn) => {
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('page-'+page).classList.add('active');
+};
+
+// ── LOAD ALL DATA ────────────────────────────────────────────────
+async function loadAll() {
+  await Promise.all([ loadAccounts(), loadMosques() ]);
+}
+
+async function loadAccounts() {
+  const snap = await getDocs(collection(db,'displayAccounts'));
+  SA.allAccounts = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+  renderQueue();
+  renderAllAccounts();
+}
+
+async function loadMosques() {
+  const snap = await getDocs(collection(db,'mosques'));
+  SA.allMosques = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+  renderMosques();
+}
+
+// ── APPROVAL QUEUE ───────────────────────────────────────────────
+function renderQueue() {
+  const pending = SA.allAccounts.filter(a=>a.status==='pending');
+  document.getElementById('pending-count-badge').textContent = pending.length || '0';
+  document.getElementById('queue-loading').style.display='none';
+
+  if (!pending.length) {
+    document.getElementById('queue-empty').style.display='block';
+    document.getElementById('queue-table-wrap').style.display='none';
+    return;
+  }
+  document.getElementById('queue-empty').style.display='none';
+  document.getElementById('queue-table-wrap').style.display='block';
+
+  document.getElementById('queue-tbody').innerHTML = pending.map(a => {
+    const requested = a.requestedAt?.seconds
+      ? new Date(a.requestedAt.seconds*1000).toLocaleDateString('en-GB')
+      : '—';
+    return `<tr id="qr-${a._id}">
+      <td style="font-weight:600;">${a.mosqueName||'—'}</td>
+      <td>${a.mosqueCity||'—'}</td>
+      <td style="font-size:11.5px;">
+        <div>${a.email}</div>
+        <div style="font-size:9.5px;color:var(--muted);margin-top:2px;font-family:monospace;">${a._id}</div>
+      </td>
+      <td style="font-size:11px;color:var(--muted);">${requested}</td>
+      <td style="font-size:11px;color:var(--muted);">
+        ${a.mosqueId ? `<span style="color:var(--mint);font-size:10px;">mosque doc exists</span>` : '<span style="color:var(--muted);font-size:10px;">to be created</span>'}
+      </td>
+      <td>
+        <div class="actions">
+          <button class="btn-approve" onclick="approveAccount('${a._id}','${a.mosqueId||''}','${(a.mosqueName||'').replace(/'/g,"\\'")}','${a.mosqueCity||''}')">✓ Approve</button>
+          <button class="btn-reject" onclick="rejectAccount('${a._id}')">✕ Reject &amp; Delete</button>
+          <button class="btn-view" onclick="viewAccount('${a._id}')">View</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── APPROVE ──────────────────────────────────────────────────────
+// Mirrors what the dart app expects from _checkMosqueBinding:
+// 1. displayAccounts/{uid}.status = 'approved'
+// 2. displayMosques/{uid} created with mosqueId, mosqueName, mosqueCity,
+//    default settings, needsRefresh: false
+window.approveAccount = async (uid, mosqueId, mosqueName, mosqueCity) => {
+  try {
+    // Step 1: set status approved on displayAccounts/{uid}
+    await updateDoc(doc(db,'displayAccounts',uid), { status: 'approved' });
+
+    // Step 2: create displayMosques/{uid} — dart reads this doc in _checkMosqueBinding Step 2
+    // All setting_* fields match DisplaySettings.loadFromMap() defaults
+    await setDoc(doc(db,'displayMosques',uid), {
+      mosqueId:             mosqueId,
+      mosqueName:           mosqueName,
+      mosqueCity:           mosqueCity,
+      customTickerMessage:  '',
+      donationLink:         '',
+      setting_bgStyle:      0,    // DisplayBgStyle.navy
+      setting_bgPattern:    0,    // BackgroundPattern.none
+      setting_bgImagePath:  '',   // new field — read by _checkMosqueBinding 21-line addition
+      setting_colourTemp:   1,    // ColourTemp.neutral
+      setting_blackoutDuration: 1,// 7 minutes default
+      setting_jumuahEnabled: true,
+      setting_showTicker:   true,
+      setting_showHadith:   true,
+      needsRefresh:         false,
+      linkedAt:             serverTimestamp(),
+    }, { merge: true });
+
+    toast(`Approved — ${mosqueName} is now live`);
+    await loadAccounts();
+  } catch(e) { toast('Error: '+e.message,'error'); }
+};
+
+// ── REJECT ───────────────────────────────────────────────────────
+window.rejectAccount = async (uid) => {
+  // Show custom confirmation instead of browser confirm()
+  const acct = SA.allAccounts.find(x => x._id === uid);
+  const name = acct ? acct.mosqueName : uid;
+  const confirmed = await showConfirm(
+    `Reject &amp; delete <strong>${name}</strong>?`,
+    `This will permanently delete their display account and display mosque record. <strong>Prayer times in the mosques collection will NOT be touched.</strong>`,
+    'Reject & Delete', 'Cancel'
+  );
+  if (!confirmed) return;
+  try {
+    // Delete displayAccounts/{uid} and displayMosques/{uid} — never touch mosques/
+    await deleteDoc(doc(db, 'displayAccounts', uid));
+    try { await deleteDoc(doc(db, 'displayMosques', uid)); } catch(_) {}
+    toast('Account rejected and deleted');
+    await loadAccounts();
+  } catch(e) { toast('Error: '+e.message,'error'); }
+};
+
+// ── CONFIRM DIALOG HELPER ─────────────────────────────────────────
+function showConfirm(title, body, confirmLabel, cancelLabel) {
+  return new Promise(resolve => {
+    const existing = document.getElementById('sa-confirm-overlay');
+    if (existing) existing.remove();
+    const el = document.createElement('div');
+    el.id = 'sa-confirm-overlay';
+    el.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(10,25,60,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;';
+    el.innerHTML = `
+      <div style="background:#1a2a4a;border:1px solid rgba(220,50,50,.4);border-radius:16px;padding:28px 24px;max-width:400px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.5);">
+        <div style="font-size:22px;margin-bottom:12px;">⚠️</div>
+        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;">${title}</div>
+        <div style="font-size:13px;color:rgba(120,152,200,.9);line-height:1.6;margin-bottom:22px;">${body}</div>
+        <div style="display:flex;gap:10px;">
+          <button id="sa-confirm-yes" style="flex:1;padding:12px;border-radius:10px;background:rgba(220,50,50,.2);border:1.5px solid rgba(220,50,50,.5);color:#e05555;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">${confirmLabel}</button>
+          <button id="sa-confirm-no"  style="flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">${cancelLabel}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(el);
+    el.querySelector('#sa-confirm-yes').onclick = () => { el.remove(); resolve(true);  };
+    el.querySelector('#sa-confirm-no').onclick  = () => { el.remove(); resolve(false); };
+    el.onclick = e => { if (e.target === el) { el.remove(); resolve(false); } };
+  });
+}
+
+// ── RE-APPROVE / UN-REJECT ────────────────────────────────────────
+window.reApprove = async (uid) => {
+  try {
+    await updateDoc(doc(db,'displayAccounts',uid), { status: 'approved' });
+    toast('Account re-approved');
+    await loadAccounts();
+  } catch(e) { toast('Error: '+e.message,'error'); }
+};
+
+// ── VIEW DETAIL MODAL ─────────────────────────────────────────────
+window.viewAccount = async (uid) => {
+  const a = SA.allAccounts.find(x=>x._id===uid);
+  if (!a) return;
+
+  // Also fetch displayMosques/{uid} to show binding state
+  let mosqueDocData = null;
+  try {
+    const ms = await getDoc(doc(db,'displayMosques',uid));
+    if (ms.exists()) mosqueDocData = ms.data();
+  } catch(e) {}
+
+  document.getElementById('modal-title').textContent = a.mosqueName || 'Account Details';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="detail-row"><span class="detail-key">UID</span><span class="detail-val" style="font-family:monospace;font-size:11px;">${a._id}</span></div>
+    <div class="detail-row"><span class="detail-key">Email</span><span class="detail-val">${a.email}</span></div>
+    <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val"><span class="badge b-${a.status}"><div class="badge-dot"></div>${a.status}</span></span></div>
+    <div class="detail-row"><span class="detail-key">Mosque Name</span><span class="detail-val">${a.mosqueName||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">City</span><span class="detail-val">${a.mosqueCity||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Address</span><span class="detail-val">${a.mosqueAddress||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">WhatsApp</span><span class="detail-val">${a.whatsapp ? `<a href="https://wa.me/${a.whatsapp}" target="_blank" style="color:var(--gold);">+${a.whatsapp} 💬</a>` : '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Phone</span><span class="detail-val">${a.phone || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Mosque ID</span><span class="detail-val" style="font-family:monospace;font-size:11px;">${a.mosqueId||'—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Requested</span><span class="detail-val">${a.requestedAt?.seconds?new Date(a.requestedAt.seconds*1000).toLocaleString('en-GB'):'—'}</span></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">displayMosques/{uid}</div>
+      ${mosqueDocData ? `
+        <div class="detail-row"><span class="detail-key">mosqueId</span><span class="detail-val" style="font-family:monospace;font-size:11px;">${mosqueDocData.mosqueId||'—'}</span></div>
+        <div class="detail-row"><span class="detail-key">setting_bgImagePath</span><span class="detail-val" style="font-family:monospace;font-size:10px;">${mosqueDocData.setting_bgImagePath||'(empty)'}</span></div>
+        <div class="detail-row"><span class="detail-key">setting_bgPattern</span><span class="detail-val">${mosqueDocData.setting_bgPattern??'—'}</span></div>
+        <div class="detail-row"><span class="detail-key">needsRefresh</span><span class="detail-val" style="color:${mosqueDocData.needsRefresh?'var(--gold)':'var(--mint)'}">${mosqueDocData.needsRefresh?'true':'false'}</span></div>
+        <div class="detail-row"><span class="detail-key">Ticker</span><span class="detail-val">${mosqueDocData.customTickerMessage||'(none)'}</span></div>
+      ` : '<div style="font-size:12px;color:var(--muted);">No displayMosques doc yet — will be created on approval.</div>'}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+      ${a.status==='pending'?`<button class="btn-approve" onclick="approveAccount('${a._id}','${a.mosqueId||''}','${(a.mosqueName||'').replace(/'/g,"\\'")}','${a.mosqueCity||''}');closeModal()">✓ Approve</button>`:''}
+      ${a.status!=='rejected'?`<button class="btn-reject" onclick="closeModal();rejectAccount('${a._id}')">✕ Reject &amp; Delete</button>`:''}
+      
+      <button class="btn-action" onclick="triggerRefresh('${a._id}')">↻ Force needsRefresh</button>
+    </div>`;
+  document.getElementById('modal-bg').classList.add('open');
+};
+
+window.closeModal = () => document.getElementById('modal-bg').classList.remove('open');
+
+// Force the display app to reload by setting needsRefresh: true
+window.triggerRefresh = async (uid) => {
+  try {
+    await setDoc(doc(db,'displayMosques',uid), { needsRefresh: true }, { merge: true });
+    toast('needsRefresh set — TV will reload on next check');
+  } catch(e) { toast('Error: '+e.message,'error'); }
+};
+
+// ── ALL ACCOUNTS TABLE ────────────────────────────────────────────
+function renderAllAccounts(filter='', status='') {
+  let list = SA.allAccounts;
+  if (filter) {
+    const q = filter.toLowerCase();
+    list = list.filter(a => (a.mosqueName||'').toLowerCase().includes(q)
+      || (a.mosqueCity||'').toLowerCase().includes(q)
+      || (a.email||'').toLowerCase().includes(q));
+  }
+  if (status) list = list.filter(a=>a.status===status);
+
+  document.getElementById('all-tbody').innerHTML = list.length ? list.map(a => `
+    <tr>
+      <td style="font-weight:600;">${a.mosqueName||'—'}</td>
+      <td>${a.mosqueCity||'—'}</td>
+      <td style="font-size:11.5px;">${a.email}</td>
+      <td style="font-size:9.5px;color:var(--muted);font-family:monospace;">${a._id}</td>
+      <td><span class="badge b-${a.status}"><div class="badge-dot"></div>${a.status}</span></td>
+      <td style="font-size:10.5px;color:var(--muted);font-family:monospace;">${a.mosqueId||'—'}</td>
+      <td>
+        <div class="actions">
+          <button class="btn-view" onclick="viewAccount('${a._id}')">View</button>
+          ${a.status==='pending'?`<button class="btn-approve" onclick="approveAccount('${a._id}','${a.mosqueId||''}','${(a.mosqueName||'').replace(/'/g,"\\'")}','${a.mosqueCity||''}')">Approve</button>`:''}
+          ${a.status==='approved'?`<button class="btn-action" onclick="triggerRefresh('${a._id}')">↻ Refresh</button>`:''}
+          
+        </div>
+      </td>
+    </tr>`).join('')
+  : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">No results</td></tr>';
+}
+window.filterAllAccounts = () => {
+  renderAllAccounts(
+    document.getElementById('all-search').value,
+    document.getElementById('all-filter').value
+  );
+};
+
+// ── MOSQUES TABLE ────────────────────────────────────────────────
+function renderMosques(filter='') {
+  let list = SA.allMosques;
+  if (filter) {
+    const q = filter.toLowerCase();
+    list = list.filter(m => m._id.toLowerCase().includes(q) || (m.name||'').toLowerCase().includes(q) || (m.city||'').toLowerCase().includes(q));
+  }
+  document.getElementById('mosques-tbody').innerHTML = list.length ? list.map(m => `
+    <tr>
+      <td style="font-size:10.5px;font-family:monospace;color:var(--muted);">${m._id}</td>
+      <td style="font-weight:600;">${m.name||'—'}</td>
+      <td>${m.city||'—'}</td>
+      <td style="font-size:11px;color:var(--muted);">${m.updatedAt?.seconds?new Date(m.updatedAt.seconds*1000).toLocaleDateString('en-GB'):'—'}</td>
+      <td><button class="btn-view" onclick="loadPrayerTimesCount('${m._id}',this)">Check</button></td>
+      <td>
+        <div class="actions">
+          <button class="btn-action" onclick="prefillLink('${m._id}','${(m.name||'').replace(/'/g,"\\'")}','${m.city||''}')">Link to account</button>
+        </div>
+      </td>
+    </tr>`).join('')
+  : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">No mosques found</td></tr>';
+}
+window.filterMosques = () => renderMosques(document.getElementById('mosque-search').value);
+
+window.loadPrayerTimesCount = async (mosqueId, btn) => {
+  btn.textContent = '…';
+  try {
+    const snap = await getDocs(collection(db,'mosques',mosqueId,'prayerTimes'));
+    btn.textContent = snap.size + ' docs';
+    btn.style.color = snap.size ? 'var(--mint)' : 'var(--muted)';
+  } catch(e) { btn.textContent = 'Error'; }
+};
+
+// ── MANUAL LINK ───────────────────────────────────────────────────
+window.manualLink = async () => {
+  const uid       = document.getElementById('link-uid').value.trim();
+  const mosqueId  = document.getElementById('link-mosque-id').value.trim();
+  const mosqueName= document.getElementById('link-mosque-name').value.trim();
+  const mosqueCity= document.getElementById('link-mosque-city').value.trim();
+  if (!uid||!mosqueId) { toast('UID and Mosque ID are required','error'); return; }
+  try {
+    await setDoc(doc(db,'displayMosques',uid), {
+      mosqueId, mosqueName, mosqueCity,
+      linkedAt: serverTimestamp(), needsRefresh: true,
+    }, { merge: true });
+    await updateDoc(doc(db,'displayAccounts',uid), { status:'approved', mosqueId });
+    toast(`Linked ${mosqueName} → ${uid}`);
+  } catch(e) { toast('Error: '+e.message,'error'); }
+};
+
+window.prefillLink = (mosqueId, mosqueName, mosqueCity) => {
+  document.getElementById('link-mosque-id').value = mosqueId;
+  document.getElementById('link-mosque-name').value = mosqueName;
+  document.getElementById('link-mosque-city').value = mosqueCity;
+  saNav('link', document.getElementById('ni-link'));
+};
+
+</script>
+</body>
+</html>

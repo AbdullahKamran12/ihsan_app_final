@@ -1,0 +1,2704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Display Screen · Ihsan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── CSS variables matching index.html exactly ─────────────── */
+    :root {
+      --navy:      #0A193C;
+      --navy-mid:  #122A5F;
+      --navy-light:#1C3A78;
+      --gold:      #D4AF5F;
+      --mint:      #48C89B;
+      --sky:       #64B4F0;
+      --muted:     #7898C8;
+      --white:     #fff;
+      --off-white: #F7F9FF;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ──────────────────────────────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,25,60,.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(212,175,95,.15);
+      padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-brand {
+      font-family: 'Amiri', serif;
+      font-size: 20px; font-weight: 700;
+      color: var(--gold); text-decoration: none;
+    }
+    .nav-back {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      text-decoration: none; transition: color .15s;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-user {
+      font-size: 12px; color: var(--muted);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-signout {
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px; padding: 5px 10px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: background .15s;
+    }
+    .nav-signout:hover { background: rgba(255,255,255,.13); color: var(--white); }
+
+    /* ── HERO ─────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #080f28 0%, #0d1f4a 55%, #0a1e3a 100%);
+      border-bottom: 1px solid rgba(212,175,95,.12);
+      padding: 56px 28px 40px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 300px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(72,200,155,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(72,200,155,.1); border: 1px solid rgba(72,200,155,.28);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 11px; font-weight: 700; color: var(--mint);
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(22px, 4vw, 38px);
+      font-weight: 700; color: var(--white);
+      line-height: 1.18; letter-spacing: -.3px;
+      max-width: 640px; margin: 0 auto 12px;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero-sub {
+      font-size: 15px; color: var(--muted);
+      max-width: 520px; margin: 0 auto 28px; line-height: 1.65;
+    }
+    .hero-steps {
+      display: flex; justify-content: center; gap: 10px;
+      flex-wrap: wrap; margin-bottom: 0;
+    }
+    .hero-step {
+      display: flex; align-items: center; gap: 9px;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(212,175,95,.15);
+      border-radius: 12px; padding: 10px 16px;
+      font-size: 13px; color: rgba(255,255,255,.82); font-weight: 500;
+    }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--gold); color: var(--navy);
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .hero-step strong { color: var(--gold); }
+
+
+    /* ── PORTAL WRAPPER ───────────────────────────────────────── */
+    .portal { max-width: 900px; margin: 0 auto; padding: 40px 28px 72px; }
+
+    /* ── TABS ─────────────────────────────────────────────────── */
+    .tabs {
+      display: flex; gap: 4px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(212,175,95,.15);
+      border-radius: 14px; padding: 4px; margin-bottom: 28px;
+    }
+    .tab {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 11px 14px; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border: none; background: none;
+      transition: background .15s, color .15s;
+    }
+    .tab.active { background: var(--navy-mid); color: var(--gold); border: 1px solid rgba(212,175,95,.3); }
+    .tab svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── WIZARD PROGRESS ──────────────────────────────────────── */
+    .wizard-row { display: flex; align-items: center; margin-bottom: 28px; }
+    .wstep {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; font-weight: 600; color: var(--muted); transition: color .2s;
+    }
+    .wstep.done { color: var(--mint); }
+    .wstep.current { color: var(--gold); }
+    .wnum {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+      background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.15);
+      transition: background .2s, border-color .2s;
+    }
+    .wstep.done .wnum { background: rgba(72,200,155,.2); border-color: var(--mint); color: var(--mint); }
+    .wstep.current .wnum { background: rgba(212,175,95,.15); border-color: var(--gold); color: var(--gold); }
+    .wline { flex: 1; height: 1px; background: rgba(255,255,255,.1); margin: 0 10px; transition: background .3s; }
+    .wline.done { background: var(--mint); }
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    /* ── CARD ─────────────────────────────────────────────────── */
+    .card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(212,175,95,.18);
+      border-radius: 18px; padding: 24px; margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 16px; font-weight: 700; color: var(--white);
+      margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .card-title svg { width: 18px; height: 18px; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; }
+    .card-sub { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+
+    /* ── FORM ─────────────────────────────────────────────────── */
+    .field { margin-bottom: 14px; }
+    .label {
+      display: block; font-size: 10px; font-weight: 700;
+      letter-spacing: 1.1px; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .input {
+      width: 100%; background: rgba(255,255,255,.07);
+      border: 1px solid rgba(212,175,95,.25); border-radius: 10px;
+      padding: 12px 14px; font-family: 'DM Sans', sans-serif;
+      font-size: 14px; color: var(--white); outline: none;
+      transition: border-color .15s, background .15s;
+    }
+    .input::placeholder { color: rgba(120,152,200,.5); }
+    .input:focus { border-color: var(--gold); background: rgba(255,255,255,.11); }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── BUTTONS ──────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+      padding: 12px 22px; border-radius: 12px; border: none; cursor: pointer;
+      transition: background .15s, transform .12s; text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-gold { background: var(--gold); color: var(--navy); }
+    .btn-gold:hover { background: #e0c472; }
+    .btn-gold:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+    .btn-ghost { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.15); color: var(--muted); }
+    .btn-ghost:hover { background: rgba(255,255,255,.12); color: var(--white); }
+    .btn-mint { background: var(--mint); color: var(--navy); }
+    .btn-mint:hover { background: #3dbf8a; }
+    .btn-red { background: rgba(220,50,50,.15); color: #e05555; border: 1px solid rgba(220,50,50,.25); }
+    .step-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+    /* ── INFO BOX ─────────────────────────────────────────────── */
+    .info-box {
+      background: rgba(100,180,240,.07); border: 1px solid rgba(100,180,240,.22);
+      border-radius: 10px; padding: 12px 15px;
+      display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px;
+    }
+    .info-box svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px; fill: none; stroke: var(--sky); stroke-width: 2; stroke-linecap: round; }
+    .info-box p { font-size: 12.5px; color: rgba(100,180,240,.9); line-height: 1.6; }
+    .warn-box {
+      background: rgba(212,175,95,.07); border: 1px solid rgba(212,175,95,.25);
+      border-radius: 10px; padding: 12px 15px;
+      display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px;
+    }
+    .warn-box p { font-size: 12.5px; color: rgba(212,175,95,.9); line-height: 1.6; }
+
+    /* ── UPLOAD AREA ──────────────────────────────────────────── */
+    .upload-area {
+      border: 2px dashed rgba(212,175,95,.3); border-radius: 14px;
+      padding: 28px 20px; text-align: center; cursor: pointer;
+      transition: border-color .15s, background .15s; position: relative;
+      margin-bottom: 12px;
+    }
+    .upload-area:hover, .upload-area.drag-over { border-color: var(--gold); background: rgba(212,175,95,.05); }
+    .upload-icon {
+      width: 44px; height: 44px; border-radius: 11px;
+      background: rgba(212,175,95,.1); border: 1px solid rgba(212,175,95,.25);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 10px; font-size: 20px;
+    }
+    .upload-title { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 5px; }
+    .upload-sub { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .type-pills { display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+    .type-pill {
+      font-size: 10px; font-weight: 700;
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px; padding: 3px 9px; color: rgba(255,255,255,.6);
+    }
+
+    /* ── PARSE TABLE ──────────────────────────────────────────── */
+    .parse-result { display: none; margin-top: 18px; }
+    .parse-result.visible { display: block; }
+    .parse-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid rgba(212,175,95,.15); max-width: 100%; }
+    .parse-table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 11px; }
+    .parse-table th {
+      background: rgba(212,175,95,.1); color: var(--gold); font-weight: 700;
+      padding: 8px 10px; text-align: left;
+      border-bottom: 1px solid rgba(212,175,95,.18);
+      font-size: 9.5px; letter-spacing: .8px; text-transform: uppercase; white-space: nowrap;
+    }
+    .parse-table td { padding: 7px 9px; color: rgba(255,255,255,.85); border-bottom: 1px solid rgba(255,255,255,.05); }
+    .parse-table tr:hover td { background: rgba(255,255,255,.03); }
+    .parse-table input {
+      background: transparent; border: none; outline: none;
+      color: rgba(255,255,255,.85); font-family: 'DM Sans', sans-serif;
+      font-size: 11px; width: 48px; text-align: center;
+    }
+    .parse-table input:focus { background: rgba(212,175,95,.08); border-radius: 5px; border: 1px solid rgba(212,175,95,.3); }
+    .friday-row td { background: rgba(156,39,176,.08) !important; }
+    .friday-row td:first-child { color: #ce93d8; font-weight: 700; }
+    .parse-actions { display: flex; gap: 10px; margin-top: 12px; }
+    .parse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .parse-count { font-size: 13px; font-weight: 700; color: var(--mint); }
+
+    /* ── JUMU'AH SLOTS ────────────────────────────────────────── */
+    .jumua-section {
+      background: rgba(156,39,176,.07); border: 1px solid rgba(156,39,176,.2);
+      border-radius: 12px; padding: 14px; margin-top: 12px;
+    }
+    .jumua-title { font-size: 12px; font-weight: 700; color: #ce93d8; margin-bottom: 10px; letter-spacing: .5px; }
+    .jumua-date { font-size: 11px; color: rgba(255,255,255,.6); margin-bottom: 6px; }
+    .jumua-slots { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .jumua-slot {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(156,39,176,.12); border: 1px solid rgba(156,39,176,.3);
+      border-radius: 8px; padding: 6px 10px;
+      font-size: 12px; font-weight: 700; color: #ce93d8;
+    }
+    .jumua-slot input {
+      background: transparent; border: none; outline: none;
+      color: #ce93d8; font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 700; width: 48px; text-align: center;
+    }
+
+    /* ── SPINNER ──────────────────────────────────────────────── */
+    .spinner {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 3px solid rgba(212,175,95,.2); border-top-color: var(--gold);
+      animation: spin .7s linear infinite; margin: 28px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .scanning-banner {
+      background: rgba(212,175,95,.1); border: 1px solid rgba(212,175,95,.4);
+      border-radius: 10px; padding: 11px 15px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12.5px; color: var(--gold); font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    /* ── SUCCESS ──────────────────────────────────────────────── */
+    .success-box { text-align: center; padding: 28px 20px; }
+    .success-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: rgba(72,200,155,.15); border: 2px solid var(--mint);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; font-size: 26px;
+    }
+    .success-title { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .success-sub { font-size: 13.5px; color: var(--muted); line-height: 1.7; }
+
+    /* ── STATUS BADGE ─────────────────────────────────────────── */
+    .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .badge.approved { background: rgba(72,200,155,.15); color: var(--mint); border: 1px solid rgba(72,200,155,.3); }
+    .badge.pending { background: rgba(212,175,95,.12); color: var(--gold); border: 1px solid rgba(212,175,95,.3); }
+    .badge.rejected { background: rgba(220,50,50,.1); color: #e05555; border: 1px solid rgba(220,50,50,.25); }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    /* ── ADMIN NAV ────────────────────────────────────────────── */
+    .admin-grid { display: grid; grid-template-columns: 210px 1fr; gap: 20px; align-items: start; }
+    .admin-grid > div:last-child { min-width: 0; overflow: hidden; }
+    .admin-nav { background: rgba(255,255,255,.04); border: 1px solid rgba(212,175,95,.15); border-radius: 16px; padding: 7px; position: sticky; top: 74px; }
+    .admin-nav-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 11px 12px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      cursor: pointer; border: none; background: none; width: 100%;
+      font-family: 'DM Sans', sans-serif; text-align: left;
+      transition: background .14s, color .14s;
+    }
+    .admin-nav-item:hover { background: rgba(255,255,255,.06); color: var(--white); }
+    .admin-nav-item.active { background: rgba(212,175,95,.1); color: var(--gold); }
+    .admin-nav-item svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+
+    /* ── TICKER PREVIEW ───────────────────────────────────────── */
+    .ticker-preview {
+      background: var(--navy-mid); border: 1px solid rgba(212,175,95,.2);
+      border-radius: 10px; padding: 12px 15px; margin-top: 10px;
+      font-size: 13px; color: var(--gold); font-family: 'Amiri', serif;
+    }
+
+    /* ── AUTH GATE ────────────────────────────────────────────── */
+    .auth-gate {
+      text-align: center; padding: 48px 24px;
+      border: 1px solid rgba(212,175,95,.15); border-radius: 18px;
+      background: rgba(255,255,255,.03);
+    }
+    .auth-gate-icon { font-size: 38px; margin-bottom: 14px; }
+    .auth-gate-title { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .auth-gate-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+
+    /* ── MODAL (login/signup) ─────────────────────────────────── */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; display: none;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: var(--navy-mid); border: 1px solid rgba(212,175,95,.25);
+      border-radius: 20px; padding: 28px; width: 100%; max-width: 400px;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+    .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    .modal-err { font-size: 12.5px; color: #e05555; margin-top: 8px; min-height: 18px; }
+    .modal-toggle { font-size: 12.5px; color: var(--muted); margin-top: 14px; text-align: center; }
+    .modal-toggle a { color: var(--gold); cursor: pointer; font-weight: 600; }
+    .modal-close {
+      position: absolute; top: 12px; right: 14px;
+      background: none; border: none; color: var(--muted);
+      font-size: 20px; cursor: pointer; line-height: 1;
+    }
+
+    /* ── TOAST ────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: var(--navy-mid); border: 1px solid rgba(212,175,95,.35);
+      border-radius: 12px; padding: 13px 18px; color: var(--white);
+      font-size: 14px; font-weight: 600;
+      display: flex; align-items: center; gap: 9px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.3);
+      opacity: 0; transform: translateY(12px);
+      transition: opacity .25s, transform .25s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: rgba(72,200,155,.4); }
+    .toast.error { border-color: rgba(220,50,50,.4); }
+
+    /* ── PENDING/REJECTED SCREENS ─────────────────────────────── */
+    .status-screen {
+      text-align: center; padding: 56px 28px;
+      max-width: 500px; margin: 0 auto;
+    }
+    .status-screen-icon { font-size: 52px; margin-bottom: 16px; }
+    .status-screen h2 { font-size: 22px; font-weight: 700; color: var(--white); margin-bottom: 10px; }
+    .status-screen p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 20px; }
+
+    /* ── PHOTO GRID ───────────────────────────────────────────── */
+    .slide-thumb {
+      position: relative; border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(212,175,95,.15); aspect-ratio: 16/9;
+      background: rgba(255,255,255,.04);
+    }
+    .slide-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .slide-thumb-del {
+      position: absolute; top: 5px; right: 5px;
+      background: rgba(0,0,0,.75); border: none; color: #e05555;
+      border-radius: 6px; padding: 3px 7px; font-size: 11px;
+      font-weight: 700; cursor: pointer; opacity: 0; transition: opacity .15s;
+    }
+    .slide-thumb:hover .slide-thumb-del { opacity: 1; }
+    .slide-thumb-name {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,.7));
+      font-size: 9px; color: rgba(255,255,255,.7); padding: 12px 6px 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media(max-width:900px) {
+      .admin-grid { grid-template-columns: 1fr; }
+      .admin-nav { position: static; display: flex; overflow-x: auto; gap: 3px; }
+      .admin-nav-item { white-space: nowrap; flex-shrink: 0; }
+    }
+    @media(max-width:600px) {
+      .portal { padding: 20px 14px 48px; }
+      .hero { padding: 36px 14px 28px; }
+      .input-row { grid-template-columns: 1fr; }
+      .tab span { display: none; }
+      .tab { padding: 10px; }
+      .wizard-row { flex-wrap: nowrap; overflow-x: auto; }
+      .wstep span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────── -->
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Ihsan — إحسان</a>
+  <div class="nav-user">
+    <span id="nav-email"></span>
+    <button class="nav-signout" id="nav-signout" style="display:none" onclick="DS.signOut()">Sign out</button>
+  </div>
+  <a href="index.html" class="nav-back">
+    <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M19 12H5"/><path d="M12 5l-7 7 7 7"/></svg>
+    Back to main site
+  </a>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-eyebrow">🕌 Mosque Display Screen</div>
+  <h1>Transform your mosque TV into a <em>live prayer board</em> in minutes</h1>
+  <p class="hero-sub">Live prayer times, Jamaat countdowns, Adhan, Iqamah, post-Salah dhikr, hadith ticker and custom photos — all managed from one place. Free for every mosque.</p>
+  <div class="hero-steps">
+    <div class="hero-step"><div class="step-num">1</div>Register with your <strong>mosque email</strong></div>
+    <div class="hero-step"><div class="step-num">2</div>Upload your <strong>monthly timetable</strong> (photo or CSV)</div>
+    <div class="hero-step"><div class="step-num">3</div>Open <strong>Ihsan Display app</strong> · sign in · done ✓</div>
+  </div>
+</div>
+
+
+
+<!-- ── PORTAL ─────────────────────────────────────────────────────── -->
+<div class="portal">
+
+  <!-- Tabs — only 2: Get Display Screen and Mosque Admin -->
+  <div class="tabs">
+    <button class="tab active" id="tab-setup" onclick="setTab('setup')">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Get Display Screen</span>
+    </button>
+    <button class="tab" id="tab-admin" onclick="setTab('admin')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Mosque Admin</span>
+    </button>
+  </div>
+
+  <!-- ══ SETUP WIZARD ══════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="panel-setup">
+
+    <!-- Wizard progress bar -->
+    <div class="wizard-row">
+      <div class="wstep current" id="wstep-1"><div class="wnum">1</div><span>Account</span></div>
+      <div class="wline" id="wline-1"></div>
+      <div class="wstep" id="wstep-2"><div class="wnum">2</div><span>Mosque Info</span></div>
+      <div class="wline" id="wline-2"></div>
+      <div class="wstep" id="wstep-3"><div class="wnum">3</div><span>Timetable</span></div>
+      <div class="wline" id="wline-3"></div>
+      <div class="wstep" id="wstep-4"><div class="wnum">4</div><span>Done</span></div>
+    </div>
+
+    <!-- Step 1: Account -->
+    <div class="step-panel active" id="step-1">
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Create your mosque account
+        </div>
+        <p class="card-sub">Sign in with your existing Ihsan account, or create one. This account will be tied to your mosque's display screen.</p>
+        <div id="step1-auth-area"><div class="spinner" style="margin:16px auto;"></div></div>
+      </div>
+      <div class="step-actions">
+        <button class="btn btn-gold" id="step1-next" onclick="goStep(2)" disabled>
+          Continue
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--navy);stroke-width:2.5;stroke-linecap:round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Mosque Info — Google Maps search (mirrors uploadMosque.dart exactly) -->
+    <div class="step-panel" id="step-2">
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7h2v13h16V7h2L12 2z"/><path d="M9 21V11h6v10"/></svg>
+          Find your mosque on Google Maps
+        </div>
+        <p class="card-sub">Search exactly as you would on Google Maps — mosque name, street, or postcode. This gives precise coordinates so your timetable, city name and location are all perfectly consistent with the app.</p>
+
+        <!-- Maps key loading indicator -->
+        <div id="maps-key-loading" style="display:none;font-size:11px;color:var(--muted);margin-bottom:10px;align-items:center;gap:7px;">
+          <div style="width:12px;height:12px;border-radius:50%;border:2px solid rgba(212,175,95,.2);border-top-color:var(--gold);animation:spin .7s linear infinite;flex-shrink:0;"></div>
+          Loading Maps…
+        </div>
+
+        <!-- Search bar — mirrors _showPlaceSearchSheet / _searchPlaceByText in uploadMosque.dart -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <input class="input" id="mosque-search-input" type="text"
+            placeholder='e.g. "Masjid Noor Bolton" or "34 Church Street, BL1"'
+            style="flex:1;"
+            onkeydown="if(event.key==='Enter')searchMosque()">
+          <button class="btn btn-gold" onclick="searchMosque()" style="flex-shrink:0;white-space:nowrap;">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--navy);stroke-width:2.5;stroke-linecap:round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            Search
+          </button>
+        </div>
+
+        <!-- Results list -->
+        <div id="mosque-search-results" style="display:none;margin-bottom:12px;">
+          <div id="mosque-results-list"></div>
+        </div>
+
+        <!-- Selected mosque confirmation card -->
+        <div id="mosque-selected-card" style="display:none;margin-bottom:14px;">
+          <div style="background:rgba(72,200,155,.07);border:1px solid rgba(72,200,155,.25);border-radius:14px;padding:16px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px;">
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <span style="font-size:22px;flex-shrink:0;">🕌</span>
+                <div>
+                  <div style="font-size:15px;font-weight:700;color:var(--white);" id="sel-mosque-name-display"></div>
+                  <div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;" id="sel-mosque-address-display"></div>
+                  <div style="font-size:10px;color:rgba(72,200,155,.7);margin-top:4px;font-family:monospace;" id="sel-mosque-coords-display"></div>
+                </div>
+              </div>
+              <button onclick="clearMosqueSelection()"
+                style="font-size:11px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:5px 9px;cursor:pointer;flex-shrink:0;font-family:'DM Sans',sans-serif;">
+                ✕ Change
+              </button>
+            </div>
+            <!-- Mini map — matches initMiniMap() which uses Google Maps JS API -->
+            <div id="mosque-mini-map" style="height:160px;border-radius:10px;background:var(--navy-mid);border:1px solid rgba(212,175,95,.15);overflow:hidden;"></div>
+          </div>
+          <div style="font-size:11px;color:rgba(72,200,155,.8);margin-top:8px;display:flex;align-items:center;gap:5px;">
+            <span>✓</span> Mosque name and city are pulled directly from Google — no typos, exact coordinates stored.
+          </div>
+        </div>
+
+        <!-- Manual fallback — mirrors onManualChange() which populates MS.manual -->
+        <details style="margin-top:4px;">
+          <summary style="font-size:12px;color:var(--muted);cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:5px;">
+            <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;flex-shrink:0;"><path d="M12 5v14M5 12h14"/></svg>
+            Can't find it on Google? Enter details manually
+          </summary>
+          <div style="margin-top:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;">
+            <div class="warn-box" style="margin-bottom:14px;">
+              <p>⚠️ Manual entry bypasses Google — make sure the name matches exactly what's used in the Ihsan app (the mosqueId is <code style="font-size:10px;color:var(--gold);">city_mosqueName</code>).</p>
+            </div>
+            <div class="field">
+              <label class="label">Mosque Name *</label>
+              <input class="input" id="f-mosque-name-manual" type="text"
+                placeholder="e.g. Masjid-e-Ibrahim" oninput="onManualChange()">
+            </div>
+            <div class="input-row">
+              <div class="field">
+                <label class="label">City *</label>
+                <input class="input" id="f-mosque-city-manual" type="text"
+                  placeholder="e.g. Bolton" oninput="onManualChange()">
+              </div>
+              <div class="field">
+                <label class="label">Postcode</label>
+                <input class="input" id="f-mosque-postcode-manual" type="text"
+                  placeholder="e.g. BL1 1AA" oninput="onManualChange()">
+              </div>
+            </div>
+            <div class="input-row">
+              <div class="field">
+                <label class="label">Latitude</label>
+                <input class="input" id="f-mosque-lat-manual" type="number" step="any"
+                  placeholder="e.g. 53.5780" oninput="onManualChange()">
+              </div>
+              <div class="field">
+                <label class="label">Longitude</label>
+                <input class="input" id="f-mosque-lng-manual" type="number" step="any"
+                  placeholder="e.g. -2.4282" oninput="onManualChange()">
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:-4px;">
+              Find coordinates: right-click your mosque on <a href="https://maps.google.com" target="_blank" style="color:var(--sky);">Google Maps</a> → copy lat/lng.
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-ghost" onclick="goStep(1)">Back</button>
+        <button class="btn btn-gold" id="step2-next" onclick="goStep(3)" disabled>
+          Continue
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--navy);stroke-width:2.5;stroke-linecap:round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Timetable -->
+    <div class="step-panel" id="step-3">
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Upload your prayer timetable
+        </div>
+        <p class="card-sub">Upload now or skip and do it later in the Mosque Admin tab. The AI scanner reads your exact printed timetable — Jumu'ah times included.</p>
+
+        <div class="info-box">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <p>You can skip this and upload your timetable any time from the Mosque Admin tab. Your account application is submitted at the end of this step either way.</p>
+        </div>
+
+        <!-- Contact WhatsApp number -->
+        <div class="field" style="margin-bottom:16px;">
+          <label class="label">WhatsApp Number (optional)</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:18px;flex-shrink:0;">📱</span>
+            <input class="input" id="f-whatsapp" type="tel"
+              placeholder="e.g. 447700900123 (include country code, no +)"
+              style="flex:1;">
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:5px;">
+            Used so we can contact you via WhatsApp about your application. Include country code without the + (UK: 44…).
+          </div>
+        </div>
+
+        <!-- Month/Year picker -->
+        <div style="display:flex;gap:10px;margin-bottom:14px;">
+          <div class="field" style="flex:1;margin:0;">
+            <label class="label">Month</label>
+            <select class="input" id="f-month" style="appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237898C8' stroke-width='2' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;background-color:rgba(255,255,255,.07);">
+              <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+              <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+              <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+              <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+            </select>
+          </div>
+          <div class="field" style="flex:1;margin:0;">
+            <label class="label">Year</label>
+            <input class="input" id="f-year" type="number" min="2024" max="2030" value="2025">
+          </div>
+        </div>
+
+        <!-- Option A: Photo -->
+        <div class="label" style="margin-bottom:8px;">Option A — Photo or scan of your monthly timetable</div>
+        <div class="upload-area" id="photo-upload-area" onclick="document.getElementById('photo-input').click()">
+          <input type="file" id="photo-input" accept="image/*,.pdf" style="display:none" onchange="handlePhotoUpload(this,'setup')">
+          <div class="upload-icon">📷</div>
+          <div class="upload-title">Photograph your paper timetable</div>
+          <div class="upload-sub">AI reads every row — beginning times, Jamaat times, Jumu'ah slots — exactly as printed</div>
+          <div class="type-pills"><span class="type-pill">JPG</span><span class="type-pill">PNG</span><span class="type-pill">PDF</span></div>
+        </div>
+
+        <!-- Option B: CSV -->
+        <div class="label" style="margin-bottom:8px;margin-top:4px;">Option B — Upload a ready-made CSV</div>
+        <div class="upload-area" onclick="document.getElementById('csv-input').click()">
+          <input type="file" id="csv-input" accept=".csv" style="display:none" onchange="handleCSVUpload(this,'setup')">
+          <div class="upload-icon">📊</div>
+          <div class="upload-title">Upload CSV directly</div>
+          <div class="upload-sub">Columns: date, fajrB, fajrJ, sunrise, dhuhrB, dhuhrJ, asrB, asrJ, maghrib, ishaB, ishaJ</div>
+          <div class="type-pills">
+            <span class="type-pill">CSV</span>
+            <a href="#" style="font-size:10px;color:var(--sky);margin-left:6px;" onclick="downloadSampleCSV(event)">Download template</a>
+          </div>
+        </div>
+
+        <!-- Ramadan timetable toggle — mirrors _isRamadanTimetable in photoupload.dart -->
+        <div style="margin-bottom:12px;">
+          <button id="setup-ramadan-btn" onclick="toggleRamadan('setup')"
+            style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;
+                   font-family:'DM Sans',sans-serif;cursor:pointer;
+                   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+                   color:var(--muted);transition:background .14s;">
+            ☪ Ramadan timetable — OFF
+          </button>
+          <div id="setup-ramadan-note" style="display:none;font-size:11px;color:rgba(212,175,95,.8);margin-top:6px;line-height:1.5;">
+            Ramadan mode: AI will detect multiple months in a single timetable (e.g. Feb + Mar). Each row's month is read individually.
+          </div>
+        </div>
+
+        <!-- Gemini loading banner -->
+        <div id="setup-scanning" style="display:none;" class="scanning-banner">
+          ⚠️ AI is scanning your timetable — do not close this page or the scan will be lost
+        </div>
+        <div id="setup-spinner" style="display:none;"><div class="spinner" style="margin:16px auto;"></div></div>
+
+        <!-- Parse result table -->
+        <div class="parse-result" id="setup-parse-result">
+          <div class="parse-header">
+            <div class="parse-count">✓ <span id="setup-parse-count">0</span> days parsed — review & edit below</div>
+            <button onclick="clearParse('setup')" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;">✕ Clear</button>
+          </div>
+          <div class="parse-wrap">
+            <table class="parse-table">
+              <thead><tr>
+                <th>Date</th><th>Day</th>
+                <th>Fajr Begin</th><th>Fajr J</th><th>Sunrise</th>
+                <th>Dhuhr Begin</th><th>Dhuhr J</th>
+                <th>Asr Begin</th><th>Asr J</th>
+                <th>Maghrib</th><th>Isha Begin</th><th>Isha J</th>
+              </tr></thead>
+              <tbody id="setup-parse-tbody"></tbody>
+            </table>
+          </div>
+          <!-- Jumu'ah slots section -->
+          <div id="setup-jumua-section" class="jumua-section" style="display:none;">
+            <div class="jumua-title">🕌 Jumu'ah Times — extracted from Fridays</div>
+            <div id="setup-jumua-slots"></div>
+          </div>
+          <div class="parse-actions">
+            <button class="btn btn-mint" onclick="confirmAndContinue()">✓ Confirm & submit application</button>
+            <button class="btn btn-ghost" onclick="clearParse('setup')">Re-upload</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-actions" id="step3-actions">
+        <button class="btn btn-ghost" onclick="goStep(2)">Back</button>
+        <button class="btn btn-gold" onclick="submitApplicationOnly().then(()=>goStep(4))">
+          Skip — add timetable later
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--navy);stroke-width:2.5;stroke-linecap:round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 4: Done -->
+    <div class="step-panel" id="step-4">
+      <div class="card">
+        <div class="success-box">
+          <div class="success-icon">✓</div>
+          <div class="success-title">Application submitted!</div>
+          <p class="success-sub">
+            Your request is pending approval by the Ihsan team. You'll receive an email at <strong id="done-email">—</strong> once approved — usually within 24 hours.<br><br>
+            While waiting, you can manage your timetable and announcements in the <strong>Mosque Admin</strong> tab above.
+          </p>
+        </div>
+
+        <!-- Display screen instructions -->
+        <div style="margin-top:20px;background:rgba(212,175,95,.07);border:1px solid rgba(212,175,95,.25);border-radius:14px;padding:20px;">
+          <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:20px;">🖥️</span> Your display screen is ready to use now
+          </div>
+
+          <!-- URL box -->
+          <div style="background:var(--navy);border:1px solid rgba(212,175,95,.3);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <span style="font-family:monospace;font-size:13px;color:var(--white);word-break:break-all;">https://abdullahkamran12.github.io/ihsandisplaylatest/</span>
+            <button onclick="navigator.clipboard.writeText('https://abdullahkamran12.github.io/ihsandisplaylatest/').then(()=>showToast('Copied!','success'))"
+              style="flex-shrink:0;font-size:11px;font-weight:700;color:var(--gold);background:rgba(212,175,95,.12);border:1px solid rgba(212,175,95,.3);border-radius:7px;padding:6px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+              Copy link
+            </button>
+          </div>
+
+          <!-- Steps -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(212,175,95,.2);border:1px solid rgba(212,175,95,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;">1</div>
+              <div style="font-size:13px;color:rgba(255,255,255,.85);padding-top:3px;">Open the link above on your mosque's TV or display device — in <strong style="color:var(--white);">Chrome</strong> or <strong style="color:var(--white);">Edge</strong></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(212,175,95,.2);border:1px solid rgba(212,175,95,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;">2</div>
+              <div style="font-size:13px;color:rgba(255,255,255,.85);padding-top:3px;">Sign in with <strong style="color:var(--white);">the same account</strong> you just registered with</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(212,175,95,.2);border:1px solid rgba(212,175,95,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;">3</div>
+              <div style="font-size:13px;color:rgba(255,255,255,.85);padding-top:3px;">Press <kbd style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:2px 7px;font-size:12px;font-family:monospace;">F11</kbd> for fullscreen — your display is live</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(72,200,155,.15);border:1px solid rgba(72,200,155,.3);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">💡</div>
+              <div style="font-size:12px;color:var(--muted);padding-top:3px;">You can also install it as a PWA — click the install icon in the browser address bar — so it opens fullscreen automatically on startup without needing a browser.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="https://abdullahkamran12.github.io/ihsandisplaylatest/" target="_blank" class="btn btn-gold" style="text-decoration:none;">
+            Open display screen →
+          </a>
+          <button class="btn btn-ghost" onclick="setTab('admin')">Go to Mosque Admin</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-setup -->
+
+  <!-- ══ MOSQUE ADMIN ══════════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-admin">
+
+    <!-- Gate: not logged in -->
+    <div id="admin-gate" class="auth-gate" style="display:none;">
+      <div class="auth-gate-icon">🔐</div>
+      <div class="auth-gate-title">Sign in to access your mosque dashboard</div>
+      <p class="auth-gate-sub">Manage your timetable, announcements, Jumu'ah times and congregation settings.</p>
+      <button class="btn btn-gold" onclick="openModal('login')">Sign in to continue</button>
+    </div>
+
+    <!-- Gate: no account yet -->
+    <div id="admin-no-account" class="auth-gate" style="display:none;">
+      <div class="auth-gate-icon">🕌</div>
+      <div class="auth-gate-title">No display account found</div>
+      <p class="auth-gate-sub">You haven't registered a mosque display account yet.</p>
+      <button class="btn btn-gold" onclick="setTab('setup')">Register your mosque →</button>
+    </div>
+
+    <!-- Pending screen — matches _showPendingScreen in dart -->
+    <div id="admin-pending" class="status-screen" style="display:none;">
+      <div class="status-screen-icon">⏳</div>
+      <h2>Awaiting Approval</h2>
+      <p>Your mosque registration is being reviewed. Once approved you'll have full access to the admin dashboard and display screen.</p>
+      <div class="badge pending" style="margin:0 auto 20px;"><div class="badge-dot"></div> Pending approval</div>
+
+      <div style="background:rgba(37,211,102,.08);border:1.5px solid rgba(37,211,102,.3);border-radius:14px;padding:18px 20px;text-align:left;max-width:420px;margin:0 auto;">
+        <div style="font-size:13px;font-weight:700;color:#25D366;margin-bottom:10px;display:flex;align-items:center;gap:7px;">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#25D366;flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          Speed up your approval — message us on WhatsApp
+        </div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px;">
+          Let us know you've applied and we'll approve you as soon as possible, in sha Allah.
+        </div>
+        <a href="https://wa.me/447466691997?text=Assalamu+alaykum%2C+I%27ve+just+applied+for+a+mosque+display+account+on+Ihsan+and+wanted+to+let+you+know+so+I+can+get+approved.+JazakAllah+khayran."
+          target="_blank"
+          style="display:inline-flex;align-items:center;gap:9px;background:#25D366;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;padding:12px 20px;border-radius:11px;text-decoration:none;margin-bottom:10px;">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff;flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          Message on WhatsApp
+        </a>
+        <div style="font-size:11px;color:var(--muted);">Or call/text: <strong style="color:var(--white);">07466 691997</strong> &nbsp;·&nbsp; <strong style="color:var(--white);">+44 7466 691997</strong></div>
+      </div>
+    </div>
+
+    <!-- Rejected screen — matches _showRejectedScreen in dart -->
+    <div id="admin-rejected" class="status-screen" style="display:none;">
+      <div class="status-screen-icon">❌</div>
+      <h2>Application Rejected</h2>
+      <p>Unfortunately your display account application was not approved. If you believe this is an error, message us on WhatsApp: <a href="https://wa.me/447466691997" target="_blank" style="color:var(--gold);">07466 691997</a> or email <a href="mailto:abdullahkamran98@yahoo.es" style="color:var(--gold);">abdullahkamran98@yahoo.es</a>.</p>
+      <div class="badge rejected" style="margin:0 auto;"><div class="badge-dot"></div> Rejected</div>
+    </div>
+
+    <!-- Full admin dashboard — shown when approved + mosque bound -->
+    <div id="admin-content" style="display:none;">
+
+      <!-- Mosque header card -->
+      <div class="card" style="margin-bottom:20px;padding:14px 20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:17px;font-weight:700;color:var(--white);" id="admin-mosque-name">Your Mosque</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="admin-mosque-city"></div>
+          </div>
+          <div id="admin-status-badge" class="badge approved"><div class="badge-dot"></div> Live ✓</div>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <!-- Sidebar -->
+        <div class="admin-nav">
+          <button class="admin-nav-item active" onclick="adminNav('timetable',this)">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Timetable
+          </button>
+          <button class="admin-nav-item" onclick="adminNav('announcements',this)">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Announcements
+          </button>
+          <button class="admin-nav-item" onclick="adminNav('jumua',this)">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7h2v13h16V7h2L12 2z"/><circle cx="12" cy="13" r="2"/></svg>Jumu'ah Times
+          </button>
+          <button class="admin-nav-item" onclick="adminNav('photos',this)">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Photos & Background
+          </button>
+          <button class="admin-nav-item" onclick="adminNav('display',this)">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Display Settings
+          </button>
+          <button class="admin-nav-item" onclick="adminNav('account',this)">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>Account
+          </button>
+        </div>
+
+        <!-- Admin panels -->
+        <div>
+
+          <!-- Timetable panel -->
+          <div class="admin-panel active" id="ap-timetable">
+
+            <!-- ── HERO: Load from database ── -->
+            <div class="card" style="border-color:rgba(212,175,95,.4);background:rgba(212,175,95,.06);">
+              <div style="margin-bottom:10px;">
+                <div style="font-size:19px;font-weight:800;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:9px;">
+                  <span style="font-size:22px;">📋</span> View &amp; edit your current timetable
+                </div>
+                <div style="font-size:14px;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:4px;">
+                  Click below to load your saved timetable from this month onwards — straight from the database, ready to edit.
+                </div>
+                <div style="font-size:12.5px;color:var(--muted);line-height:1.6;">
+                  Change any individual prayer time and hit <strong style="color:var(--white);">Save row</strong> — no need to re-scan or re-upload the whole timetable.
+                  Or use bulk re-upload (below) to replace everything at once.
+                </div>
+              </div>
+              <button onclick="loadExistingTimetable()"
+                style="width:100%;padding:16px 22px;border-radius:13px;font-family:'DM Sans',sans-serif;
+                       font-size:15px;font-weight:800;color:var(--navy);background:var(--gold);
+                       border:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;
+                       justify-content:center;gap:10px;"
+                onmouseover="this.style.background='#e0c472'" onmouseout="this.style.background='var(--gold)'"
+                id="load-tt-btn">
+                <span id="load-tt-spinner" style="display:none;width:16px;height:16px;border:2.5px solid rgba(10,25,60,.3);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;"></span>
+                📥 Load timetable from database
+              </button>
+              <div id="load-tt-msg" style="font-size:12px;color:var(--mint);min-height:18px;margin-top:8px;"></div>
+            </div>
+
+            <!-- ── Parse / edit table (shown after load or upload) ── -->
+            <div class="card" style="padding:0;overflow:hidden;" id="admin-parse-card" style="display:none;">
+              <div style="padding:16px 20px 0;">
+                <div id="admin-scanning" style="display:none;" class="scanning-banner">⚠️ AI is scanning — do not close this page</div>
+                <div id="admin-spinner" style="display:none;"><div class="spinner" style="margin:12px auto;"></div></div>
+              </div>
+              <div class="parse-result" id="admin-parse-result" style="padding:16px 20px;">
+                <div class="parse-header">
+                  <div class="parse-count">✓ <span id="admin-parse-count">0</span> days loaded</div>
+                  <button onclick="clearParse('admin')" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;">✕ Clear</button>
+                </div>
+                <div class="parse-wrap">
+                  <table class="parse-table">
+                    <thead><tr>
+                      <th>Date</th><th>Day</th>
+                      <th>fajrB</th><th>fajrJ</th><th>sunrise</th>
+                      <th>dhuhrB</th><th>dhuhrJ</th>
+                      <th>asrB</th><th>asrJ</th>
+                      <th>maghrib</th><th>ishaB</th><th>ishaJ</th>
+                      <th></th>
+                    </tr></thead>
+                    <tbody id="admin-parse-tbody"></tbody>
+                  </table>
+                </div>
+                <div id="admin-jumua-section" class="jumua-section" style="display:none;">
+                  <div class="jumua-title">🕌 Jumu'ah times — will be saved as <code style="font-size:10px;color:#ce93d8;">jummahTimes[]</code> on each Friday doc</div>
+                  <div id="admin-jumua-slots"></div>
+                </div>
+                <div class="parse-actions">
+                  <button class="btn btn-mint" onclick="adminPublishTimetable()">✓ Publish / re-publish all</button>
+                  <button class="btn btn-ghost" onclick="clearParse('admin')">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Upload new timetable (collapsed) ── -->
+            <details style="margin-bottom:16px;">
+              <summary style="cursor:pointer;padding:14px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,175,95,.15);border-radius:14px;font-size:13px;font-weight:600;color:var(--muted);list-style:none;display:flex;align-items:center;gap:8px;user-select:none;">
+                <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload new timetable (photo, PDF or CSV)
+                <span style="font-size:10px;color:rgba(120,152,200,.5);margin-left:4px;">— replaces current timetable</span>
+              </summary>
+              <div style="padding:18px 4px 4px;">
+                <div class="card" style="margin-bottom:0;">
+                  <div style="display:flex;gap:10px;margin-bottom:14px;">
+                    <div class="field" style="flex:1;margin:0;">
+                      <label class="label">Month</label>
+                      <select class="input" id="a-month" style="appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237898C8' stroke-width='2' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;background-color:rgba(255,255,255,.07);">
+                        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                        <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                      </select>
+                    </div>
+                    <div class="field" style="flex:1;margin:0;">
+                      <label class="label">Year</label>
+                      <input class="input" id="a-year" type="number" min="2024" max="2030" value="2025">
+                    </div>
+                  </div>
+
+                  <div class="upload-area" onclick="document.getElementById('a-photo-input').click()">
+                    <input type="file" id="a-photo-input" accept="image/*,.pdf" style="display:none" onchange="handlePhotoUpload(this,'admin')">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-title">Photo, scan or PDF of monthly timetable</div>
+                    <div class="upload-sub">AI powered — reads beginning times, Jamaat times and Jumu'ah slots exactly as printed</div>
+                    <div class="type-pills"><span class="type-pill">JPG</span><span class="type-pill">PNG</span><span class="type-pill">PDF</span></div>
+                  </div>
+                  <div style="text-align:center;margin:12px 0;font-size:11px;color:var(--muted);">— or —</div>
+                  <div class="upload-area" onclick="document.getElementById('a-csv-input').click()">
+                    <input type="file" id="a-csv-input" accept=".csv" style="display:none" onchange="handleCSVUpload(this,'admin')">
+                    <div class="upload-icon">📊</div>
+                    <div class="upload-title">Upload CSV directly</div>
+                    <div class="upload-sub">Columns: date, fajrB, fajrJ, sunrise, dhuhrB, dhuhrJ, asrB, asrJ, maghrib, ishaB, ishaJ</div>
+                  </div>
+
+                  <!-- Ramadan toggle -->
+                  <div style="margin-top:10px;">
+                    <button id="admin-ramadan-btn" onclick="toggleRamadan('admin')"
+                      style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;
+                             font-family:'DM Sans',sans-serif;cursor:pointer;
+                             background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+                             color:var(--muted);transition:background .14s;">
+                      ☪ Ramadan timetable — OFF
+                    </button>
+                    <div id="admin-ramadan-note" style="display:none;font-size:11px;color:rgba(212,175,95,.8);margin-top:5px;line-height:1.5;">
+                      Ramadan mode: AI detects multiple months per timetable.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- ── Currently live (small, at bottom) ── -->
+            <div class="card" style="padding:14px 18px;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">Currently live</div>
+              <div id="admin-current-tt" style="font-size:13px;color:var(--muted);">Loading…</div>
+            </div>
+
+          </div>
+
+          <!-- Announcements panel -->
+          <div class="admin-panel" id="ap-announcements">
+            <div class="card">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Ticker / Announcement
+              </div>
+              <p class="card-sub">Scrolls across the bottom of your display screen. Stored as <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">customTickerMessage</code> in <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">displayMosques/{uid}</code>. The display app reads it on every <code style="font-size:11px;color:var(--sky);background:rgba(100,180,240,.1);padding:1px 5px;border-radius:4px;">needsRefresh</code> trigger.</p>
+              <div class="field">
+                <label class="label">Announcement message</label>
+                <input class="input" id="a-ticker" type="text" maxlength="200"
+                  placeholder="e.g. Eid ul-Adha prayer at 08:00 — all brothers and sisters welcome"
+                  oninput="document.getElementById('a-ticker-preview').textContent=this.value||'Your message will appear here…';document.getElementById('a-ticker-count').textContent=this.value.length">
+                <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;"><span id="a-ticker-count">0</span>/200</div>
+              </div>
+              <div class="ticker-preview" id="a-ticker-preview">Your message will appear here…</div>
+              <div class="info-box" style="margin-top:14px;">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <p>Leave blank to disable the ticker. Visual settings (themes, Adhan sounds, blackout duration, custom photos, background patterns) are configured from the Ihsan display app on your mosque TV — they are not managed here.</p>
+              </div>
+              <button class="btn btn-mint" onclick="saveTicker()">Save announcement</button>
+
+              <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:22px 0;">
+
+              <!-- Donation QR link — mirrors _saveDonation in mosqueadminscreen.dart -->
+              <div class="card-title" style="margin-bottom:6px;">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h3M17 14v3M20 17h.01M20 14h.01"/></svg>
+                Donation QR Code
+              </div>
+              <p style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:12px;">
+                Enter your mosque's donation link. A QR code will appear on the TV display overlay.
+                Stored as <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">donationLink</code> in <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">displayMosques/{uid}</code>.
+              </p>
+              <div class="field">
+                <label class="label">Donation URL</label>
+                <input class="input" id="a-donation" type="url" placeholder="https://donate.example.com/mosque">
+              </div>
+              <button class="btn btn-ghost" onclick="saveDonation()">Save donation link</button>
+            </div>
+          </div>
+
+          <!-- Jumu'ah panel -->
+          <div class="admin-panel" id="ap-jumua">
+            <div class="card">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7h2v13h16V7h2L12 2z"/></svg>
+                Jumu'ah (Friday) Times
+              </div>
+              <p class="card-sub">Stored as <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">jummahTimes</code> array on each Friday's <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">prayerTimes</code> document. The display app reads up to 4 slots (1st, 2nd, 3rd, 4th Jumu'ah).</p>
+              <div class="warn-box">
+                <p>💡 Jumu'ah times are normally uploaded automatically when you scan your monthly timetable. Use this only to manually override individual Fridays.</p>
+              </div>
+              <div id="jumua-friday-list">
+                <div style="font-size:13px;color:var(--muted);">Loading Fridays from timetable…</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Photos & Background panel -->
+          <div class="admin-panel" id="ap-photos">
+            <div class="card">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Background Image
+              </div>
+              <p class="card-sub">
+                Upload a single image to use as the TV background. Stored in Firebase Storage and read by the display app at startup via
+                <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">setting_bgImagePath</code>
+                in <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">displayMosques/{uid}</code>.
+                The app fetches it from Storage only when <code style="font-size:11px;color:var(--sky);background:rgba(100,180,240,.1);padding:1px 5px;border-radius:4px;">backgroundPattern == customImage</code>.
+              </p>
+
+              <!-- Current background preview -->
+              <div id="bg-current-wrap" style="display:none;margin-bottom:16px;">
+                <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Current background</div>
+                <div style="position:relative;display:inline-block;">
+                  <img id="bg-current-img" src="" alt="Current background"
+                    style="max-width:100%;max-height:200px;border-radius:12px;border:1px solid rgba(212,175,95,.25);object-fit:cover;display:block;">
+                  <button onclick="removeBgImage()"
+                    style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);border:none;color:#e05555;border-radius:8px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer;">
+                    ✕ Remove
+                  </button>
+                </div>
+                <div id="bg-current-path" style="font-size:10px;color:var(--muted);margin-top:6px;"></div>
+              </div>
+
+              <!-- Upload new background -->
+              <div class="upload-area" onclick="document.getElementById('bg-file-input').click()">
+                <input type="file" id="bg-file-input" accept="image/*" style="display:none"
+                  onchange="uploadBgImage(this)">
+                <div class="upload-icon">🖼️</div>
+                <div class="upload-title">Upload background image</div>
+                <div class="upload-sub">
+                  Saved to Storage at <code style="font-size:10px;color:var(--gold);">displayMosques/{mosqueId}/background/bg.jpg</code><br>
+                  Sets <code style="font-size:10px;color:var(--sky);">backgroundPattern = customImage</code> on the TV automatically
+                </div>
+                <div class="type-pills"><span class="type-pill">JPG</span><span class="type-pill">PNG</span><span class="type-pill">WEBP</span></div>
+              </div>
+
+              <div id="bg-uploading" style="display:none;">
+                <div class="spinner" style="margin:12px auto;"></div>
+                <div style="font-size:12px;color:var(--muted);text-align:center;">Uploading to Storage…</div>
+              </div>
+
+              <div class="info-box" style="margin-top:12px;">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <p>After uploading, the TV display will reload the background at next startup or <code style="font-size:10px;">needsRefresh</code> trigger. Use a landscape image (16:9) for best results. The app uses <code style="font-size:10px;">BackgroundPattern.customImage</code> guard — if you remove the image, the display reverts to its pattern/style setting.</p>
+              </div>
+            </div>
+
+            <!-- Slideshow / display images — separate from background -->
+            <div class="card">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                Slideshow Images
+              </div>
+              <p class="card-sub">
+                Images that rotate on the display screen between prayers. Stored at
+                <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">displayMosques/{mosqueId}/images/</code>
+                in Storage. The app fetches all files in this folder via <code style="font-size:11px;color:var(--sky);background:rgba(100,180,240,.1);padding:1px 5px;border-radius:4px;">listAll()</code> on startup.
+              </p>
+
+              <!-- Upload slideshow image -->
+              <div class="upload-area" onclick="document.getElementById('slide-file-input').click()" style="margin-bottom:16px;">
+                <input type="file" id="slide-file-input" accept="image/*" style="display:none" multiple
+                  onchange="uploadSlideImages(this)">
+                <div class="upload-icon">📸</div>
+                <div class="upload-title">Upload slideshow images</div>
+                <div class="upload-sub">Multiple files supported. Landscape (16:9) recommended.</div>
+                <div class="type-pills"><span class="type-pill">JPG</span><span class="type-pill">PNG</span><span class="type-pill">WEBP</span></div>
+              </div>
+              <div id="slide-uploading" style="display:none;">
+                <div class="spinner" style="margin:8px auto;"></div>
+                <div style="font-size:12px;color:var(--muted);text-align:center;" id="slide-upload-progress">Uploading…</div>
+              </div>
+
+              <!-- Current slideshow images grid -->
+              <div>
+                <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">
+                  Currently uploaded — <span id="slide-count">0</span> image(s)
+                </div>
+                <div id="slide-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">
+                  <div style="font-size:12px;color:var(--muted);grid-column:1/-1;">Loading…</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display Settings panel — mirrors mosqueadminscreen.dart DISPLAY tab -->
+          <div class="admin-panel" id="ap-display">
+            <div class="card">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                Display Settings
+              </div>
+              <p class="card-sub">
+                Controls the TV display appearance. All settings write to
+                <code style="font-size:11px;color:var(--gold);background:rgba(212,175,95,.1);padding:1px 5px;border-radius:4px;">displayMosques/{uid}</code>
+                as integer indices matching <code style="font-size:11px;color:var(--sky);background:rgba(100,180,240,.1);padding:1px 5px;border-radius:4px;">DisplaySettings.toFirestore()</code>.
+                The TV picks up changes via <code style="font-size:11px;color:var(--sky);background:rgba(100,180,240,.1);padding:1px 5px;border-radius:4px;">needsRefresh: true</code>.
+              </p>
+              <div id="ap-display-inner">
+                <div style="font-size:13px;color:var(--muted);">Loading settings…</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Congregation panel -->
+          <div class="admin-panel" id="ap-congregation">
+            <div class="card">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Congregation Visibility
+              </div>
+              <p class="card-sub">When approved, your Jamaat times appear automatically in the Ihsan app for anyone searching your area.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                <div style="background:rgba(72,200,155,.07);border:1px solid rgba(72,200,155,.2);border-radius:12px;padding:16px;text-align:center;">
+                  <div style="font-size:22px;font-weight:800;color:var(--mint);" id="a-view-count">—</div>
+                  <div style="font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.7px;">Timetable views this month</div>
+                </div>
+                <div style="background:rgba(212,175,95,.07);border:1px solid rgba(212,175,95,.2);border-radius:12px;padding:16px;text-align:center;">
+                  <div style="font-size:22px;font-weight:800;color:var(--gold);" id="a-follow-count">—</div>
+                  <div style="font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.7px;">Users following your mosque</div>
+                </div>
+              </div>
+              <div class="info-box">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <p>The display app listens to <code style="font-size:10px;">displayMosques/{uid}</code> for a <code style="font-size:10px;">needsRefresh: true</code> flag — when you publish a new timetable or announcement, the screen updates itself within seconds.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account panel -->
+          <div class="admin-panel" id="ap-account">
+            <div class="card">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
+                Account Details
+              </div>
+              <div style="font-size:13px;color:var(--muted);line-height:1.9;" id="a-account-details">Loading…</div>
+              <div style="margin-top:16px;">
+                <button class="btn btn-ghost" onclick="DS.signOut()">Sign out</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /admin panels -->
+      </div><!-- /admin-grid -->
+    </div><!-- /admin-content -->
+
+  </div><!-- /panel-admin -->
+
+</div><!-- /portal -->
+
+<!-- ── LOGIN MODAL ────────────────────────────────────────────────── -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title" id="modal-title">Sign in</div>
+    <div class="modal-sub" id="modal-sub">Sign in to your Ihsan account</div>
+    <div class="field">
+      <label class="label">Email</label>
+      <input class="input" id="modal-email" type="email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')modalSubmit()">
+    </div>
+    <div class="field">
+      <label class="label">Password</label>
+      <input class="input" id="modal-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')modalSubmit()">
+    </div>
+    <div class="field" id="modal-name-field" style="display:none;">
+      <label class="label">Your Name</label>
+      <input class="input" id="modal-name" type="text" placeholder="e.g. Ahmed Khan">
+    </div>
+    <div class="field" id="modal-phone-field" style="display:none;">
+      <label class="label">Your Phone Number</label>
+      <input class="input" id="modal-phone" type="tel" placeholder="e.g. 07700 900123">
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Used only to contact you about your mosque application.</div>
+    </div>
+    <div class="modal-err" id="modal-err"></div>
+    <button class="btn btn-gold" style="width:100%;margin-top:8px;justify-content:center;" onclick="modalSubmit()" id="modal-submit">Sign in</button>
+    <div class="modal-toggle" id="modal-toggle">
+      Don't have an account? <a onclick="toggleModal()">Create one</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FIREBASE + APP LOGIC
+═══════════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp }                              from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged,
+         signInWithEmailAndPassword,
+         createUserWithEmailAndPassword,
+         signOut }                                    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc,
+         getDocs, setDoc, addDoc, updateDoc,
+         query, where, orderBy, limit,
+         serverTimestamp, onSnapshot, writeBatch }    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getFunctions }                                   from "https://www.gstatic.com/firebasejs/11.0.0/firebase-functions.js";
+import { getStorage, ref as sRef,
+         uploadBytes, getDownloadURL,
+         deleteObject, listAll }                      from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
+
+const app       = initializeApp({
+  apiKey:            "AIzaSyA6f4ejuvj5vF5gw4NhXJ2GtPJSzdWE8kw",
+  authDomain:        "ihsanapp-e2d2d.firebaseapp.com",
+  projectId:         "ihsanapp-e2d2d",
+  storageBucket:     "ihsanapp-e2d2d.firebasestorage.app",
+  messagingSenderId: "706286641509",
+  appId:             "1:706286641509:web:9ba251972b488ad582018c",
+  measurementId:     "G-GF71EXG990"
+});
+const auth      = getAuth(app);
+const db        = getFirestore(app);
+const functions = getFunctions(app, 'europe-west2');
+const storage   = getStorage(app);
+
+// ── STATE ────────────────────────────────────────────────────────
+const DS = {
+  user: null,
+  accountDoc: null,       // displayAccounts/{uid}
+  mosqueDoc: null,        // displayMosques/{uid}
+  uid: null,
+  mosqueId: null,
+  parsedRows: [],         // [{date,day,fajrB,fajrJ,sunrise,dhuhrB,dhuhrJ,asrB,asrJ,maghrib,ishaB,ishaJ}]
+  fridayJummahs: {},      // { 'YYYY-MM-DD': ['13:15','14:30'] }
+  modalMode: 'login',
+  approvalSub: null,      // onSnapshot unsubscribe
+
+  signOut: async () => {
+    if (DS.approvalSub) DS.approvalSub();
+    await signOut(auth);
+  }
+};
+window.DS = DS;
+
+// ── TOAST ────────────────────────────────────────────────────────
+window.showToast = (msg, type='success') => {
+  const t = document.getElementById('toast');
+  t.className = 'toast '+type;
+  t.innerHTML = `<span style="color:${type==='success'?'var(--mint)':'#e05555'}">${type==='success'?'✓':'✕'}</span> ${msg}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3400);
+};
+
+// ── TABS ─────────────────────────────────────────────────────────
+window.setTab = (name) => {
+  ['setup','admin'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+    document.getElementById('panel-'+t).classList.toggle('active', t===name);
+  });
+  if (name==='admin') initAdminPanel();
+};
+
+// ── WIZARD ───────────────────────────────────────────────────────
+window.goStep = (n) => {
+  document.querySelectorAll('.step-panel').forEach((p,i) => p.classList.toggle('active', i+1===n));
+  for (let i=1;i<=4;i++) {
+    const ws = document.getElementById('wstep-'+i);
+    const wl = document.getElementById('wline-'+i);
+    if (!ws) continue;
+    ws.classList.toggle('done', i<n);
+    ws.classList.toggle('current', i===n);
+    if (wl) wl.classList.toggle('done', i<n);
+  }
+};
+
+// validateMosqueInfo — now just a guard (step2-next btn is disabled until selection)
+window.validateMosqueInfo = () => {
+  const m = MS.selected || MS.manual;
+  if (!m || !m.name || !m.city) {
+    showToast('Please search for and select your mosque on Google Maps','error'); return;
+  }
+  goStep(3);
+};
+
+// ── AUTH STATE ───────────────────────────────────────────────────
+onAuthStateChanged(auth, async user => {
+  DS.user = user;
+  DS.uid  = user?.uid || null;
+
+  // Nav bar
+  const navEmail  = document.getElementById('nav-email');
+  const navSignout = document.getElementById('nav-signout');
+  if (user) {
+    navEmail.textContent = user.email;
+    navSignout.style.display = 'inline-block';
+  } else {
+    navEmail.textContent = '';
+    navSignout.style.display = 'none';
+    // Restore setup tab in case it was hidden
+    const setupTab = document.getElementById('tab-setup');
+    if (setupTab) setupTab.style.display = '';
+  }
+
+  renderStep1Auth(user);
+
+  // If user already has an account, switch straight to admin tab
+  if (user) {
+    const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js');
+    const snap = await getDoc(doc(db, 'displayAccounts', user.uid));
+    if (snap.exists()) {
+      // Hide the "Get Display Screen" tab — they already have one
+      const setupTab = document.getElementById('tab-setup');
+      if (setupTab) setupTab.style.display = 'none';
+      setTab('admin');
+    }
+  }
+});
+
+function renderStep1Auth(user) {
+  const el = document.getElementById('step1-auth-area');
+  const next = document.getElementById('step1-next');
+  if (!el) return;
+  if (user) {
+    el.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(72,200,155,.1);border:1px solid rgba(72,200,155,.25);border-radius:10px;padding:14px;">
+        <span style="font-size:22px;">✓</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--mint);">Signed in as ${user.email}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">Ready to register your mosque.</div>
+        </div>
+      </div>`;
+    next.disabled = false;
+  } else {
+    el.innerHTML = `
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">You need an Ihsan account to manage your mosque display.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-gold" onclick="openModal('login')">Sign in</button>
+        <button class="btn btn-ghost" onclick="openModal('signup')">Create account</button>
+      </div>`;
+    next.disabled = true;
+  }
+}
+
+// ── MODAL ────────────────────────────────────────────────────────
+window.openModal = (mode) => {
+  DS.modalMode = mode || 'login';
+  const isLogin = DS.modalMode === 'login';
+  document.getElementById('modal-title').textContent = isLogin ? 'Sign in' : 'Create account';
+  document.getElementById('modal-sub').textContent = isLogin ? 'Sign in to your Ihsan account' : 'Create a new Ihsan account';
+  document.getElementById('modal-submit').textContent = isLogin ? 'Sign in' : 'Create account';
+  document.getElementById('modal-toggle').innerHTML = isLogin
+    ? `Don't have an account? <a onclick="toggleModal()">Create one</a>`
+    : `Already have an account? <a onclick="toggleModal()">Sign in</a>`;
+  document.getElementById('modal-name-field').style.display  = isLogin ? 'none' : 'block';
+  document.getElementById('modal-phone-field').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('modal-err').textContent = '';
+  document.getElementById('modal-bg').classList.add('open');
+};
+window.closeModal = () => document.getElementById('modal-bg').classList.remove('open');
+window.toggleModal = () => openModal(DS.modalMode === 'login' ? 'signup' : 'login');
+
+window.modalSubmit = async () => {
+  const email = document.getElementById('modal-email').value.trim();
+  const pass  = document.getElementById('modal-password').value;
+  const errEl = document.getElementById('modal-err');
+  errEl.textContent = '';
+  try {
+    if (DS.modalMode === 'login') {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } else {
+      const name  = document.getElementById('modal-name').value.trim();
+      const phone = document.getElementById('modal-phone').value.trim();
+      const cred  = await createUserWithEmailAndPassword(auth, email, pass);
+      await setDoc(doc(db, 'UserData', cred.user.uid), {
+        displayName: name,
+        phone:       phone,
+        email:       email,
+        createdAt:   serverTimestamp(),
+      });
+    }
+    closeModal();
+  } catch(e) {
+    errEl.textContent = e.message.replace('Firebase: ','').replace(/\(auth\/.*\)/,'').trim();
+  }
+};
+
+// ── PHOTO UPLOAD + GEMINI ────────────────────────────────────────
+// Calls Cloud Function 'askGeminiWeb' (onRequest) — same logic as
+// photoupload.dart but using fetch() so CORS headers are controlled.
+window.handlePhotoUpload = async (input, ctx) => {
+  const file = input.files[0]; if (!file) return;
+  const pfx = ctx === 'setup' ? 'setup' : 'admin';
+
+  const scanningEl = document.getElementById(pfx+'-scanning');
+  scanningEl.style.display = 'flex';
+  setTimeout(() => scanningEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+  document.getElementById(pfx+'-spinner').style.display = 'block';
+  if (pfx==='setup') document.getElementById('step3-actions').style.display = 'none';
+  document.getElementById(pfx+'-parse-result').classList.remove('visible');
+
+  try {
+    const b64  = await fileToBase64(file);
+    const mime = file.type || 'image/jpeg';
+    const month = parseInt(document.getElementById(pfx==='setup'?'f-month':'a-month').value);
+    const year  = parseInt(document.getElementById(pfx==='setup'?'f-year':'a-year').value);
+
+    const isRamadan = !!window[pfx+'-ramadan'];
+    const res = await fetch(`${CF_BASE}/askGeminiWeb`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: b64, mime, prompt: buildPrompt(isRamadan) }),
+    });
+    if (!res.ok) throw new Error(`Scan failed (${res.status})`);
+    const data = await res.json();
+    const rawText = data.text;
+    const cleaned = rawText.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+    const jsonRows = JSON.parse(cleaned);
+
+    const { rows, jummahs } = buildRows(jsonRows, month, year, isRamadan);
+    DS.parsedRows = rows;
+    DS.fridayJummahs = jummahs;
+
+    renderParseTable(pfx+'-parse-tbody', rows);
+    renderJumuaSlots(pfx+'-jumua-section', pfx+'-jumua-slots', jummahs);
+    document.getElementById(pfx+'-parse-count').textContent = rows.length;
+    document.getElementById(pfx+'-parse-result').classList.add('visible');
+    if (pfx==='setup') document.getElementById('step3-actions').style.display = 'none';
+
+  } catch(e) {
+    showToast('AI scan error: '+e.message, 'error');
+    if (pfx==='setup') document.getElementById('step3-actions').style.display = 'flex';
+  } finally {
+    document.getElementById(pfx+'-scanning').style.display = 'none';
+    document.getElementById(pfx+'-spinner').style.display = 'none';
+  }
+};
+
+window.handleCSVUpload = async (input, ctx) => {
+  const file = input.files[0]; if (!file) return;
+  const pfx = ctx === 'setup' ? 'setup' : 'admin';
+  const text = await file.text();
+
+  // ── Validate header columns ──────────────────────────────────
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) { showToast('CSV is empty — nothing to import','error'); input.value=''; return; }
+  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
+  const REQUIRED_COLS = ['date','fajrb','fajrj','sunrise','dhuhrb','dhuhrj','asrb','asrj','maghrib','ishab','ishaj'];
+  const ALIASES = {fajrb:['fajr_begin','fajr_b'],fajrj:['fajr_jamaat','fajr_j'],dhuhrb:['dhuhr_begin','dhuhr_b'],dhuhrj:['dhuhr_jamaat','dhuhr_j'],asrb:['asr_begin','asr_b'],asrj:['asr_jamaat','asr_j'],ishab:['isha_begin','isha_b'],ishaj:['isha_jamaat','isha_j']};
+  const missing = REQUIRED_COLS.filter(col => {
+    if (headers.includes(col)) return false;
+    const alts = ALIASES[col] || [];
+    return !alts.some(a => headers.includes(a));
+  });
+  if (missing.length) {
+    showToast(`CSV missing columns: ${missing.join(', ')} — download the template`, 'error');
+    input.value=''; return;
+  }
+
+  // ── Validate date format (dd/mm/yyyy or yyyymmdd) ───────────
+  const dateColIdx = headers.indexOf('date');
+  const badDates = [];
+  const DATE_RE_SLASH = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+  const DATE_RE_COMPACT = /^\d{8}$/;
+  lines.slice(1).forEach((line, i) => {
+    if (!line.trim()) return;
+    const vals = line.split(',');
+    const d = (vals[dateColIdx] || '').trim();
+    if (!d) return;
+    if (!DATE_RE_SLASH.test(d) && !DATE_RE_COMPACT.test(d)) badDates.push(`row ${i+2}: "${d}"`);
+  });
+  if (badDates.length) {
+    showToast(`Invalid date format in ${badDates.slice(0,3).join(', ')}${badDates.length>3?' (and more)':''}. Use dd/mm/yyyy`, 'error');
+    input.value=''; return;
+  }
+
+  const rows = parseCSV(text);
+  if (!rows.length) { showToast('CSV appears empty or invalid','error'); input.value=''; return; }
+  DS.parsedRows = rows;
+  DS.fridayJummahs = {};
+  renderParseTable(pfx+'-parse-tbody', rows);
+  document.getElementById(pfx+'-parse-count').textContent = rows.length;
+  document.getElementById(pfx+'-parse-result').classList.add('visible');
+  document.getElementById(pfx+'-jumua-section').style.display = 'none';
+  if (pfx==='setup') document.getElementById('step3-actions').style.display = 'none';
+};
+
+// ── GEMINI PROMPT — mirrors photoupload.dart getPrompt() ─────────
+function buildPrompt(isRamadan) {
+  return 'This is a printed mosque prayer timetable. Extract every data row as a JSON array. ' +
+    'CRITICAL: Convert ALL times to 24-hour format (e.g., 1:00 PM → 13:00). ' +
+    'If there is a sunset column, ignore sunset and take ONLY maghrib. ' +
+    'Each object must have these exact keys:\n' +
+    '  day (integer 1-31),\n' +
+    '  fajr_begin, fajr_jamaat, sunrise,\n' +
+    '  dhuhr_begin, dhuhr_jamaat,\n' +
+    '  asr_begin, asr_jamaat,\n' +
+    '  maghrib,\n' +
+    '  isha_begin, isha_jamaat,\n' +
+    '  jummah_times — ONLY for Friday rows: array of up to 4 time strings. ' +
+    'For non-Friday rows use empty array []. ' +
+    'Never return an empty array for a Friday row — use dhuhr_jamaat as fallback. ' +
+    'Use empty string for any blank cell. Do not guess times. ' +
+    'Return ONLY the JSON array, no other text.';
+}
+
+// ── BUILD ROWS — mirrors photoupload.dart _buildRows() ───────────
+function buildRows(jsonRows, month, year, isRamadan) {
+  const WEEKDAYS = ['','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+  const raw = jsonRows.map(r => {
+    const day = parseInt(r.day);
+    // Per-row month for Ramadan (matches _buildRows rowMonth logic in photoupload.dart)
+    const rowMonth = (isRamadan && r.month) ? parseInt(r.month) : month;
+    const dt  = new Date(year, rowMonth-1, day);
+    const dd  = String(day).padStart(2,'0');
+    const mm  = String(rowMonth).padStart(2,'0');
+    return {
+      date:    `${dd}/${mm}/${year}`,
+      dateKey: `${year}-${mm}-${dd}`,
+      day:     WEEKDAYS[dt.getDay()===0 ? 7 : dt.getDay()] || '',
+      fajrB:   s(r.fajr_begin),
+      fajrJ:   s(r.fajr_jamaat),
+      sunrise: s(r.sunrise),
+      dhuhrB:  s(r.dhuhr_begin),
+      dhuhrJ:  s(r.dhuhr_jamaat),
+      asrB:    s(r.asr_begin),
+      asrJ:    s(r.asr_jamaat),
+      maghrib: s(r.maghrib),
+      ishaB:   s(r.isha_begin),
+      ishaJ:   s(r.isha_jamaat),
+      _raw:    r,
+    };
+  });
+
+  // Carry-forward Jamaat times (like dart's intelligent fill)
+  const carry = {};
+  const rows = raw.map(r => {
+    const out = {...r};
+    ['fajrJ','dhuhrJ','asrJ','ishaJ'].forEach(k => {
+      if (!out[k]) out[k] = carry[k] || '';
+      else carry[k] = out[k];
+    });
+    return out;
+  });
+
+  // Extract Friday Jumu'ah slots
+  const jummahs = {};
+  rows.forEach(r => {
+    if (r.day !== 'Friday') return;
+    const raw = r._raw.jummah_times;
+    const times = Array.isArray(raw) ? raw.map(t=>(t||'').trim()).filter(Boolean) : [];
+    if (!times.length && r.dhuhrJ) times.push(r.dhuhrJ);
+    jummahs[r.dateKey] = times.length ? times : [''];
+  });
+
+  return { rows, jummahs };
+}
+
+function s(v) { return v == null ? '' : String(v).trim(); }
+
+// ── CSV PARSER — matches uploadMosque.dart field names exactly ────
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
+  const get = (vals, ...keys) => { for (const k of keys) { const i=headers.indexOf(k); if(i!==-1&&vals[i]) return vals[i].trim(); } return ''; };
+  return lines.slice(1).map(line => {
+    const vals = line.split(',');
+    const date = get(vals,'date');
+    if (!date) return null;
+    const [dd,mm,yyyy] = date.includes('/') ? date.split('/') : [date.substring(6,8),date.substring(4,6),date.substring(0,4)];
+    return {
+      date,
+      dateKey: `${yyyy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`,
+      day: '',
+      fajrB:   get(vals,'fajrb','fajr_begin','fajr_b'),
+      fajrJ:   get(vals,'fajrj','fajr_jamaat','fajr_j'),
+      sunrise: get(vals,'sunrise'),
+      dhuhrB:  get(vals,'dhuhrb','dhuhr_begin','dhuhr_b'),
+      dhuhrJ:  get(vals,'dhuhrj','dhuhr_jamaat','dhuhr_j'),
+      asrB:    get(vals,'asrb','asr_begin','asr_b'),
+      asrJ:    get(vals,'asrj','asr_jamaat','asr_j'),
+      maghrib: get(vals,'maghrib'),
+      ishaB:   get(vals,'ishab','isha_begin','isha_b'),
+      ishaJ:   get(vals,'ishaj','isha_jamaat','isha_j'),
+    };
+  }).filter(Boolean);
+}
+
+// ── RENDER PARSE TABLE ────────────────────────────────────────────
+function renderParseTable(tbodyId, rows) {
+  const isAdmin = tbodyId === 'admin-parse-tbody';
+  document.getElementById(tbodyId).innerHTML = rows.map((r,i) => `
+    <tr class="${r.day==='Friday'?'friday-row':''}" id="row-tr-${i}">
+      <td style="white-space:nowrap;font-size:10.5px;">${r.date}</td>
+      <td style="font-size:10px;color:var(--muted);">${r.day}</td>
+      <td><input value="${r.fajrB}"   onchange="DS.parsedRows[${i}].fajrB=this.value"></td>
+      <td><input value="${r.fajrJ}"   onchange="DS.parsedRows[${i}].fajrJ=this.value"></td>
+      <td><input value="${r.sunrise}" onchange="DS.parsedRows[${i}].sunrise=this.value"></td>
+      <td><input value="${r.dhuhrB}"  onchange="DS.parsedRows[${i}].dhuhrB=this.value"></td>
+      <td><input value="${r.dhuhrJ}"  onchange="DS.parsedRows[${i}].dhuhrJ=this.value"></td>
+      <td><input value="${r.asrB}"    onchange="DS.parsedRows[${i}].asrB=this.value"></td>
+      <td><input value="${r.asrJ}"    onchange="DS.parsedRows[${i}].asrJ=this.value"></td>
+      <td><input value="${r.maghrib}" onchange="DS.parsedRows[${i}].maghrib=this.value"></td>
+      <td><input value="${r.ishaB}"   onchange="DS.parsedRows[${i}].ishaB=this.value"></td>
+      <td><input value="${r.ishaJ}"   onchange="DS.parsedRows[${i}].ishaJ=this.value"></td>
+      ${isAdmin ? `<td><button onclick="saveRowToFirestore(${i})"
+        style="font-size:10px;font-weight:700;color:var(--navy);background:var(--gold);border:none;
+               border-radius:6px;padding:4px 8px;cursor:pointer;white-space:nowrap;">Save row</button></td>` : '<td></td>'}
+    </tr>`).join('');
+}
+
+function renderJumuaSlots(sectionId, slotId, jummahs) {
+  const section = document.getElementById(sectionId);
+  const keys = Object.keys(jummahs);
+  if (!keys.length) { section.style.display='none'; return; }
+  section.style.display = 'block';
+  const ordinals = ['1st','2nd','3rd','4th'];
+  const addLabels = ['Add 2nd Jumu\'ah','Add 3rd Jumu\'ah','Add 4th Jumu\'ah'];
+  document.getElementById(slotId).innerHTML = keys.map(dateKey => {
+    const times = jummahs[dateKey];
+    const slots = times.map((t,si) => `
+      <div class="jumua-slot">
+        <span style="font-size:9px;opacity:.6;">${ordinals[si]||`${si+1}th`}</span>
+        <input value="${t}" onchange="DS.fridayJummahs['${dateKey}'][${si}]=this.value"
+               placeholder="13:30">
+        ${si > 0 ? `<button onclick="DS.fridayJummahs['${dateKey}'].splice(${si},1);renderJumuaSlots('${sectionId}','${slotId}',DS.fridayJummahs)"
+          style="font-size:10px;color:rgba(255,100,100,.7);background:none;border:none;cursor:pointer;padding:0 2px;line-height:1;">✕</button>` : ''}
+      </div>`).join('');
+    const formatted = dateKey.split('-').reverse().join('/');
+    // Only show add button if fewer than 4 slots
+    const addBtn = times.length < 4
+      ? `<button onclick="DS.fridayJummahs['${dateKey}'].push('');renderJumuaSlots('${sectionId}','${slotId}',DS.fridayJummahs)"
+          style="font-size:11px;color:#ce93d8;background:rgba(156,39,176,.08);border:1px dashed rgba(156,39,176,.35);border-radius:7px;padding:5px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">
+          + ${addLabels[times.length-1]||'Add slot'}
+        </button>`
+      : `<span style="font-size:10px;color:rgba(156,39,176,.5);font-style:italic;">Max 4 Jumu'ah times</span>`;
+    return `
+      <div style="margin-bottom:14px;background:rgba(156,39,176,.05);border:1px solid rgba(156,39,176,.15);border-radius:10px;padding:12px 14px;">
+        <div class="jumua-date" style="margin-bottom:8px;">Friday ${formatted}</div>
+        <div class="jumua-slots">${slots}</div>
+        <div style="margin-top:6px;">${addBtn}</div>
+      </div>`;
+  }).join('');
+}
+
+window.clearParse = (ctx) => {
+  const pfx = ctx==='setup'?'setup':'admin';
+  DS.parsedRows = []; DS.fridayJummahs = {};
+  document.getElementById(pfx+'-parse-result').classList.remove('visible');
+  document.getElementById(pfx===('setup')?'photo-input':'a-photo-input').value='';
+  document.getElementById(pfx===('setup')?'csv-input':'a-csv-input').value='';
+  if (pfx==='setup') document.getElementById('step3-actions').style.display='flex';
+};
+
+// ── LOAD EXISTING TIMETABLE FROM FIRESTORE ────────────────────────
+window.loadExistingTimetable = async () => {
+  if (!DS.mosqueId) { showToast('No mosque linked','error'); return; }
+  const btn  = document.getElementById('load-tt-btn');
+  const spin = document.getElementById('load-tt-spinner');
+  const msg  = document.getElementById('load-tt-msg');
+  btn.disabled = true; spin.style.display = 'inline-block'; msg.textContent = 'Loading…';
+
+  try {
+    const snap = await getDocs(collection(db, 'mosques', DS.mosqueId, 'prayerTimes'));
+    if (snap.empty) { msg.textContent = 'No timetable in the database yet — upload one below.'; return; }
+
+    // Filter from 1st of current month onwards (client-side — no index needed)
+    const now   = new Date();
+    const fromKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+    const rows = []; const jummahs = {};
+    snap.docs
+      .filter(d => d.id >= fromKey)
+      .sort((a,b) => a.id.localeCompare(b.id))
+      .forEach(d => {
+        const r   = d.data();
+        const [y,mo,da] = d.id.split('-');
+        const dt  = new Date(Number(y), Number(mo)-1, Number(da));
+        const row = {
+          date:    `${da}/${mo}/${y}`,
+          dateKey: d.id,
+          day:     WEEKDAYS[dt.getDay()] || '',
+          fajrB:   r.fajrB   || '', fajrJ:   r.fajrJ   || '',
+          sunrise: r.sunrise  || '',
+          dhuhrB:  r.dhuhrB  || '', dhuhrJ:  r.dhuhrJ  || '',
+          asrB:    r.asrB    || '', asrJ:    r.asrJ    || '',
+          maghrib: r.maghrib  || '',
+          ishaB:   r.ishaB   || '', ishaJ:   r.ishaJ   || '',
+        };
+        rows.push(row);
+        if (row.day === 'Friday') {
+          const jt = Array.isArray(r.jummahTimes) ? r.jummahTimes.filter(Boolean) : [];
+          jummahs[d.id] = jt.length ? jt : (r.dhuhrJ ? [r.dhuhrJ] : ['']);
+        }
+      });
+
+    if (!rows.length) { msg.textContent = 'No entries from this month onwards found.'; return; }
+
+    DS.parsedRows    = rows;
+    DS.fridayJummahs = jummahs;
+    renderParseTable('admin-parse-tbody', rows);
+    document.getElementById('admin-parse-count').textContent = rows.length;
+    document.getElementById('admin-parse-result').classList.add('visible');
+    renderJumuaSlots('admin-jumua-section','admin-jumua-slots', jummahs);
+    msg.textContent = `✓ ${rows.length} days loaded from database`;
+  } catch(e) {
+    msg.textContent = 'Error: ' + e.message;
+  } finally {
+    btn.disabled = false; spin.style.display = 'none';
+  }
+};
+
+// ── SAVE SINGLE ROW TO FIRESTORE ──────────────────────────────────
+window.saveRowToFirestore = async (i) => {
+  const r = DS.parsedRows[i];
+  if (!r || !r.dateKey || !DS.mosqueId) return;
+  const btn = document.querySelector(`#row-tr-${i} button`);
+  if (btn) { btn.textContent = '…'; btn.disabled = true; }
+  try {
+    const data = {
+      fajrB: r.fajrB, fajrJ: r.fajrJ, sunrise: r.sunrise,
+      dhuhrB: r.dhuhrB, dhuhrJ: r.dhuhrJ,
+      asrB: r.asrB, asrJ: r.asrJ,
+      maghrib: r.maghrib, ishaB: r.ishaB, ishaJ: r.ishaJ,
+    };
+    if (DS.fridayJummahs[r.dateKey]) {
+      data.jummahTimes = DS.fridayJummahs[r.dateKey].filter(Boolean);
+    }
+    await setDoc(doc(db,'mosques',DS.mosqueId,'prayerTimes',r.dateKey), data, { merge: true });
+    await triggerDisplayRefresh(DS.uid);
+    if (btn) { btn.textContent = '✓ Saved'; btn.style.background = 'var(--mint)'; }
+    setTimeout(() => { if (btn) { btn.textContent = 'Save row'; btn.style.background = 'var(--gold)'; btn.disabled = false; } }, 2000);
+  } catch(e) {
+    if (btn) { btn.textContent = 'Error'; btn.disabled = false; }
+    showToast('Save failed: '+e.message,'error');
+  }
+};
+
+// ── FIRESTORE WRITE — exact field names from uploadMosque.dart ────
+// mosques/{mosqueId}/prayerTimes/{yyyy-MM-dd}
+// Fields: fajrB, fajrJ, sunrise, dhuhrB, dhuhrJ, asrB, asrJ, maghrib, ishaB, ishaJ
+// Friday only: jummahTimes: [...]
+async function pushTimetableToFirestore(mosqueId, rows, jummahs) {
+  const batch = writeBatch(db);
+  let count = 0;
+  for (const r of rows) {
+    if (!r.dateKey) continue;
+    const ref = doc(db, 'mosques', mosqueId, 'prayerTimes', r.dateKey);
+    const data = {
+      fajrB:   r.fajrB,   fajrJ:   r.fajrJ,
+      sunrise: r.sunrise,
+      dhuhrB:  r.dhuhrB,  dhuhrJ:  r.dhuhrJ,
+      asrB:    r.asrB,    asrJ:    r.asrJ,
+      maghrib: r.maghrib,
+      ishaB:   r.ishaB,   ishaJ:   r.ishaJ,
+    };
+    // Attach jummahTimes to Friday rows — matching _uploadRowsToFirestore exactly
+    if (jummahs[r.dateKey] && jummahs[r.dateKey].length) {
+      data.jummahTimes = jummahs[r.dateKey].filter(Boolean);
+    }
+    batch.set(ref, data, { merge: false });
+    count++;
+    if (count >= 400) {
+      await batch.commit();
+      count = 0;
+    }
+  }
+  if (count > 0) await batch.commit();
+}
+
+// Sets needsRefresh = true on displayMosques/{uid} so app reloads itself
+async function triggerDisplayRefresh(uid) {
+  await setDoc(doc(db, 'displayMosques', uid), { needsRefresh: true }, { merge: true });
+}
+
+// ── SUBMIT APPLICATION ────────────────────────────────────────────
+// Creates displayAccounts/{uid} — status:'pending'
+// displayMosques/{uid} is created by superadmin on approval
+window.submitApplicationOnly = async () => {
+  if (!DS.user) { showToast('Please sign in first','error'); return; }
+
+  // Get mosque data from MS state (Google Maps selected OR manual entry)
+  const m = MS.selected || MS.manual;
+  if (!m || !m.name || !m.city) { showToast('No mosque selected','error'); return; }
+
+  // mosqueId exactly matches dart: '${city}_${mosqueName}' (no replacing spaces)
+  const mosqueId = `${m.city}_${m.name}`;
+  DS.mosqueId = mosqueId;
+
+  // displayAccounts/{uid} — document ID is the user's UID (matches Firestore screenshot)
+  const whatsapp = (document.getElementById('f-whatsapp')?.value || '').trim().replace(/\D/g,'');
+  // Also pull phone from UserData if stored at signup
+  let userPhone = '';
+  try {
+    const uSnap = await getDoc(doc(db, 'UserData', DS.uid));
+    userPhone = uSnap.data()?.phone || '';
+  } catch(_) {}
+  await setDoc(doc(db,'displayAccounts',DS.uid), {
+    email:         DS.user.email,
+    mosqueName:    m.name,
+    mosqueId:      mosqueId,
+    mosqueCity:    m.city,
+    mosqueAddress: m.address || '',
+    placeId:       m.place_id || '',
+    whatsapp:      whatsapp,
+    phone:         userPhone,
+    status:        'pending',
+    requestedAt:   serverTimestamp(),
+  });
+
+  // mosques/{mosqueId} — exact fields from _uploadRowsToFirestore in uploadMosque.dart:
+  // name, city, Area, lat, long, location(GeoPoint), updatedAt
+  const { GeoPoint } = await import('https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js');
+  const mosqueDocData = {
+    name:      m.name,
+    city:      m.city,
+    Area:      m.area  || '',
+    lat:       m.lat   || 0,
+    long:      m.lng   || 0,
+    location:  (m.lat && m.lng) ? new GeoPoint(m.lat, m.lng) : null,
+    address:   m.address  || '',
+    placeId:   m.place_id || '',
+    updatedAt: serverTimestamp(),
+  };
+  await setDoc(doc(db,'mosques',mosqueId), mosqueDocData, { merge: true });
+
+  document.getElementById('done-email').textContent = DS.user.email;
+  showToast('Application submitted!');
+};
+
+window.confirmAndContinue = async () => {
+  if (!DS.user) { showToast('Please sign in first','error'); return; }
+  await submitApplicationOnly();
+  if (DS.parsedRows.length && DS.mosqueId) {
+    await pushTimetableToFirestore(DS.mosqueId, DS.parsedRows, DS.fridayJummahs);
+    showToast(`${DS.parsedRows.length} days saved!`);
+  }
+  goStep(4);
+};
+
+// ── SAMPLE CSV DOWNLOAD ───────────────────────────────────────────
+window.downloadSampleCSV = (e) => {
+  e.preventDefault(); e.stopPropagation();
+  const hdr = 'date,fajrB,fajrJ,sunrise,dhuhrB,dhuhrJ,asrB,asrJ,maghrib,ishaB,ishaJ';
+  const row = '01/06/2025,03:42,04:00,05:18,13:07,13:30,17:22,18:00,21:15,23:00,23:15';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([hdr+'\n'+row],{type:'text/csv'}));
+  a.download = 'ihsan_timetable_template.csv'; a.click();
+};
+
+// ── ADMIN PANEL INIT ──────────────────────────────────────────────
+// Mirrors _checkMosqueBinding() in mosqueDisplayScreen.dart exactly
+async function initAdminPanel() {
+  const gate      = document.getElementById('admin-gate');
+  const noAcct    = document.getElementById('admin-no-account');
+  const pending   = document.getElementById('admin-pending');
+  const rejected  = document.getElementById('admin-rejected');
+  const content   = document.getElementById('admin-content');
+  [gate,noAcct,pending,rejected,content].forEach(el => el.style.display='none');
+
+  if (!DS.user) { gate.style.display='block'; return; }
+
+  // Step 1: check displayAccounts/{uid} — same as dart Step 1
+  const accountSnap = await getDoc(doc(db,'displayAccounts',DS.uid));
+  if (!accountSnap.exists()) { noAcct.style.display='block'; return; }
+
+  const acct   = accountSnap.data();
+  DS.accountDoc = acct;
+  const status = acct.status || 'pending';
+
+  if (status === 'rejected') { rejected.style.display='block'; return; }
+
+  if (status === 'pending') {
+    pending.style.display='block';
+    // Listen for approval — matches _listenForApproval() in dart
+    if (DS.approvalSub) DS.approvalSub();
+    DS.approvalSub = onSnapshot(doc(db,'displayAccounts',DS.uid), snap => {
+      const newStatus = snap.data()?.status || 'pending';
+      if (newStatus !== 'pending') {
+        DS.approvalSub(); DS.approvalSub = null;
+        initAdminPanel(); // re-run now approved
+      }
+    });
+    return;
+  }
+
+  // Step 2: approved — check displayMosques/{uid} — matches dart Step 2
+  const mosqueSnap = await getDoc(doc(db,'displayMosques',DS.uid));
+  if (!mosqueSnap.exists() || !mosqueSnap.data()?.mosqueId) {
+    // Approved but superadmin hasn't linked mosque yet
+    content.style.display='block';
+    document.getElementById('admin-mosque-name').textContent = acct.mosqueName || 'Your Mosque';
+    document.getElementById('admin-mosque-city').textContent = acct.mosqueCity || '';
+    document.getElementById('admin-status-badge').className = 'badge approved';
+    document.getElementById('admin-status-badge').innerHTML = '<div class="badge-dot"></div> Approved — linking mosque…';
+    return;
+  }
+
+  DS.mosqueDoc = mosqueSnap.data();
+  DS.mosqueId  = DS.mosqueDoc.mosqueId;
+
+  content.style.display='block';
+  document.getElementById('admin-mosque-name').textContent = DS.mosqueDoc.mosqueName || acct.mosqueName;
+  document.getElementById('admin-mosque-city').textContent = DS.mosqueDoc.mosqueCity || acct.mosqueCity;
+  document.getElementById('admin-status-badge').className = 'badge approved';
+  document.getElementById('admin-status-badge').innerHTML = '<div class="badge-dot"></div> Live ✓';
+  document.getElementById('a-ticker').value = DS.mosqueDoc.customTickerMessage || '';
+  document.getElementById('a-ticker-preview').textContent = DS.mosqueDoc.customTickerMessage || 'Your message will appear here…';
+  document.getElementById('a-donation').value = DS.mosqueDoc.donationLink || '';
+  document.getElementById('a-account-details').innerHTML = `
+    <div><strong style="color:var(--white);">Email:</strong> ${DS.user.email}</div>
+    <div><strong style="color:var(--white);">Mosque ID:</strong> ${DS.mosqueId}</div>
+    <div><strong style="color:var(--white);">Linked display doc:</strong> displayMosques/${DS.uid}</div>
+    <div><strong style="color:var(--white);">Status:</strong> ${status}</div>
+    <div style="margin-top:8px;font-size:12px;color:rgba(120,152,200,.75);">
+      Visual display settings (themes, Adhan sounds, background patterns, custom photos, blackout duration, colour temperature)
+      are configured from the Ihsan display app on your mosque's TV device — not from the web portal.
+    </div>`;
+
+  loadCurrentTimetable();
+  loadJumuaFridays();
+  loadPhotosPanel();
+  loadDisplaySettings(DS.mosqueDoc);
+}
+
+window.adminNav = (panel, btn) => {
+  document.querySelectorAll('.admin-nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ap-'+panel).classList.add('active');
+};
+
+// Load last 3 timetable entries to show what's live
+async function loadCurrentTimetable() {
+  const el = document.getElementById('admin-current-tt');
+  if (!DS.mosqueId) { el.textContent='No mosque linked.'; return; }
+  try {
+    const snap = await getDocs(
+      query(collection(db,'mosques',DS.mosqueId,'prayerTimes'),
+            orderBy('__name__','desc'), limit(5))
+    );
+    if (snap.empty) { el.textContent='No timetable uploaded yet.'; return; }
+    el.innerHTML = snap.docs.map(d => {
+      const r = d.data();
+      return `<div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+        <span style="font-size:11px;font-weight:700;color:var(--gold);width:90px;flex-shrink:0;">${d.id}</span>
+        <span style="font-size:11px;color:var(--muted);">Fajr ${r.fajrB||'—'}|${r.fajrJ||'—'} · Dhuhr ${r.dhuhrB||'—'}|${r.dhuhrJ||'—'} · Asr ${r.asrB||'—'}|${r.asrJ||'—'} · Maghrib ${r.maghrib||'—'} · Isha ${r.ishaB||'—'}|${r.ishaJ||'—'}</span>
+      </div>`;
+    }).join('');
+  } catch(e) { el.textContent='Could not load: '+e.message; }
+}
+
+// Load Friday docs for Jumu'ah editor
+async function loadJumuaFridays() {
+  const el = document.getElementById('jumua-friday-list');
+  if (!DS.mosqueId) { el.innerHTML='<div style="color:var(--muted);font-size:13px;">No mosque linked.</div>'; return; }
+  try {
+    const snap = await getDocs(collection(db,'mosques',DS.mosqueId,'prayerTimes'));
+    const fridays = snap.docs.filter(d => {
+      const dt = new Date(d.id); return dt.getDay()===5;
+    }).sort((a,b)=>a.id.localeCompare(b.id));
+
+    if (!fridays.length) { el.innerHTML='<div style="color:var(--muted);font-size:13px;">No Friday data found. Upload a timetable first.</div>'; return; }
+
+    DS._jumuaState = {};
+    fridays.forEach(d => {
+      const r = d.data();
+      const existing = Array.isArray(r.jummahTimes) && r.jummahTimes.length ? r.jummahTimes : [r.dhuhrJ||''];
+      DS._jumuaState[d.id] = [...existing];
+    });
+
+    el.innerHTML = fridays.map(d => `<div style="margin-bottom:12px;" id="jf-wrap-${d.id}"></div>`).join('');
+    fridays.forEach(d => renderJumuaFridayRow(d.id));
+
+  } catch(e) { el.innerHTML='<div style="color:var(--muted);">'+e.message+'</div>'; }
+}
+
+function renderJumuaFridayRow(dateId) {
+  const wrap = document.getElementById(`jf-wrap-${dateId}`);
+  if (!wrap || !DS._jumuaState) return;
+  const times = DS._jumuaState[dateId] || [''];
+  const formatted = dateId.split('-').reverse().join('/');
+
+  const slots = times.map((t, si) => `
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+      <input id="jf-${dateId}-${si}" value="${t}" placeholder="13:30"
+             onchange="DS._jumuaState['${dateId}'][${si}]=this.value"
+             style="background:rgba(156,39,176,.12);border:1px solid rgba(156,39,176,.3);border-radius:8px;
+                    padding:7px 10px;color:#ce93d8;font-family:'DM Sans',sans-serif;font-size:13px;
+                    font-weight:700;width:90px;outline:none;text-align:center;">
+      <button onclick="DS._jumuaState['${dateId}'].splice(${si},1);renderJumuaFridayRow('${dateId}')"
+        style="font-size:11px;color:rgba(255,100,100,.6);background:none;border:none;cursor:pointer;padding:2px 4px;">✕</button>
+    </div>`).join('');
+
+  const addBtn = times.length < 4
+    ? `<button onclick="DS._jumuaState['${dateId}'].push('');renderJumuaFridayRow('${dateId}')"
+        style="font-size:12px;color:#ce93d8;background:rgba(156,39,176,.08);border:1px dashed rgba(156,39,176,.35);
+               border-radius:7px;padding:6px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">
+        + Add slot
+      </button>`
+    : `<span style="font-size:10px;color:rgba(156,39,176,.5);font-style:italic;">Max 4 slots</span>`;
+
+  wrap.innerHTML = `
+    <div style="background:rgba(156,39,176,.05);border:1px solid rgba(156,39,176,.15);border-radius:10px;padding:12px 14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:10px;">Friday ${formatted}</div>
+      ${slots}
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;">
+        ${addBtn}
+        <button onclick="saveJumuaDay('${dateId}')" class="btn btn-ghost" style="font-size:11px;padding:6px 12px;">Save</button>
+      </div>
+    </div>`;
+}
+
+window.renderJumuaFridayRow = renderJumuaFridayRow;
+
+window.saveJumuaDay = async (dateId) => {
+  if (!DS.mosqueId) return;
+  const state = DS._jumuaState?.[dateId] || [];
+  state.forEach((_, si) => {
+    const inp = document.getElementById(`jf-${dateId}-${si}`);
+    if (inp) state[si] = inp.value.trim();
+  });
+  const slots = state.filter(Boolean);
+  await setDoc(doc(db,'mosques',DS.mosqueId,'prayerTimes',dateId),
+    { jummahTimes: slots }, { merge: true });
+  await triggerDisplayRefresh(DS.uid);
+  showToast("Jumu'ah times saved for "+dateId);
+};
+
+window.adminPublishTimetable = async () => {
+  if (!DS.parsedRows.length) { showToast('No timetable data','error'); return; }
+  if (!DS.mosqueId) { showToast('No mosque linked','error'); return; }
+  try {
+    await pushTimetableToFirestore(DS.mosqueId, DS.parsedRows, DS.fridayJummahs);
+    await triggerDisplayRefresh(DS.uid);
+    showToast(`${DS.parsedRows.length} days published — display will refresh!`);
+    clearParse('admin');
+    loadCurrentTimetable();
+    loadJumuaFridays();
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+};
+
+window.saveTicker = async () => {
+  if (!DS.uid) return;
+  const msg = document.getElementById('a-ticker').value.trim();
+  await setDoc(doc(db,'displayMosques',DS.uid),
+    { customTickerMessage: msg, needsRefresh: true }, { merge: true });
+  showToast('Announcement saved — display refreshing');
+};
+
+// ── PHOTOS & BACKGROUND — called from initAdminPanel ────────────
+// Background image: displayMosques/{mosqueId}/background/bg.{ext}
+// Path stored in displayMosques/{uid}.setting_bgImagePath
+// Slideshow images: displayMosques/{mosqueId}/images/{filename}
+// (matches _fetchDisplayImages path in mosqueDisplayScreen.dart)
+
+async function loadPhotosPanel() {
+  if (!DS.mosqueId || !DS.uid) return;
+  await Promise.all([ loadBgImage(), loadSlideImages() ]);
+}
+
+async function loadBgImage() {
+  const wrap = document.getElementById('bg-current-wrap');
+  const img  = document.getElementById('bg-current-img');
+  const pathEl = document.getElementById('bg-current-path');
+  // Read setting_bgImagePath from displayMosques/{uid}
+  const snap = await getDoc(doc(db,'displayMosques',DS.uid));
+  const bgPath = snap.data()?.setting_bgImagePath || '';
+  if (!bgPath) { wrap.style.display='none'; return; }
+  try {
+    const url = await getDownloadURL(sRef(storage, bgPath));
+    img.src = url;
+    pathEl.textContent = '📂 ' + bgPath;
+    wrap.style.display = 'block';
+  } catch(e) {
+    wrap.style.display='none';
+  }
+}
+
+window.uploadBgImage = async (input) => {
+  const file = input.files[0]; if (!file) return;
+  if (!DS.mosqueId || !DS.uid) { showToast('No mosque linked','error'); return; }
+  const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
+  // Path matches what the dart app reads: stored in setting_bgImagePath
+  const path = `displayMosques/${DS.mosqueId}/background/bg.${ext}`;
+  document.getElementById('bg-uploading').style.display='block';
+  try {
+    const storageRef = sRef(storage, path);
+    await uploadBytes(storageRef, file);
+    // Save path + pattern flag to displayMosques/{uid}
+    // setting_bgImagePath is the new field; backgroundPattern index for customImage = 10
+    // (matches BackgroundPattern.customImage = index 10 in the dart enum)
+    await setDoc(doc(db,'displayMosques',DS.uid), {
+      setting_bgImagePath: path,
+      setting_bgPattern:   10,   // BackgroundPattern.customImage index
+      needsRefresh:        true,
+    }, { merge: true });
+    showToast('Background uploaded — TV will refresh!');
+    input.value='';
+    await loadBgImage();
+  } catch(e) {
+    showToast('Upload failed: '+e.message,'error');
+  } finally {
+    document.getElementById('bg-uploading').style.display='none';
+  }
+};
+
+window.removeBgImage = async () => {
+  if (!DS.uid) return;
+  const snap = await getDoc(doc(db,'displayMosques',DS.uid));
+  const bgPath = snap.data()?.setting_bgImagePath || '';
+  try {
+    if (bgPath) await deleteObject(sRef(storage, bgPath));
+  } catch(e) { /* already deleted — fine */ }
+  // Clear path and revert pattern to none (0)
+  // Matches _clearBackgroundImage() in dart: pattern → BackgroundPattern.none (index 0)
+  await setDoc(doc(db,'displayMosques',DS.uid), {
+    setting_bgImagePath: '',
+    setting_bgPattern:   0,   // BackgroundPattern.none
+    needsRefresh:        true,
+  }, { merge: true });
+  document.getElementById('bg-current-wrap').style.display='none';
+  document.getElementById('bg-file-input').value='';
+  showToast('Background removed — TV reverting to pattern');
+};
+
+// Slideshow images — matches _fetchDisplayImages / _uploadImageFromDevice in dart
+async function loadSlideImages() {
+  const grid     = document.getElementById('slide-grid');
+  const countEl  = document.getElementById('slide-count');
+  if (!DS.mosqueId) { grid.innerHTML='<div style="font-size:12px;color:var(--muted);">No mosque linked.</div>'; return; }
+  try {
+    const listRef = sRef(storage, `displayMosques/${DS.mosqueId}/images`);
+    const result  = await listAll(listRef);
+    countEl.textContent = result.items.length;
+    if (!result.items.length) {
+      grid.innerHTML='<div style="font-size:12px;color:var(--muted);grid-column:1/-1;">No images uploaded yet.</div>';
+      return;
+    }
+    // Fetch download URLs in parallel
+    const items = await Promise.all(result.items.map(async item => ({
+      path: item.fullPath,
+      name: item.name,
+      url:  await getDownloadURL(item),
+    })));
+    grid.innerHTML = items.map(it => `
+      <div class="slide-thumb">
+        <img src="${it.url}" alt="${it.name}" loading="lazy">
+        <button class="slide-thumb-del" onclick="deleteSlideImage('${it.path}')">✕</button>
+        <div class="slide-thumb-name">${it.name}</div>
+      </div>`).join('');
+  } catch(e) {
+    grid.innerHTML=`<div style="font-size:12px;color:var(--muted);grid-column:1/-1;">Error: ${e.message}</div>`;
+  }
+}
+
+window.uploadSlideImages = async (input) => {
+  const files = Array.from(input.files); if (!files.length) return;
+  if (!DS.mosqueId) { showToast('No mosque linked','error'); return; }
+  const prog = document.getElementById('slide-upload-progress');
+  document.getElementById('slide-uploading').style.display='block';
+  let done = 0;
+  try {
+    for (const file of files) {
+      prog.textContent = `Uploading ${done+1}/${files.length}: ${file.name}…`;
+      const ts  = Date.now();
+      const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+      // Path matches _uploadImageFromDevice storage path in dart
+      const path = `displayMosques/${DS.mosqueId}/images/${ts}_${file.name}`;
+      await uploadBytes(sRef(storage, path), file);
+      done++;
+    }
+    // Set needsRefresh so app reloads images (matches dart _fetchDisplayImages trigger)
+    await setDoc(doc(db,'displayMosques',DS.uid), { needsRefresh: true }, { merge: true });
+    showToast(`${done} image(s) uploaded — TV will refresh!`);
+    input.value='';
+    await loadSlideImages();
+  } catch(e) {
+    showToast('Upload error: '+e.message,'error');
+  } finally {
+    document.getElementById('slide-uploading').style.display='none';
+  }
+};
+
+window.deleteSlideImage = async (path) => {
+  // Matches _deleteDisplayImage in dart: delete from Storage, list reloads
+  try {
+    await deleteObject(sRef(storage, path));
+    await setDoc(doc(db,'displayMosques',DS.uid), { needsRefresh: true }, { merge: true });
+    showToast('Image removed');
+    await loadSlideImages();
+  } catch(e) {
+    showToast('Delete failed: '+e.message,'error');
+  }
+};
+
+// ── MOSQUE SELECTION STATE (Google Maps) ─────────────────────────
+// Matches uploadMosque.dart: name, city, Area, lat, long, location(GeoPoint)
+const MS = {
+  selected: null,  // { name, city, area, lat, lng, address, place_id }
+  manual:   {},    // fallback manual entry
+  mapsKey:  null,
+  miniMap:  null,
+  miniMarker: null,
+};
+
+// Load Maps key via Cloud Function (onRequest — fetch directly)
+const CF_BASE = 'https://europe-west2-ihsanapp-e2d2d.cloudfunctions.net';
+async function loadMapsKey() {
+  if (MS.mapsKey) return MS.mapsKey;
+  document.getElementById('maps-key-loading').style.display = 'flex';
+  try {
+    const res = await fetch(`${CF_BASE}/getMapsKeysWeb`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ platform: 'web' }),
+    });
+    const json = await res.json();
+    MS.mapsKey = json.key || null;
+  } catch(e) {
+    console.warn('Could not load Maps key:', e);
+  }
+  document.getElementById('maps-key-loading').style.display = 'none';
+  return MS.mapsKey;
+}
+
+// Text search using Places Text Search API — mirrors _searchPlaceByText in uploadMosque.dart
+window.searchMosque = async () => {
+  const q = document.getElementById('mosque-search-input').value.trim();
+  if (!q) return;
+
+  const resultsDiv = document.getElementById('mosque-search-results');
+  const list = document.getElementById('mosque-results-list');
+  resultsDiv.style.display = 'block';
+  list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Searching…</div>';
+
+  try {
+    // Proxy through CF — browser can't call Places API directly (CORS)
+    const res = await fetch(`${CF_BASE}/searchPlaces`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: q }),
+    });
+    const data = await res.json();
+    const results = data.results || [];
+
+    if (!results.length) {
+      list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">No results found. Try a different search or use manual entry below.</div>';
+      return;
+    }
+
+    list.innerHTML = results.slice(0,8).map((r,i) => `
+      <div onclick="selectMosque(${i})" data-idx="${i}"
+        style="display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:10px;
+               border:1px solid rgba(212,175,95,.15);margin-bottom:6px;cursor:pointer;
+               background:rgba(255,255,255,.03);transition:background .14s;"
+        onmouseover="this.style.background='rgba(255,255,255,.07)'"
+        onmouseout="this.style.background='rgba(255,255,255,.03)'">
+        <span style="font-size:18px;flex-shrink:0;">🕌</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;">${r.name}</div>
+          <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.formatted_address||''}</div>
+        </div>
+      </div>`).join('');
+
+    // Store results for selection
+    window._mosqueSearchResults = results;
+  } catch(e) {
+    // Fallback: if no searchPlaces CF, direct fetch (won't work in prod due to CORS — use CF)
+    list.innerHTML = `<div style="font-size:12px;color:#e05555;padding:8px 0;">Search error: ${e.message}. Use manual entry below.</div>`;
+  }
+};
+
+window.selectMosque = async (idx) => {
+  const r = window._mosqueSearchResults?.[idx];
+  if (!r) return;
+
+  const lat = r.geometry?.location?.lat || 0;
+  const lng = r.geometry?.location?.lng || 0;
+  const addr = r.formatted_address || '';
+
+  // Extract city via reverseGeocode CF — mirrors _updateCityFromCoordinates in uploadMosque.dart
+  let city = '', area = '';
+  try {
+    const res = await fetch(`${CF_BASE}/reverseGeocode`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lat, lng }),
+    });
+    const data = await res.json();
+    city = data.city || '';
+    area = data.area || '';
+  } catch(e) {
+    // Fallback: parse from address string
+    const parts = addr.split(',').map(s=>s.trim());
+    city = parts.length >= 2 ? parts[parts.length-3] || parts[1] : '';
+  }
+
+  MS.selected = {
+    name:     r.name,
+    city:     city,
+    area:     area,
+    lat:      lat,
+    lng:      lng,
+    address:  addr,
+    place_id: r.place_id,
+  };
+
+  // Show confirmation card
+  document.getElementById('mosque-search-results').style.display = 'none';
+  document.getElementById('mosque-selected-card').style.display = 'block';
+  document.getElementById('sel-mosque-name-display').textContent    = r.name;
+  document.getElementById('sel-mosque-address-display').textContent = addr;
+  document.getElementById('sel-mosque-coords-display').textContent  = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+  // Show mini map
+  initMiniMap(lat, lng, r.name);
+
+  document.getElementById('step2-next').disabled = false;
+};
+
+function initMiniMap(lat, lng, label) {
+  if (!window.google?.maps) return;
+  const mapDiv = document.getElementById('mosque-mini-map');
+  const pos = { lat, lng };
+  if (!MS.miniMap) {
+    MS.miniMap = new google.maps.Map(mapDiv, {
+      center: pos, zoom: 16,
+      mapTypeId: 'roadmap',
+      disableDefaultUI: true, zoomControl: true,
+      styles: [{ elementType:'geometry', stylers:[{color:'#0A193C'}] },
+               { elementType:'labels.text.fill', stylers:[{color:'#7898C8'}] },
+               { featureType:'road', elementType:'geometry', stylers:[{color:'#122A5F'}] }]
+    });
+  } else {
+    MS.miniMap.setCenter(pos);
+  }
+  if (MS.miniMarker) MS.miniMarker.setMap(null);
+  MS.miniMarker = new google.maps.Marker({
+    position: pos, map: MS.miniMap, title: label,
+    icon: { path: google.maps.SymbolPath.CIRCLE, scale: 9, fillColor: '#D4AF5F', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 }
+  });
+}
+
+window.clearMosqueSelection = () => {
+  MS.selected = null;
+  document.getElementById('mosque-selected-card').style.display = 'none';
+  document.getElementById('mosque-search-input').value = '';
+  document.getElementById('step2-next').disabled = true;
+};
+
+window.onManualChange = () => {
+  const name = document.getElementById('f-mosque-name-manual').value.trim();
+  const city = document.getElementById('f-mosque-city-manual').value.trim();
+  const lat  = parseFloat(document.getElementById('f-mosque-lat-manual').value) || 0;
+  const lng  = parseFloat(document.getElementById('f-mosque-lng-manual').value) || 0;
+  MS.manual = { name, city, area:'', lat, lng, address: document.getElementById('f-mosque-postcode-manual')?.value||'' };
+  document.getElementById('step2-next').disabled = !(name && city);
+};
+
+// Load Maps script on page load (deferred, same as index.html)
+async function initMapsForDisplay() {
+  const key = await loadMapsKey();
+  if (!key) return;
+  if (window.google?.maps) return;
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&loading=async`;
+  script.async = true;
+  document.head.appendChild(script);
+}
+initMapsForDisplay();
+
+// ── DISPLAY SETTINGS ENUMS (mirrors display_settings.dart exactly) ────────────
+// Indices match what _saveDisplaySettings writes / _loadDisplaySettingsFromMap reads
+const BACKGROUND_STYLES = [
+  { index:0, label:'Navy',        desc:'Deep navy — default' },
+  { index:1, label:'Deep Black',  desc:'Near-black deep space' },
+  { index:2, label:'Dark Green',  desc:'Deep forest green' },
+  { index:3, label:'Dark Maroon', desc:'Deep rich maroon' },
+  { index:4, label:'Warm Gold',   desc:'Warm dark amber' },
+  { index:5, label:'Dark Brown',  desc:'Deep warm brown' },
+  { index:6, label:'Deep Purple', desc:'Deep royal purple' },
+  { index:7, label:'Slate Grey',  desc:'Dark slate grey' },
+];
+const COLOUR_TEMPS = [
+  { index:0, label:'Warm',     desc:'Warm amber tone' },
+  { index:1, label:'Neutral',  desc:'Natural white — default' },
+  { index:2, label:'Cool',     desc:'Cool daylight tone' },
+];
+const BG_PATTERNS = [
+  { index:0,  label:'None',          desc:'Plain background' },
+  { index:1,  label:'Geometric',     desc:'Subtle geometric overlay' },
+  { index:2,  label:'Star Field',    desc:'Star field pattern' },
+  { index:3,  label:'Gradient Mesh', desc:'Gradient mesh overlay' },
+  { index:4,  label:'Wood',          desc:'Wood grain texture' },
+  { index:5,  label:'Arabesque',     desc:'Islamic arabesque' },
+  { index:6,  label:'Circuit Lines', desc:'Circuit board lines' },
+  { index:7,  label:'Hex Grid',      desc:'Hexagonal grid' },
+  { index:8,  label:'Dots',          desc:'Dot grid' },
+  { index:9,  label:'Waves',         desc:'Wave lines' },
+  // index 10 = customImage — set via image upload, not chip
+];
+const BLACKOUT_DURATIONS = [
+  { index:0, label:'5 min',  desc:'5 minutes' },
+  { index:1, label:'7 min',  desc:'7 minutes — default' },
+  { index:2, label:'10 min', desc:'10 minutes' },
+  { index:3, label:'15 min', desc:'15 minutes' },
+];
+
+// Display settings state — loaded from displayMosques/{uid}
+const DISP = {
+  bgStyle:    0,
+  colourTemp: 1,
+  bgPattern:  0,
+  showTicker: true,
+  jumuahEnabled: true,
+  blackoutDuration: 1,
+};
+
+function renderDisplayPanel() {
+  const el = document.getElementById('ap-display-inner');
+  if (!el) return;
+
+  function chipGroup(id, items, current, onSelect) {
+    return `<div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:6px;" id="chips-${id}">
+      ${items.map(it=>`
+        <button onclick="${onSelect}(${it.index})"
+          title="${it.desc}"
+          style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;
+                 font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid;
+                 transition:background .14s;
+                 background:${it.index===current?'rgba(212,175,95,.18)':'rgba(255,255,255,.05)'};
+                 border-color:${it.index===current?'rgba(212,175,95,.5)':'rgba(255,255,255,.1)'};
+                 color:${it.index===current?'var(--gold)':'var(--muted)'};
+                 " id="chip-${id}-${it.index}">
+          ${it.label}
+        </button>`).join('')}
+    </div>`;
+  }
+
+  el.innerHTML = `
+    <!-- Toggles -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">Display Options</div>
+      ${toggleRow('disp-ticker','Scrolling Ticker','Show mosque name and announcement at the bottom',DISP.showTicker,'DISP.showTicker')}
+      ${toggleRow('disp-jumuah',"Jumu'ah Display","Enable Jumu'ah adhan, khutbah overlay and iqamah on Fridays",DISP.jumuahEnabled,'DISP.jumuahEnabled')}
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:18px 0;">
+
+    <!-- Blackout duration -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Blackout After Jamā'ah</div>
+      <div style="font-size:11.5px;color:rgba(120,152,200,.7);margin-bottom:10px;">How long the screen goes dark after each congregation prayer.</div>
+      ${chipGroup('blackout', BLACKOUT_DURATIONS, DISP.blackoutDuration, 'setBlackout')}
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:18px 0;">
+
+    <!-- Background style -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Background Style</div>
+      <div style="font-size:11.5px;color:rgba(120,152,200,.7);margin-bottom:10px;">Overall background tone of the display screen.</div>
+      ${chipGroup('bgstyle', BACKGROUND_STYLES, DISP.bgStyle, 'setBgStyle')}
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:18px 0;">
+
+    <!-- Colour temperature -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Colour Temperature</div>
+      <div style="font-size:11.5px;color:rgba(120,152,200,.7);margin-bottom:10px;">Adjusts warm/cool tone for different room lighting conditions.</div>
+      ${chipGroup('colourtemp', COLOUR_TEMPS, DISP.colourTemp, 'setColourTemp')}
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:18px 0;">
+
+    <!-- Background pattern (excludes customImage — that's via the Photos panel) -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Background Pattern</div>
+      <div style="font-size:11.5px;color:rgba(120,152,200,.7);margin-bottom:10px;">Subtle overlay. Choosing a pattern clears any background image (use Photos tab for custom image).</div>
+      ${chipGroup('bgpattern', BG_PATTERNS, DISP.bgPattern===10?0:DISP.bgPattern, 'setBgPattern')}
+    </div>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:18px 0;">
+
+    <div id="disp-save-msg" style="font-size:12px;color:var(--mint);min-height:18px;margin-bottom:10px;"></div>
+    <button class="btn btn-gold" onclick="saveDisplaySettings()">
+      <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--navy);stroke-width:2.5;stroke-linecap:round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Apply to TV
+    </button>`;
+}
+
+function toggleRow(id, label, sub, current, stateKey) {
+  return `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,95,.1);border-radius:10px;margin-bottom:8px;">
+    <div>
+      <div style="font-size:13px;font-weight:600;color:#fff;">${label}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px;">${sub}</div>
+    </div>
+    <div onclick="${stateKey}=!${stateKey};document.getElementById('${id}-track').style.background=${stateKey}?'var(--mint)':'rgba(255,255,255,.12)';document.getElementById('${id}-thumb').style.transform=${stateKey}?'translateX(20px)':'translateX(2px)';"
+      style="width:44px;height:24px;border-radius:12px;cursor:pointer;position:relative;flex-shrink:0;
+             background:${current?'var(--mint)':'rgba(255,255,255,.12)'};transition:background .2s;"
+      id="${id}-track">
+      <div id="${id}-thumb" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;
+             transform:${current?'translateX(20px)':'translateX(2px)'};transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3);"></div>
+    </div>
+  </div>`;
+}
+
+window.setBlackout  = (i) => { DISP.blackoutDuration = i; renderDisplayPanel(); };
+window.setBgStyle   = (i) => { DISP.bgStyle = i; renderDisplayPanel(); };
+window.setColourTemp= (i) => { DISP.colourTemp = i; renderDisplayPanel(); };
+window.setBgPattern = (i) => {
+  DISP.bgPattern = i;
+  // Choosing a non-none pattern clears bg image (matches mosqueadminscreen.dart behaviour)
+  if (i !== 0) {
+    setDoc(doc(db,'displayMosques',DS.uid), { setting_bgImagePath:'', needsRefresh:true }, {merge:true}).catch(()=>{});
+  }
+  renderDisplayPanel();
+};
+
+window.saveDisplaySettings = async () => {
+  if (!DS.uid) return;
+  const msg = document.getElementById('disp-save-msg');
+  msg.textContent = 'Saving…';
+  try {
+    // Mirrors _saveDisplaySettings in mosqueadminscreen.dart exactly
+    const payload = {
+      setting_bgStyle:          DISP.bgStyle,
+      setting_colourTemp:       DISP.colourTemp,
+      setting_showTicker:       DISP.showTicker,
+      setting_jumuahEnabled:    DISP.jumuahEnabled,
+      setting_blackoutDuration: DISP.blackoutDuration,
+      needsRefresh:             true,
+    };
+    // If bg image exists, keep customImage pattern (10); else write chosen pattern
+    const bgSnap = await getDoc(doc(db,'displayMosques',DS.uid));
+    const hasBgImage = !!(bgSnap.data()?.setting_bgImagePath);
+    payload.setting_bgPattern = hasBgImage ? 10 : DISP.bgPattern;
+    if (!hasBgImage) payload.setting_bgImagePath = '';
+
+    await setDoc(doc(db,'displayMosques',DS.uid), payload, {merge:true});
+    msg.textContent = '✓ Display settings applied to TV';
+    showToast('Settings applied — TV will refresh!');
+  } catch(e) {
+    msg.textContent = 'Error: '+e.message;
+  }
+};
+
+// Load DISP values from Firestore doc and render
+function loadDisplaySettings(data) {
+  function safe(max, key, def) {
+    const v = data[key];
+    return (typeof v === 'number' && v >= 0 && v < max) ? v : def;
+  }
+  DISP.bgStyle          = safe(BACKGROUND_STYLES.length, 'setting_bgStyle', 0);
+  DISP.colourTemp       = safe(COLOUR_TEMPS.length, 'setting_colourTemp', 1);
+  DISP.bgPattern        = safe(11, 'setting_bgPattern', 0); // 11 covers all indices 0–10 including customImage(10)
+  DISP.showTicker       = data['setting_showTicker'] !== false;
+  DISP.jumuahEnabled    = data['setting_jumuahEnabled'] !== false;
+  DISP.blackoutDuration = safe(BLACKOUT_DURATIONS.length, 'setting_blackoutDuration', 1);
+  renderDisplayPanel();
+}
+
+// ── RAMADAN TOGGLE — mirrors _isRamadanTimetable in photoupload.dart ──────────
+window.toggleRamadan = (ctx) => {
+  const pfx = ctx==='setup'?'setup':'admin';
+  const key = pfx+'-ramadan';
+  window[key] = !window[key];
+  const btn = document.getElementById(pfx+'-ramadan-btn');
+  if (btn) {
+    btn.style.background = window[key] ? 'rgba(212,175,95,.18)' : 'rgba(255,255,255,.05)';
+    btn.style.borderColor = window[key] ? 'rgba(212,175,95,.5)' : 'rgba(255,255,255,.1)';
+    btn.style.color = window[key] ? 'var(--gold)' : 'var(--muted)';
+    btn.textContent = window[key] ? '☪ Ramadan timetable — ON' : '☪ Ramadan timetable — OFF';
+  }
+  // Show/hide month-override note
+  const note = document.getElementById(pfx+'-ramadan-note');
+  if (note) note.style.display = window[key] ? 'block' : 'none';
+};
+
+// ── DONATION LINK (Settings panel) ────────────────────────────────────────────
+window.saveDonation = async () => {
+  if (!DS.uid) return;
+  const val = document.getElementById('a-donation').value.trim();
+  try {
+    await setDoc(doc(db,'displayMosques',DS.uid),
+      { donationLink: val, needsRefresh: true }, {merge:true});
+    showToast('Donation link saved — QR code will appear on TV');
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+};
+function fileToBase64(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+// Set default month/year selectors to current month
+const now = new Date();
+document.getElementById('f-month').value = now.getMonth()+1;
+document.getElementById('f-year').value  = now.getFullYear();
+document.getElementById('a-month').value = now.getMonth()+1;
+document.getElementById('a-year').value  = now.getFullYear();
+
+</script>
+</body>
+</html>
